@@ -1,29 +1,40 @@
-import {FlatList, Text, View} from 'react-native'
+import { FlatList, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
+import { Card } from "./Card";
 
-export default function Hello () {
+const products = [
+  {
+    title: "name",
+    price: "1243",
+    vendor: "cloths",
+  },
+  {
+    title: "name",
+    price: "1243",
+    vendor: "cloths",
+  },
+  {
+    title: "name",
+    price: "1243",
+    vendor: "cloths",
+  },
+];
 
-    function renderItem() {
-        return(
-            <View>
-                <Image />
-                <Text>title</Text>
-                <Text>name</Text>
-                <Text>price</Text>
-                <View>
-                    <View className='w-[8px] h-[8px]'></View>
-                </View>
-            </View>
-        )
-    }
+export default function CardSlider() {
 
-    return(
-        <View className='bg-green-200 flex-1'>
-            <Text>Featured</Text>
-            <FlatList
-            data={proucts}
-            keyExtractor={(_, index) => index.toString()}
-            renderItem={renderItem}
-            />
+
+  return (
+    <View className="bg-white py-[15px] pb-[40px] flex-col">
+        <View className='flex-row justify-between py-[10px] px-[15px]'>
+      <Text className='text-[18px] font-light text-black'>Featured</Text>
+            <Text className='text-[11px] text-red-900 font-normal uppercase underline'>View all</Text>
         </View>
-    )
+      <ScrollView className='px-[15px]' horizontal >
+        {products.map((product, index) => (
+            <TouchableOpacity onPress={() => {}}>
+                <Card />
+            </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
 }
