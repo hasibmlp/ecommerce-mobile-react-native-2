@@ -1,5 +1,6 @@
 import { FlatList, Text, View, Image, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import { Card } from "./Card";
+import { useNavigation } from '@react-navigation/native';
 
 const products = [
   {
@@ -21,6 +22,7 @@ const products = [
 
 export default function CardSlider() {
 
+    const navigation = useNavigation()
 
   return (
     <View className="bg-white py-[15px] pb-[40px] flex-col">
@@ -30,7 +32,7 @@ export default function CardSlider() {
         </View>
       <ScrollView className='px-[15px]' horizontal >
         {products.map((product, index) => (
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => {navigation.navigate("ProductDetailScreen")}}>
                 <Card />
             </TouchableOpacity>
         ))}
