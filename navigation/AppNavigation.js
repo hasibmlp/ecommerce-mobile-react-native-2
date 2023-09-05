@@ -38,6 +38,7 @@ export function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <ShoppingBagIcon size={size} color="black" strokeWidth={1} />
           ),
+          title: 'Bag'
         }}
       />
       <Tab.Screen
