@@ -3,14 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 const genderSlice = createSlice({
     name: 'gender',
     initialState: {
-        current: null
+        current: 'women'
     },
     reducers: {
-        changeGender(state, action) {
+        selectGender(state, action) {
             state.current = action.payload
         }
     }
 })
 
-export const { changeGender } = genderSlice.actions
+export const { selectGender } = genderSlice.actions
 export default genderSlice.reducer

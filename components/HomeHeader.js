@@ -3,28 +3,37 @@ import {
   BellIcon,
   HeartIcon,
   ChevronDownIcon,
+  ChevronUpIcon
 } from "react-native-heroicons/outline";
 
 import InfoSlider from "./InfoSlider";
+import { useSelector } from "react-redux";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
-export default function HomeHeader() {
+export default function HomeHeader({handleToggleMenu, value}) {
+
+  const currentGender = useSelector(state => state.gender.current)
+
   return (
-    <View className="mb-3">
+    <Pressable className="mb-3" onPress={() => handleToggleMenu(!value)}>
       <View className="flex-row justify-between  py-[5px]">
         <View className="items-start">
           <Text className="text-[20px] font-normal text-black ml-[15px] mb-2">
             Good Morning!
           </Text>
           <Pressable
-            className="flex-row items-center bg-black"
-            onPress={() => Alert.alert("clicked")}
+            className="flex-row items-center"
+            onPress={() => handleToggleMenu(!value)}
           >
             <Text className="text-[14px] font-normal text-black ml-[15px] mr-2">
-              Shop Women
+              Shop {currentGender}
             </Text>
-            <ChevronDownIcon size={16} color="black" />
+            {
+              value ? (<ChevronUpIcon size={16} color="black" />)
+              :
+              (<ChevronDownIcon size={16} color="black" />)
+            }
           </Pressable>
         </View>
         <View className="h-[42px] w-[42px] mr-4 rounded-full bg-white justify-center items-center">
@@ -44,6 +53,6 @@ export default function HomeHeader() {
       </View>
 
       <InfoSlider />
-    </View>
+    </Pressable>
   );
 }

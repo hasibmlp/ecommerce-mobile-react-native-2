@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   BellIcon,
@@ -30,6 +30,7 @@ import DiscoverBoutique from "../components/DiscoverBoutique";
 import ContentBanner from "../components/ContentBanner";
 import { changeGender } from "../redux/features/gender/genderSlice";
 import GenderSelector from "../components/GenderSelector";
+import HomeHeaderMain from "../components/HomeHeaderMain";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -45,11 +46,16 @@ export default function HomeScreen() {
   const gender = useSelector((state) => state.gender.current);
   dispatch = useDispatch();
 
+  const [toggleGenderMenuBar, setToggleGenderMenuBar] = useState(false);
+  const handleToggleMenu = (value) => {
+    setToggleGenderMenuBar(value);
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView className="bg-gray-100">
-        <HomeHeader />
-        <GenderSelector />
+        <HomeHeader handleToggleMenu={handleToggleMenu} value={toggleGenderMenuBar} />
+        <GenderSelector toggleGenderMenuBar={toggleGenderMenuBar} />
         <ImageBanner />
         <DiscoverBanner />
         <MostWantedBanner />
