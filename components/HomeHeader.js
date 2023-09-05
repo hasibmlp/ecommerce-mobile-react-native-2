@@ -1,4 +1,4 @@
-import { Text, View, Dimensions } from "react-native";
+import { Text, View, Dimensions, Pressable, Alert } from "react-native";
 import {
   BellIcon,
   HeartIcon,
@@ -11,20 +11,23 @@ const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 export default function HomeHeader() {
   return (
-    <View className='mb-3'>
-      <View className="flex-row justify-between px-[15px] py-[5px]">
+    <View className="mb-3">
+      <View className="flex-row justify-between  py-[5px]">
         <View className="items-start">
           <Text className="text-[20px] font-normal text-black ml-[15px] mb-2">
             Good Morning!
           </Text>
-          <View className="flex-row items-center">
+          <Pressable
+            className="flex-row items-center bg-black"
+            onPress={() => Alert.alert("clicked")}
+          >
             <Text className="text-[14px] font-normal text-black ml-[15px] mr-2">
               Shop Women
             </Text>
             <ChevronDownIcon size={16} color="black" />
-          </View>
+          </Pressable>
         </View>
-        <View className="h-[42px] w-[42px] rounded-full bg-white justify-center items-center">
+        <View className="h-[42px] w-[42px] mr-4 rounded-full bg-white justify-center items-center">
           <HeartIcon size={24} color="black" />
         </View>
       </View>

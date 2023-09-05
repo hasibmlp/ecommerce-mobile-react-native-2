@@ -5,6 +5,7 @@ import {
   Dimensions,
   ScrollView,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
@@ -15,6 +16,7 @@ import {
   TruckIcon,
   ChevronDownIcon,
 } from "react-native-heroicons/outline";
+import { Circle } from "react-native-svg";
 
 import CardSlider from "../components/CardSlider";
 import InfoSlider from "../components/InfoSlider";
@@ -27,6 +29,7 @@ import GenderBanner from "../components/GenderBanner";
 import DiscoverBoutique from "../components/DiscoverBoutique";
 import ContentBanner from "../components/ContentBanner";
 import { changeGender } from "../redux/features/gender/genderSlice";
+import GenderSelector from "../components/GenderSelector";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -46,15 +49,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView className="bg-gray-100">
         <HomeHeader />
-        <View>
-          <Pressable onPress={() => dispatch(changeGender('men')) }>
-            <Text className="text-2xl">Men</Text>
-          </Pressable>
-          <Pressable onPress={() => dispatch(changeGender('women')) }>
-            <Text className="text-2xl">Women</Text>
-          </Pressable>
-          <Text className="text-2xl">Current Gender: {gender} </Text>
-        </View>
+        <GenderSelector />
         <ImageBanner />
         <DiscoverBanner />
         <MostWantedBanner />
