@@ -3,51 +3,34 @@ import {
   BellIcon,
   HeartIcon,
   ChevronDownIcon,
-  ChevronUpIcon
+  ChevronUpIcon,
+  MagnifyingGlassIcon
 } from "react-native-heroicons/outline";
 
 import InfoSlider from "./InfoSlider";
 import { useSelector } from "react-redux";
+import SearchInput from "./SearchInput";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 export default function HomeHeader({handleToggleMenu, value}) {
 
-  const currentGender = useSelector(state => state.gender.current)
+  
 
   return (
     <Pressable className="mb-3" onPress={() => handleToggleMenu(!value)}>
-      <View className="flex-row justify-between  py-[5px]">
-        <View className="items-start">
-          <Text className="text-[20px] font-normal text-black ml-[15px] mb-2">
-            Good Morning!
-          </Text>
-          <Pressable
-            className="flex-row items-center"
-            onPress={() => handleToggleMenu(!value)}
-          >
-            <Text className="text-[14px] font-normal text-black ml-[15px] mr-2">
-              Shop {currentGender}
-            </Text>
-            {
-              value ? (<ChevronUpIcon size={16} color="black" />)
-              :
-              (<ChevronDownIcon size={16} color="black" />)
-            }
-          </Pressable>
-        </View>
-        <View className="h-[42px] w-[42px] mr-4 rounded-full bg-white justify-center items-center">
-          <HeartIcon size={24} color="black" />
-        </View>
-      </View>
+      
 
-      <View className="flex-row gap-[10px] px-[15px] py-[10px]">
-        <View className="h-[42px] bg-white justify-center rounded-[10px] flex-1">
-          <Text className="text-[14px] font-normal text-black ml-[15px]">
+      <View className="flex-row gap-[10px] px-[15px] py-[10px] pt-[70px]">
+        
+        <View className="h-[50px] flex flex-row bg-white items-center rounded-[10px] flex-1 pl-2">
+          <MagnifyingGlassIcon size={22} color='black' strokeWidth={1} />
+          <Text className="text-[14px] font-normal text-gray-500 ml-[15px]">
             Search
           </Text>
         </View>
-        <View className="h-[42px] w-[42px] rounded-[10px] bg-white justify-center items-center">
+        {/* <SearchInput text={'Search'} size={14} /> */}
+        <View className="h-[50px] w-[50px] rounded-[10px] bg-white justify-center items-center">
           <BellIcon size={24} color="black" />
         </View>
       </View>

@@ -15,7 +15,9 @@ import {
   HeartIcon,
   TruckIcon,
   ChevronDownIcon,
+  ChevronUpIcon
 } from "react-native-heroicons/outline";
+
 import { Circle } from "react-native-svg";
 
 import CardSlider from "../components/CardSlider";
@@ -31,6 +33,8 @@ import ContentBanner from "../components/ContentBanner";
 import { changeGender } from "../redux/features/gender/genderSlice";
 import GenderSelector from "../components/GenderSelector";
 import HomeHeaderMain from "../components/HomeHeaderMain";
+import MainContent from "../components/MainContent";
+import GreetingHeader from "../components/GreetingHeader";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -51,21 +55,24 @@ export default function HomeScreen() {
     setToggleGenderMenuBar(value);
   };
 
+  const currentGender = useSelector(state => state.gender.current)
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView className="bg-gray-100">
-        <HomeHeader handleToggleMenu={handleToggleMenu} value={toggleGenderMenuBar} />
-        <GenderSelector toggleGenderMenuBar={toggleGenderMenuBar} />
-        <ImageBanner />
-        <DiscoverBanner />
-        <MostWantedBanner />
-        <CardSlider />
-        <CategoryImageBanner />
-        <DiscoverBoutique />
-        <ContentBanner />
-        <GenderBanner gender={"Men"} />
-        <GenderBanner gender={"Kids"} />
-        {/* <CardSlider /> */}
+      <ScrollView scrollEnabled={!toggleGenderMenuBar} className="bg-gray-100">
+
+      <GreetingHeader handleToggleMenu={handleToggleMenu} state={toggleGenderMenuBar} />
+
+          <HomeHeader
+            handleToggleMenu={handleToggleMenu}
+            value={toggleGenderMenuBar}
+          />
+          <GenderSelector
+            toggleGenderMenuBar={toggleGenderMenuBar}
+            setToggleGenderMenuBar={setToggleGenderMenuBar}
+          />
+
+        <MainContent toggleGenderMenuBar={toggleGenderMenuBar} setState={setToggleGenderMenuBar} />
       </ScrollView>
     </SafeAreaView>
   );
