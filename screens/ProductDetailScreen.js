@@ -18,8 +18,18 @@ import {
   TruckIcon,
   ChevronLeftIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
+  QuestionMarkCircleIcon,
+  TagIcon,
+  StarIcon,
 } from "react-native-heroicons/outline";
+
 import ShowAndHide from "../components/ShowAndHide";
+import CardSlider from "../components/CardSlider";
+import FollowButton from "../components/FollowButton";
+import HeartButton from "../components/HeartButton";
+import BottomModal from "../components/BottomModal";
+
 const images = [
   require("../assets/boys.jpg"),
   require("../assets/boys.jpg"),
@@ -50,6 +60,7 @@ export default function ProductDetailScreen() {
 
   return (
     <View>
+      <BottomModal />
       <ScrollView bounces={false}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -76,10 +87,8 @@ export default function ProductDetailScreen() {
         />
 
         <View className="pb-[100px]">
-          <View className="items-center gap-[8px] py-[10px]">
-            <TouchableOpacity className="bg-white h-[50px] w-[50px] rounded-full items-center justify-center absolute z-1 right-[15px] -top-[25px]">
-              <HeartIcon color="black" size={30} strokeWidth={1} />
-            </TouchableOpacity>
+          <View className="items-center gap-[8px] py-[10px] bg-white">
+            <HeartButton />
             <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center">
               <Text className="text-[11px] text-black uppercase">
                 new season
@@ -96,7 +105,7 @@ export default function ProductDetailScreen() {
             </Text>
           </View>
 
-          <Pressable className="border-t border-gray-300 py-2">
+          <Pressable className="border-t border-gray-300 py-2 bg-white">
             <Text className="text-[11px] text-black font-medium uppercase text-center ">
               size
             </Text>
@@ -108,7 +117,7 @@ export default function ProductDetailScreen() {
             </View>
           </Pressable>
 
-          <TouchableOpacity className=" border py-5 border-gray-300">
+          <TouchableOpacity className=" border py-5 border-gray-300 bg-white">
             <View className="flex-row gap-x-2 justify-center items-center">
               <TruckIcon size={26} strokeWidth={1} color="black" />
               <Text className="text-[14px] font-normal text-black uppercase">
@@ -125,15 +134,15 @@ export default function ProductDetailScreen() {
             </View>
           </TouchableOpacity>
 
-          <View className="flex gap-y-4 py-5 px-4">
+          <View className="flex gap-y-4 py-5 px-4 bg-white">
             <View className="flex-row gap-x-1 items-center justify-center">
               <ClockIcon size={20} color="red" />
               <Text className="text-[13px] text-red-500 font-normal">
                 Low in stock: only 1 left
               </Text>
             </View>
-            <TouchableOpacity className="flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px]">
-              <Text className="text-[14px] text-white font-normal uppercase">
+            <TouchableOpacity className=" flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px]">
+              <Text className="text-[14px] text-white font-semibold uppercase">
                 Add to bag
               </Text>
             </TouchableOpacity>
@@ -143,8 +152,60 @@ export default function ProductDetailScreen() {
           <ShowAndHide title="Size & Fit" />
           <ShowAndHide title="Delivery % Free Returns" />
 
-          
+          <View className="flex-row gap-x-2 bg-gray-100 py-4 px-4">
+            <Text className="text-[12px] text-black font-light uppercase">
+              product code :
+            </Text>
+            <Text className="text-[12px] text-black font-medium uppercase">
+              289238923
+            </Text>
+          </View>
 
+          <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4">
+            <View className="flex-row gap-x-1 items-center">
+              <QuestionMarkCircleIcon size={22} color="black" strokeWidth={1} />
+              <View className="flex-row gap-x-1">
+                <Text className="text-[13px] text-black font-medium ">
+                  Need help?
+                </Text>
+                <Text className="text-[13px] text-black font-light ">
+                  Call, Whatsapp , or email us
+                </Text>
+              </View>
+            </View>
+            <ChevronRightIcon size={24} color="black" strokeWidth={1} />
+          </Pressable>
+
+          <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4 mt-4">
+            <View className="flex-row gap-x-1 items-center">
+              <TagIcon size={24} color="black" strokeWidth={1} />
+              <View className="flex-row gap-x-1">
+                <Text className="text-[13px] text-black font-light ">
+                  We offer
+                </Text>
+                <Text className="text-[13px] text-black font-medium ">
+                  Price Match
+                </Text>
+              </View>
+            </View>
+            <ChevronDownIcon size={22} color="black" strokeWidth={1} />
+          </Pressable>
+
+          <View className="p-4 bg-white mt-4">
+            <View className="flex-row justify-between">
+              <Text className="text-[16px] text-black font-normal ">
+                Emporio Armani
+              </Text>
+              <FollowButton />
+            </View>
+            <Text className="text-[13px] text-gray-800 font-normal mt-3">
+              Follow this brand to get exciting updateds on new collections,
+              offers and more.
+            </Text>
+          </View>
+
+          <CardSlider title="You May Also Like" mt={3} />
+          <CardSlider title="More from this brand" mt={3} />
         </View>
       </ScrollView>
 

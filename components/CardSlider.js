@@ -20,14 +20,14 @@ const products = [
   },
 ];
 
-export default function CardSlider() {
+export default function CardSlider({title, mt}) {
 
     const navigation = useNavigation()
 
   return (
-    <View className="bg-white py-[15px] pb-[40px] flex-col">
+    <View className={`bg-white py-[15px] pb-[40px] flex-col mt-${mt}`}>
         <View className='flex-row justify-between py-[10px] px-[15px]'>
-      <Text className='text-[18px] font-light text-black'>Featured</Text>
+      <Text className='text-[18px] font-light text-black capitalize'>{title}</Text>
             <Text className='text-[11px] text-red-900 font-normal uppercase underline'>View all</Text>
         </View>
       <ScrollView className='px-[15px]' horizontal >

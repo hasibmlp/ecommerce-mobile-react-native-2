@@ -18,7 +18,7 @@ export default function MainContent({ toggleGenderMenuBar, setState }) {
       <ImageBanner />
       <DiscoverBanner />
       <MostWantedBanner />
-      <CardSlider />
+      <CardSlider title="featured" />
       <CategoryImageBanner />
       <DiscoverBoutique />
       <ContentBanner />
