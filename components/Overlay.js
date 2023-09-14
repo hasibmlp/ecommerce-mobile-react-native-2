@@ -13,6 +13,8 @@ export default function Overlay ({state, setState}) {
         }).start()
     }, [state])
 
+    if(!state) return null
+
     return (
         <Animated.View style={{ opacity: opacityRef }}  className={` absolute top-0 left-0 bottom-0 right-0 bg-black z-10`}>
             <TouchableOpacity className="h-full w-full" onPress={() => setState(false)} />

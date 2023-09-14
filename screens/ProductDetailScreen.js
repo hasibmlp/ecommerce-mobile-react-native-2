@@ -17,6 +17,7 @@ import {
   ClockIcon,
   TruckIcon,
   ChevronLeftIcon,
+  ChevronDownIcon,
 } from "react-native-heroicons/outline";
 import ShowAndHide from "../components/ShowAndHide";
 const images = [
@@ -33,11 +34,10 @@ const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 export default function ProductDetailScreen() {
   const [bottomAction, setBottomAction] = useState(null);
 
-  const topEdge = bottomAction?.y  ;
+  const topEdge = bottomAction?.y;
 
   console.log(bottomAction);
   console.log(topEdge);
-  
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
@@ -50,16 +50,7 @@ export default function ProductDetailScreen() {
 
   return (
     <View>
-      
-      <Animated.ScrollView
-        bounces={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-          
-        )}
-        onScrollBeginDrag={() => {console.log(bottomAction); console.log(topEdge)}}
-      >
+      <ScrollView bounces={false}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="h-[40px] w-[40px] items-center justify-center rounded-full bg-white absolute z-[1] left-[20px] top-[50px]"
@@ -105,14 +96,26 @@ export default function ProductDetailScreen() {
             </Text>
           </View>
 
-          <TouchableOpacity className="items-center gap-[2px] py-[5px] border border-gray-300">
-            <View className="flex-row gap-[5px] items-center">
+          <Pressable className="border-t border-gray-300 py-2">
+            <Text className="text-[11px] text-black font-medium uppercase text-center ">
+              size
+            </Text>
+            <View className="flex-row items-center justify-center gap-x-1 mt-3">
+              <Text className="text-[18px] text-black font-light uppercase">
+                26 eu
+              </Text>
+              <ChevronDownIcon size={14} color="black" />
+            </View>
+          </Pressable>
+
+          <TouchableOpacity className=" border py-5 border-gray-300">
+            <View className="flex-row gap-x-2 justify-center items-center">
               <TruckIcon size={26} strokeWidth={1} color="black" />
               <Text className="text-[14px] font-normal text-black uppercase">
                 shipping from uae
               </Text>
             </View>
-            <View className="flex-row gap-[5px]">
+            <View className="flex-row justify-center items-center gap-x-2 mt-3">
               <Text className="text-[14px] font-normal text-black">
                 Next day delevery to
               </Text>
@@ -122,39 +125,30 @@ export default function ProductDetailScreen() {
             </View>
           </TouchableOpacity>
 
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
+          <View className="flex gap-y-4 py-5 px-4">
+            <View className="flex-row gap-x-1 items-center justify-center">
+              <ClockIcon size={20} color="red" />
+              <Text className="text-[13px] text-red-500 font-normal">
+                Low in stock: only 1 left
+              </Text>
+            </View>
+            <TouchableOpacity className="flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px]">
+              <Text className="text-[14px] text-white font-normal uppercase">
+                Add to bag
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-          <View
-            onLayout={(event) => {
-              setBottomAction(event.nativeEvent.layout);
-            }}
-            className="h-[140px] bg-gray-300"
-          ></View>
+          <ShowAndHide title="Editor's advice" />
+          <ShowAndHide title="Size & Fit" />
+          <ShowAndHide title="Delivery % Free Returns" />
 
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
-          <ShowAndHide />
+          
+
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
 
-      {bottomAction && (
+      {/* {bottomAction && (
         <Animated.View
           style={{
             transform: [
@@ -180,7 +174,7 @@ export default function ProductDetailScreen() {
             </Text>
           </TouchableOpacity>
         </Animated.View>
-      )}
+      )} */}
     </View>
   );
 }
