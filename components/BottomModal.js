@@ -1,17 +1,29 @@
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef } from "react";
+import { Pressable, Text, TouchableOpacity, View, Animated } from "react-native";
 import { TruckIcon } from "react-native-heroicons/outline";
 
-export default function BottomModal() {
+export default function BottomModal({state, setState}) {
+    const transRef = useRef(new Animated.Value(100)).current
+
+    useEffect(() => {
+        Animated.timing(transRef, {
+            toValue: state ? 0 : 600,
+            duration: 300,
+            useNativeDriver: true,
+        }).start()
+    },[state])
+
   return (
-    <View style={{ borderTopStartRadius: 180, borderTopEndRadius: 180, transform: [{scaleX: 2.4},] }} className="absolute bottom-0 left-0 right-0 z-10 bg-white">
+    <Animated.View style={{ borderTopStartRadius: 180, borderTopEndRadius: 180, transform: [{scaleX: 2.4}, {translateY: transRef}] }} className="absolute bottom-0 left-0 right-0 z-30 bg-white">
       <View className="flex-1 items-center justify-center scale-x-[.42]">
+
         <View className=" py-10 self-stretch px-5 ">
           <View className="gap-y-5">
             <View className="flex-row justify-between items-center">
               <Text className="text-[22px] font-normal text-black">
                 Select Size
               </Text>
-              <Pressable>
+              <Pressable className=" py-1 px-2" onPress={() => setState(false)}>
                 <Text className="text-[14px] font-medium text-black uppercase">
                   Done
                 </Text>
@@ -78,6 +90,6 @@ export default function BottomModal() {
           </View>
         </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }

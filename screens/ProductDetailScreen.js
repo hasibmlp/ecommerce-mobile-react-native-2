@@ -10,7 +10,6 @@ import {
   FlatList,
   Pressable,
   TouchableOpacity,
-  Animated,
 } from "react-native";
 import {
   HeartIcon,
@@ -29,6 +28,7 @@ import CardSlider from "../components/CardSlider";
 import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
 import BottomModal from "../components/BottomModal";
+import Overlay from "../components/Overlay";
 
 const images = [
   require("../assets/boys.jpg"),
@@ -42,14 +42,12 @@ const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
 export default function ProductDetailScreen() {
-  const [bottomAction, setBottomAction] = useState(null);
-
-  const topEdge = bottomAction?.y;
+  const [bottomModal, setBottomModal] = useState(false);
 
   console.log(bottomAction);
   console.log(topEdge);
 
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
@@ -60,7 +58,17 @@ export default function ProductDetailScreen() {
 
   return (
     <View>
-      <BottomModal />
+      <SafeAreaView className="bg-white" />
+      <View className="items-center justify-center bg-white h-[50px] relative">
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          className="h-[40px] w-[40px] items-center justify-center absolute left-4 "
+        >
+          <ChevronLeftIcon size={20} color="black" />
+        </TouchableOpacity>
+        <Text className="text-[20px] font-medium text-black">Boucheron</Text>
+      </View>
+      <SafeAreaView />
       <ScrollView bounces={false}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
@@ -105,7 +113,10 @@ export default function ProductDetailScreen() {
             </Text>
           </View>
 
-          <Pressable className="border-t border-gray-300 py-2 bg-white">
+          <Pressable
+            onPress={() => setBottomModal(!bottomModal)}
+            className="border-t border-gray-300 py-2 bg-white"
+          >
             <Text className="text-[11px] text-black font-medium uppercase text-center ">
               size
             </Text>
@@ -148,9 +159,11 @@ export default function ProductDetailScreen() {
             </TouchableOpacity>
           </View>
 
-          <ShowAndHide title="Editor's advice" />
-          <ShowAndHide title="Size & Fit" />
-          <ShowAndHide title="Delivery % Free Returns" />
+          <View>
+            <ShowAndHide title="Editor's advice" />
+            <ShowAndHide title="Size & Fit" />
+            <ShowAndHide title="Delivery % Free Returns" />
+          </View>
 
           <View className="flex-row gap-x-2 bg-gray-100 py-4 px-4">
             <Text className="text-[12px] text-black font-light uppercase">
@@ -208,6 +221,9 @@ export default function ProductDetailScreen() {
           <CardSlider title="More from this brand" mt={3} />
         </View>
       </ScrollView>
+
+      <BottomModal state={bottomModal} setState={setBottomModal} />
+      <Overlay state={bottomModal} setState={setBottomModal} />
 
       {/* {bottomAction && (
         <Animated.View
