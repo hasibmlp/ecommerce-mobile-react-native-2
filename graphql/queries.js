@@ -1,14 +1,12 @@
 import { gql } from "@apollo/client";
 
-export const GET_COLLECTION = gql`
+export const GET_PRODUCTS = gql`
   query {
     collection(id: "gid://shopify/Collection/289439154328") {
-      id
-      title
       products(first: 5) {
         edges {
           node {
-            id
+            vendor
             title
             featuredImage {
               url
@@ -19,3 +17,4 @@ export const GET_COLLECTION = gql`
     }
   }
 `;
+

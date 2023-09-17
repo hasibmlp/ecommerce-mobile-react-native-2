@@ -1,22 +1,9 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 
-const httpLink = createHttpLink({
+export const client = new ApolloClient({
   uri: "https://trappist-1e.myshopify.com/api/2023-07/graphql.json",
-});
-
-const authLink = setContext((_, { headers }) => {
-  const token = "ff031bf264f816c80da166c05bc93a87";
-  return {
-    headers: {
-      ...headers,
-      "Content-Type": "application/json",
-      "X-Shopify-Storefront-Access-Token": token,
-    },
-  };
-});
-
-export default client = new ApolloClient({
-  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
+  headers: {
+    "X-Shopify-Storefront-Access-Token": "bfe9571e29cb8075537f0a0111d2ee63",
+  },
 });

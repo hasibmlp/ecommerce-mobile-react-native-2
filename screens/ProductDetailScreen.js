@@ -44,8 +44,6 @@ const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 export default function ProductDetailScreen() {
   const [bottomModal, setBottomModal] = useState(false);
 
-  console.log(bottomAction);
-  console.log(topEdge);
 
   // const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
