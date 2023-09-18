@@ -30,24 +30,27 @@ import HeartButton from "../components/HeartButton";
 import BottomModal from "../components/BottomModal";
 import Overlay from "../components/Overlay";
 
-const images = [
-  require("../assets/boys.jpg"),
-  require("../assets/boys.jpg"),
-  require("../assets/boys.jpg"),
-];
+// const images = [
+//   require("../assets/boys.jpg"),
+//   require("../assets/boys.jpg"),
+//   require("../assets/boys.jpg"),
+// ];
 
 const screen_width = Dimensions.get("screen").width;
 const screen_height = Dimensions.get("screen").height;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
-export default function ProductDetailScreen() {
+export default function ProductDetailScreen({route}) {
   const [bottomModal, setBottomModal] = useState(false);
 
 
   // const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+  const { product } = route.params
+  
 
+  const images = product.images.edges.map(edge => edge.node.url)
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -64,7 +67,7 @@ export default function ProductDetailScreen() {
         >
           <ChevronLeftIcon size={20} color="black" />
         </TouchableOpacity>
-        <Text className="text-[20px] font-medium text-black">Boucheron</Text>
+        <Text className="text-[20px] font-medium text-black">{product.title}</Text>
       </View>
       <SafeAreaView />
       <ScrollView bounces={false}>
@@ -86,7 +89,7 @@ export default function ProductDetailScreen() {
               <Image
                 style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
                 className="h-[600px]"
-                source={item}
+                src={item}
               />
             );
           }}
@@ -97,11 +100,11 @@ export default function ProductDetailScreen() {
             <HeartButton />
             <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center">
               <Text className="text-[11px] text-black uppercase">
-                new season
+                {product.vendor}
               </Text>
             </View>
             <Text className="text-[20px] font-medium text-black">
-              Boucheron
+              {product.title}
             </Text>
             <Text className="text-[14px] font-normal text-black">
               this is amzing product with beautiful patters, 12mm

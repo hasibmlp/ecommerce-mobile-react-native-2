@@ -11,10 +11,16 @@ export const GET_PRODUCTS = gql`
             featuredImage {
               url
             }
+            images(first: 5) {
+              edges {
+                node {
+                  url
+                }
+              }
+            }
           }
         }
       }
     }
   }
 `;
-
