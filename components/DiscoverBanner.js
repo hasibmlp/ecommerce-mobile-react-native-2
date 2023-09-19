@@ -1,19 +1,16 @@
 import { View, Image, Text } from "react-native";
+import DoubleScreenImage from "./DoubleScreenImage";
+
+const images = [
+  require("../assets/boys.jpg"),
+  require("../assets/boys.jpg")
+]
 
 export default function DiscoverBanner() {
   return (
-    <View className="mb-3 bg-white">
-      <View className="flex-row gap-2">
-        <Image
-          className="w-[50%] h-[300px]"
-          source={require("../assets/boys.jpg")}
-        />
-        <Image
-          className="w-[50%] h-[300px]"
-          source={require("../assets/boys.jpg")}
-        />
-      </View>
-      <View className="items-center py-4 gap-1">
+    <View className="mb-3 bg-white flex-col">
+      <DoubleScreenImage images={images} />
+      <View className="items-center py-4 gap-1 ">
         <Text className="text-[18px] text-black font-normal">
           Emirati Heirlooms:
         </Text>
