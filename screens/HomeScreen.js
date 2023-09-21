@@ -16,12 +16,18 @@ import HomeHeader from "../components/HomeHeader";
 import GenderSelector from "../components/GenderSelector";
 import MainContent from "../components/MainContent";
 import GreetingHeader from "../components/GreetingHeader";
+import { useQuery } from "@apollo/client";
+import {
+  GET_HOMESCREEN_DATA,
+} from "../graphql/queries";
 
 export default function HomeScreen() {
   const [toggleGenderMenuBar, setToggleGenderMenuBar] = useState(false);
 
   const navigation = useNavigation();
   dispatch = useDispatch();
+
+  const gender = useSelector((state) => state.gender.current);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,6 +38,13 @@ export default function HomeScreen() {
   const handleToggleMenu = (value) => {
     setToggleGenderMenuBar(value);
   };
+
+    const { loading, error, data } = useQuery(GET_HOMESCREEN_DATA, {
+      variables: {"gender": gender.toUpperCase()}
+    });
+
+  if (loading) return <Text>Loading..</Text>;
+  if (error) return <Text>Error Occured {error}</Text>;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -52,6 +65,7 @@ export default function HomeScreen() {
         <MainContent
           toggleGenderMenuBar={toggleGenderMenuBar}
           setState={setToggleGenderMenuBar}
+          homeScreenData={data.homeScreen}
         />
       </ScrollView>
     </SafeAreaView>
