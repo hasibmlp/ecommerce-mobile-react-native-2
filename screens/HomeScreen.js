@@ -39,12 +39,8 @@ export default function HomeScreen() {
     setToggleGenderMenuBar(value);
   };
 
-    const { loading, error, data } = useQuery(GET_HOMESCREEN_DATA, {
-      variables: {"gender": gender.toUpperCase()}
-    });
+  
 
-  if (loading) return <Text>Loading..</Text>;
-  if (error) return <Text>Error Occured {error}</Text>;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -65,7 +61,7 @@ export default function HomeScreen() {
         <MainContent
           toggleGenderMenuBar={toggleGenderMenuBar}
           setState={setToggleGenderMenuBar}
-          homeScreenData={data.homeScreen}
+          homeScreenData={[]}
         />
       </ScrollView>
     </SafeAreaView>

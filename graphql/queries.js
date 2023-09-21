@@ -26,15 +26,107 @@ import { gql } from "@apollo/client";
 // `;
 
 export const GET_HOMESCREEN_DATA = gql`
-  query GetHomeScreenData($gender: GenderValues){
-    homeScreen(gender: $gender) {
-      greeting
-      collectionCategory {
-        title
-        desc
-        images {
+  query HomeScreenData {
+    homeData {
+      womensData {
+        gender
+        categories {
           title
-          url
+          desc
+          media {
+            title
+            url
+          }
+        }
+        collections {
+          title
+          cta
+          products {
+            title
+            price
+            media {
+              title
+              url
+            }
+          }
+        }
+        bannerCards {
+          title
+          desc
+          media {
+            url
+          }
+        }
+        subCategories {
+          title
+          media {
+            title
+            url
+          }
+        }
+        genderCategories {
+          field {
+            title
+            url
+          }
+        }
+      }
+      mensData {
+        gender
+        categories {
+          title
+          desc
+          media {
+            title
+            url
+          }
+        }
+        collections {
+          title
+          cta
+          products {
+            title
+            price
+            media {
+              title
+              url
+            }
+          }
+        }
+        bannerCards {
+          title
+          desc
+          media {
+            url
+          }
+        }
+        subCategories {
+          title
+          media {
+            title
+            url
+          }
+        }
+        genderCategories {
+          field {
+            title
+            url
+          }
+        }
+      }
+      kidsData {
+        bannerCards {
+          title
+          desc
+          media {
+            url
+          }
+        }
+        genderCategories {
+          field {
+            title
+            url
+          }
         }
       }
     }
