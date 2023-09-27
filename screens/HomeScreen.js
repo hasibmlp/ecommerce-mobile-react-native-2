@@ -8,7 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {} from "react-native-heroicons/outline";
 
@@ -17,17 +17,14 @@ import GenderSelector from "../components/GenderSelector";
 import MainContent from "../components/MainContent";
 import GreetingHeader from "../components/GreetingHeader";
 import { useQuery } from "@apollo/client";
-import {
-  GET_HOMESCREEN_DATA,
-} from "../graphql/queries";
+import { GET_HOMESCREEN_DATA } from "../graphql/queries";
+import { getHomeData } from "../redux/features/homedata/homedataSlice";
+import MainContentV2 from "../components/MainContentV2";
 
 export default function HomeScreen() {
   const [toggleGenderMenuBar, setToggleGenderMenuBar] = useState(false);
-
   const navigation = useNavigation();
-  dispatch = useDispatch();
-
-  const gender = useSelector((state) => state.gender.current);
+  const dispatch = useDispatch();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -38,9 +35,6 @@ export default function HomeScreen() {
   const handleToggleMenu = (value) => {
     setToggleGenderMenuBar(value);
   };
-
-  
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -58,11 +52,15 @@ export default function HomeScreen() {
           setToggleGenderMenuBar={setToggleGenderMenuBar}
         />
 
-        <MainContent
+        <MainContentV2
           toggleGenderMenuBar={toggleGenderMenuBar}
           setState={setToggleGenderMenuBar}
-          homeScreenData={[]}
         />
+
+        {/* <MainContent
+          toggleGenderMenuBar={toggleGenderMenuBar}
+          setState={setToggleGenderMenuBar}
+        /> */}
       </ScrollView>
     </SafeAreaView>
   );

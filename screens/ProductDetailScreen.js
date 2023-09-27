@@ -41,16 +41,23 @@ const screen_height = Dimensions.get("screen").height;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
-export default function ProductDetailScreen({route}) {
+const products = {
+  id: "124",
+  title: "test product",
+  desc: "this is a test product for scrubs and clogs",
+  price: 1200,
+};
+
+export default function ProductDetailScreen({ route }) {
   const [bottomModal, setBottomModal] = useState(false);
 
-
-  // const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
-  const { product } = route.params
-  
+  const { product } = route.params;
 
-  const images = product.images.edges.map(edge => edge.node.url)
+
+  // const images = product.media.map(image => image.url)
+  const images = [];
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -67,7 +74,9 @@ export default function ProductDetailScreen({route}) {
         >
           <ChevronLeftIcon size={20} color="black" />
         </TouchableOpacity>
-        <Text className="text-[20px] font-medium text-black">{product.title}</Text>
+        <Text className="text-[20px] font-medium text-black">
+          {product.title}
+        </Text>
       </View>
       <SafeAreaView />
       <ScrollView bounces={false}>
@@ -86,11 +95,12 @@ export default function ProductDetailScreen({route}) {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => {
             return (
-              <Image
-                style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
-                className="h-[600px]"
-                src={item}
-              />
+              <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
+                <Image
+                  className="w-full h-full"
+                  src={item}
+                />
+              </View>
             );
           }}
         />

@@ -1,6 +1,6 @@
 import { View, Image, Text } from "react-native";
 
-export default function ContentBanner({
+export default function PostCardBanner({
   title,
   subTitle,
   cta,
@@ -10,19 +10,21 @@ export default function ContentBanner({
 
   return (
     <View className="mb-3 items-center bg-white">
+      {title && (
+        <Text className="text-[22px] text-black font-light py-[15px]">
+          {title}
+        </Text>
+      )}
       <View className="flex-row">
-        <Image className="w-[100%] h-[350px]" src={media[0].url} />
+        <Image className="w-[90%] h-[250px]" src={media[0].url} />
       </View>
-      <View className="items-center py-4">
+      <View className="items-center py-4 gap-3">
         {subTitle && (
-          <Text className="text-[18px] text-black font-normal mb-2">{subTitle}</Text>
+          <Text className="text-[18px] text-black font-normal">{subTitle}</Text>
         )}
 
-        {title && (
-          <Text className="text-[28px] text-black font-medium mb-2">{title}</Text>
-        )}
         {desc && (
-          <Text className="text-[14px] text-black font-light w-[350px] text-center mb-2">
+          <Text className="text-[14px] text-black font-light w-[350px] text-center">
             {desc}
           </Text>
         )}

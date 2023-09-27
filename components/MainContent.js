@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useQuery } from "@apollo/client";
 import { Text, View } from "react-native";
 
 import CardSlider from "../components/CardSlider";
 import ImageBanner from "../components/ImageBanner";
 import DiscoverBanner from "../components/DiscoverBanner";
-import MostWantedBanner from "../components/MostWantedBanner";
+import MostWantedBanner from "./PostCardBanner";
 import CategoryImageBanner from "../components/CategoryImageBanner";
 import GenderBanner from "../components/GenderBanner";
-import DiscoverBoutique from "../components/DiscoverBoutique";
+// import DiscoverBoutique from "../components/DiscoverBoutique";
 import ContentBanner from "../components/ContentBanner";
 import Overlay from "./Overlay";
 import { GET_HOMESCREEN_DATA, GET_PRODUCTS } from "../graphql/queries";
@@ -17,6 +18,7 @@ import DoubleScreenImage from "./DoubleScreenImage";
 import TripleeScreenImage from "./TripleScreenImage";
 import ContentOutsideBottom from "./ContentOutsideBottom";
 import SingleScreenImage from "./SingleScreenImage";
+import KidsHomeCollection from "./KidsHomeCollections";
 
 const images1 = [
   require("../assets/scrubset.jpg"),
@@ -34,48 +36,44 @@ const images3 = [
   require("../assets/t-shirt.jpg"),
 ];
 
-export default function MainContent({
-  toggleGenderMenuBar,
-  setState,
-  homeScreenData,
-}) {
-  // const { loading, error, data } = useQuery(GET_PRODUCTS);
+export default function MainContent({ toggleGenderMenuBar, setState }) {
+  const gender = useSelector((state) => state.gender.current);
+  const { loading, error, data } = useQuery(GET_HOMESCREEN_DATA);
 
+  if (loading) return <Text>Loading..</Text>;
+  if (error) return <Text>Error occured !! {error}</Text>;
 
-  // if (loading) return <View></View>;
-  // if (error) {
-  //   console.log(error);
-  // }
+  const currentData = data.homeData.filter((item) => item.gender === gender);
+
+  if (gender === "kids")
+    return <KidsHomeCollection currentData={currentData} />;
 
   return (
     <View className="relative">
       <Overlay state={toggleGenderMenuBar} setState={setState} />
+      <ImageBanner />
       <ContentOutsideTop
-        title={homeScreenData.collectionCategory[0].title}
-        desc={homeScreenData.collectionCategory[0].desc}
+        title={currentData[0].data.categories[0].title}
+        desc={currentData[0].data.categories[0].desc}
       >
-        <DoubleScreenImage
-          images={homeScreenData.collectionCategory[0].images}
-        />
+        <DoubleScreenImage images={currentData[0].data.categories[0].media} />
       </ContentOutsideTop>
 
       <ContentOutsideTop
-        title={homeScreenData.collectionCategory[1].title}
-        desc={homeScreenData.collectionCategory[1].desc}
+        title={currentData[0].data.categories[1].title}
+        desc={currentData[0].data.categories[1].desc}
       >
-        <TripleeScreenImage
-          images={homeScreenData.collectionCategory[1].images}
-        />
+        <TripleeScreenImage images={currentData[0].data.categories[1].media} />
       </ContentOutsideTop>
 
       <ContentOutsideTop
-        title={homeScreenData.collectionCategory[2].title}
-        desc={homeScreenData.collectionCategory[2].desc}
+        title={currentData[0].data.categories[2].title}
+        desc={currentData[0].data.categories[2].desc}
       >
-        <DoubleScreenImage
-          images={homeScreenData.collectionCategory[2].images}
-        />
+        <DoubleScreenImage images={currentData[0].data.categories[2].media} />
       </ContentOutsideTop>
+
+      <MostWantedBanner />
 
       <ContentOutsideBottom
         cta="Explore"
@@ -84,13 +82,29 @@ export default function MainContent({
         <SingleScreenImage image={require("../assets/fullsleeve.jpg")} />
       </ContentOutsideBottom>
 
-      <ImageBanner />
       <DiscoverBanner />
-      <MostWantedBanner />
-      <CardSlider title="featured" products={[]} />
-      <CategoryImageBanner />
-      <DiscoverBoutique />
+      <CardSlider
+        title={currentData[0].data.collections[0].title}
+        products={currentData[0].data.collections[0].products}
+      />
+
       <ContentBanner />
+
+      <CardSlider
+        title={currentData[0].data.collections[0].title}
+        products={currentData[0].data.collections[0].products}
+      />
+
+      <MostWantedBanner />
+
+      <ImageBanner />
+
+      <CategoryImageBanner />
+
+      <ContentBanner />
+
+      {/* <DiscoverBoutique /> */}
+
       <GenderBanner gender={"Men"} />
       <GenderBanner gender={"Kids"} />
       {/* <CardSlider /> */}
