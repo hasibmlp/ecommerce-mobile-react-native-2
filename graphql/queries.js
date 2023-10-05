@@ -92,8 +92,8 @@ export const GET_COLLECTION = gql`
                 amount
               }
             }
-            images(first:5){
-              edges{
+            images(first: 5) {
+              edges {
                 node {
                   url
                 }
@@ -106,25 +106,78 @@ export const GET_COLLECTION = gql`
   }
 `;
 
-
 export const GET_PRODUCT = gql`
   query singleProduct($productId: ID!) {
     product(id: $productId) {
-    id
-    vendor
-    title
-    priceRangeV2 {
-      minVariantPrice {
-        amount
+      id
+      vendor
+      title
+      description
+      priceRange {
+        minVariantPrice {
+          amount
+        }
       }
-    }
-    images(first:5) {
-      edges {
-        node {
-          url
+      images(first: 10) {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      options {
+        name
+        values
+      }
+      variants(first:100) {
+        edges {
+          node {
+            id
+            quantityAvailable
+            selectedOptions {
+              name
+              value
+            }
+          }
         }
       }
     }
   }
+`;
+
+export const GET_CART_ITEM = gql`
+  query getCartItem($productId: ID!) {
+    node(id: $productId) {
+      ... on ProductVariant {
+        id
+        title
+        image {
+          url
+        }
+        price {
+          amount
+        }
+        selectedOptions {
+          name
+          value
+        }
+        product {
+          title
+        }
+      }
+    }
   }
-`
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+  query getProductVariant(
+    $productId: ID!
+    $selectedOptions: [SelectedOptionInput!]!
+  ) {
+    product(id: $productId) {
+      variantBySelectedOptions(selectedOptions: $selectedOptions) {
+        id
+      }
+    }
+  }
+`;

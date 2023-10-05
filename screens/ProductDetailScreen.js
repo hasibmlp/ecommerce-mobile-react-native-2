@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useSate, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   Image,
@@ -20,49 +20,95 @@ import {
   ChevronRightIcon,
   QuestionMarkCircleIcon,
   TagIcon,
-  StarIcon,
 } from "react-native-heroicons/outline";
+import { useQuery } from "@apollo/client";
 
+import { GET_PRODUCT } from "../graphql/queries";
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
 import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
 import BottomModal from "../components/BottomModal";
 import Overlay from "../components/Overlay";
-
-// const images = [
-//   require("../assets/boys.jpg"),
-//   require("../assets/boys.jpg"),
-//   require("../assets/boys.jpg"),
-// ];
+import { cartItemsVar } from "../App";
 
 const screen_width = Dimensions.get("screen").width;
-const screen_height = Dimensions.get("screen").height;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
-const products = {
-  id: "124",
-  title: "test product",
-  desc: "this is a test product for scrubs and clogs",
-  price: 1200,
-};
-
 export default function ProductDetailScreen({ route }) {
   const [bottomModal, setBottomModal] = useState(false);
+  const [addToCartbuttonDisabled, setaddToCartbuttonDisabled] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [prodVariants, setProdVariants] = useState([]);
+  const [filteredVariants, setFilteredVariants] = useState([])
+
+  // console.log(" this is selected variant id ", selectedVariant);
 
   const navigation = useNavigation();
-  const { product } = route.params;
+  const { productId } = route.params;
 
+  const { loading, error, data } = useQuery(GET_PRODUCT, {
+    variables: {
+      productId: productId,
+    },
+  });
 
-  // const images = product.media.map(image => image.url)
-  const images = [];
+  function handleOptionSelectionProdVariant (option, value) {
+    const filteredVariantsArray = prodVariants.filter(variant => variant.selectedOptions[option] === value && variant.quantityAvailable > 0)
+    setFilteredVariants(() => filteredVariantsArray)
+  }
+  console.log("filterd Array",filteredVariants)
+
+  function handleAddCartBtn() {
+    if (selectedVariant) {
+      const currentArray = cartItemsVar();
+
+      if (!currentArray.includes(selectedVariant)) {
+        const updatedArray = [selectedVariant, ...currentArray];
+        cartItemsVar(updatedArray);
+      }
+      setaddToCartbuttonDisabled(true);
+      navigation.navigate("CartScreen");
+    } else {
+      setBottomModal(true);
+    }
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
-  });
+  }, []);
+
+  useLayoutEffect(() => {
+    const currentArray = cartItemsVar();
+    if (currentArray.includes(productId)) setaddToCartbuttonDisabled(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    const prodVariantsArray = []
+    if (data)
+      data.product.variants.edges.map((edge) => {
+        const productVariantObj = {
+          id: edge.node.id,
+          quantityAvailable: edge.node.quantityAvailable,
+          selectedOptions: {},
+        };
+
+        edge.node.selectedOptions.forEach((option) => {
+          productVariantObj.selectedOptions[option.name] = option.value;
+        });
+
+        prodVariantsArray.push(productVariantObj);
+      });
+      setProdVariants(prodVariantsArray)
+  }, [data]);
+
+
+
+  if (loading) return <Text>loading product screen..</Text>;
+  if (error) return <Text>Error occured {error}</Text>;
 
   return (
     <View>
@@ -75,52 +121,55 @@ export default function ProductDetailScreen({ route }) {
           <ChevronLeftIcon size={20} color="black" />
         </TouchableOpacity>
         <Text className="text-[20px] font-medium text-black">
-          {product.title}
+          {data.product.vendor}
         </Text>
       </View>
       <SafeAreaView />
       <ScrollView bounces={false}>
-        <TouchableOpacity
+        {/* floating back button */}
+        {/* <TouchableOpacity
           onPress={() => navigation.goBack()}
           className="h-[40px] w-[40px] items-center justify-center rounded-full bg-white absolute z-[1] left-[20px] top-[50px]"
         >
           <ChevronLeftIcon size={20} color="black" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
-        <FlatList
-          horizontal
-          data={images}
-          keyExtractor={(_, index) => index.toString()}
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => {
-            return (
-              <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
-                <Image
-                  className="w-full h-full"
-                  src={item}
-                />
-              </View>
-            );
-          }}
-        />
+        <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
+          <FlatList
+            horizontal
+            data={data.product.images.edges}
+            keyExtractor={(_, index) => index.toString()}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item }) => {
+              return (
+                <View>
+                  <Image
+                    style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
+                    src={item.node.url}
+                  />
+                </View>
+              );
+            }}
+          />
+        </View>
 
         <View className="pb-[100px]">
           <View className="items-center gap-[8px] py-[10px] bg-white">
             <HeartButton />
             <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center">
               <Text className="text-[11px] text-black uppercase">
-                {product.vendor}
+                {data.product.vendor}
               </Text>
             </View>
-            <Text className="text-[20px] font-medium text-black">
-              {product.title}
+            <Text className="text-[20px] font-medium text-black text-center">
+              {data.product.title}
             </Text>
             <Text className="text-[14px] font-normal text-black">
-              this is amzing product with beautiful patters, 12mm
+              {data.product.description}
             </Text>
             <Text className="text-[18px] font-light text-red-800">
-              12,00 AED
+              {data.product.priceRange.minVariantPrice.amount} AED
             </Text>
           </View>
 
@@ -163,9 +212,15 @@ export default function ProductDetailScreen({ route }) {
                 Low in stock: only 1 left
               </Text>
             </View>
-            <TouchableOpacity className=" flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px]">
+            <TouchableOpacity
+              onPress={handleAddCartBtn}
+              disabled={addToCartbuttonDisabled ? true : false}
+              className={`flex items-center justify-center py-4 w-full ${
+                addToCartbuttonDisabled ? "bg-gray-300" : "bg-red-400"
+              }  rounded-[5px]`}
+            >
               <Text className="text-[14px] text-white font-semibold uppercase">
-                Add to bag
+                {addToCartbuttonDisabled ? "Added to bag" : "Add to bag"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -233,7 +288,16 @@ export default function ProductDetailScreen({ route }) {
         </View>
       </ScrollView>
 
-      <BottomModal state={bottomModal} setState={setBottomModal} />
+      <BottomModal
+        state={bottomModal}
+        setState={setBottomModal}
+        options={data.product.options}
+        productId={productId}
+        setSelectedVariant={setSelectedVariant}
+        handleAddCartBtn={handleAddCartBtn}
+        handleOptionSelectionProdVariant={handleOptionSelectionProdVariant}
+        filteredVariants={filteredVariants}
+      />
       <Overlay state={bottomModal} setState={setBottomModal} />
 
       {/* {bottomAction && (

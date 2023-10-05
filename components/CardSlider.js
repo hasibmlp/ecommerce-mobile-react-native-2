@@ -20,6 +20,7 @@ export default function CardSlider({ id, products, mt }) {
     },
   });
 
+
   if (loading) return <Text>loading..</Text>;
   if (error) return <Text>error occured {error}</Text>;
 
@@ -39,7 +40,7 @@ export default function CardSlider({ id, products, mt }) {
             key={index.toString()}
             onPress={() => {
               navigation.navigate("ProductDetailScreen", {
-                product: product.node,
+                productId: product.node.id,
               });
             }}
           >

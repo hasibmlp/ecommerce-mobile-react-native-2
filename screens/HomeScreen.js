@@ -16,7 +16,7 @@ import HomeHeader from "../components/HomeHeader";
 import GenderSelector from "../components/GenderSelector";
 import MainContent from "../components/MainContent";
 import GreetingHeader from "../components/GreetingHeader";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import { GET_HOMESCREEN_DATA } from "../graphql/queries";
 import { getHomeData } from "../redux/features/homedata/homedataSlice";
 import MainContentV2 from "../components/MainContentV2";
@@ -35,6 +35,7 @@ export default function HomeScreen() {
   const handleToggleMenu = (value) => {
     setToggleGenderMenuBar(value);
   };
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
