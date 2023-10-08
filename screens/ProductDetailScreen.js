@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   Image,
@@ -41,24 +41,21 @@ export default function ProductDetailScreen({ route }) {
   const [addToCartbuttonDisabled, setaddToCartbuttonDisabled] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [prodVariants, setProdVariants] = useState([]);
-  const [filteredVariants, setFilteredVariants] = useState([])
-
-  // console.log(" this is selected variant id ", selectedVariant);
-
+  const [filteredVariants, setFilteredVariants] = useState([]);
+  const [selectedOption, setSelectedOption] = useState([
+    {
+      name: "Color",
+      value: "Navy",
+    },
+  ]);
   const navigation = useNavigation();
   const { productId } = route.params;
-
   const { loading, error, data } = useQuery(GET_PRODUCT, {
     variables: {
       productId: productId,
     },
   });
-
-  function handleOptionSelectionProdVariant (option, value) {
-    const filteredVariantsArray = prodVariants.filter(variant => variant.selectedOptions[option] === value && variant.quantityAvailable > 0)
-    setFilteredVariants(() => filteredVariantsArray)
-  }
-  console.log("filterd Array",filteredVariants)
+  
 
   function handleAddCartBtn() {
     if (selectedVariant) {
@@ -75,19 +72,48 @@ export default function ProductDetailScreen({ route }) {
     }
   }
 
+  function handleOptionSelectionProdVariant(option, value) {
+    const filteredVariantsArray = prodVariants.filter(
+      (variant) =>
+        variant.selectedOptions[option] === value &&
+        variant.quantityAvailable > 0
+    );
+    setFilteredVariants(() => filteredVariantsArray);
+  }
+
+  function handleSelectOption(name, value) {
+    const currentSelected = [...selectedOption];
+
+    const existingIndex = currentSelected.findIndex(
+      (option) => option.name === name
+    );
+    if (existingIndex !== -1) {
+      currentSelected.splice(existingIndex, 1);
+    }
+
+    currentSelected.push({ name, value });
+
+    setSelectedOption(currentSelected);
+  }
+
+  function variantSelectionfunctionCombined(optionName, item) {
+    handleOptionSelectionProdVariant(optionName, item);
+    handleSelectOption(optionName, item);
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const currentArray = cartItemsVar();
     if (currentArray.includes(productId)) setaddToCartbuttonDisabled(true);
   }, []);
 
-  useLayoutEffect(() => {
-    const prodVariantsArray = []
+  useEffect(() => {
+    const prodVariantsArray = [];
     if (data)
       data.product.variants.edges.map((edge) => {
         const productVariantObj = {
@@ -102,10 +128,45 @@ export default function ProductDetailScreen({ route }) {
 
         prodVariantsArray.push(productVariantObj);
       });
-      setProdVariants(prodVariantsArray)
+    setProdVariants(prodVariantsArray);
   }, [data]);
 
+  useEffect(() => {
+    let firstColorOption;
+    if (data)
+      firstColorOption = data.product.options.find(
+        (option) => option.name === "Color"
+      )
+        ? data.product.options.find((option) => option.name === "Color")
+            .values[0]
+        : null;
+    if (prodVariants.length !== 0) {
+      variantSelectionfunctionCombined("Color", firstColorOption);
+    }
+  }, [prodVariants, data]);
 
+  useEffect(() => {
+    console.log("product detail page")
+
+    const selectedSize = selectedOption.find(
+      (option) => option.name === "Size"
+    );
+
+    if (selectedSize) {
+      const sizeValueToCheck = selectedSize.value;
+
+      if (filteredVariants) {
+        const sizeExists = filteredVariants.some(
+          (variant) => variant.selectedOptions.Size === sizeValueToCheck
+        );
+
+        if (!sizeExists || filteredVariants.length === 0) {
+          const updateSelectedOption = selectedOption.filter(option => option.name !== 'Size')
+          setSelectedOption(updateSelectedOption)
+        }
+      }
+    }
+  }, [selectedOption]);
 
   if (loading) return <Text>loading product screen..</Text>;
   if (error) return <Text>Error occured {error}</Text>;
@@ -297,6 +358,10 @@ export default function ProductDetailScreen({ route }) {
         handleAddCartBtn={handleAddCartBtn}
         handleOptionSelectionProdVariant={handleOptionSelectionProdVariant}
         filteredVariants={filteredVariants}
+        selectedOption={selectedOption}
+        setSelectedOption={setSelectedOption}
+        handleSelectOption={handleSelectOption}
+        variantSelectionfunctionCombined={variantSelectionfunctionCombined}
       />
       <Overlay state={bottomModal} setState={setBottomModal} />
 

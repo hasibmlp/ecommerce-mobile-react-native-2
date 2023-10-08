@@ -23,27 +23,15 @@ export default function BottomModal({
   handleAddCartBtn,
   handleOptionSelectionProdVariant,
   filteredVariants,
+  selectedOption,
+  variantSelectionfunctionCombined,
+  handleSelectOption
 }) {
   const transRef = useRef(new Animated.Value(100)).current;
 
-  // const defaultColorOption = options.
-
-  console.log(options);
-
-  const [selectedOption, setSelectedOption] = useState([
-    {
-      name: "Color",
-      value: "Navy",
-    },
-  ]);
   const [selectedOptionObj, setSelectedOptionObj] = useState({});
 
-  console.log(selectedOption);
-
-  // console.log(Object.entries(selectedOptionObj).length !== 0 && filteredVariants.some(variantOption => variantOption.selectedOptions.Size === item) ?  )
-  // console.log(selectedOptionObj )
-
-  const [getVariant, { loading, error, data }] = useLazyQuery(
+  const [getVariant, { loading: variantLoading, error: variantError, data: variantData }] = useLazyQuery(
     GET_PRODUCT_VARIANT,
     {
       variables: {
@@ -53,26 +41,6 @@ export default function BottomModal({
     }
   );
 
-  function functionCombined(optionName, item) {
-    console.log("clicked");
-    handleSelectOption(optionName, item);
-    handleOptionSelectionProdVariant(optionName, item);
-  }
-
-  function handleSelectOption(name, value) {
-    const currentSelected = [...selectedOption];
-    console.log("reached here", currentSelected);
-
-    const existingIndex = currentSelected.findIndex(
-      (option) => option.name === name
-    );
-    if (existingIndex !== -1) {
-      currentSelected.splice(existingIndex, 1);
-    }
-
-    currentSelected.push({ name, value });
-    setSelectedOption(currentSelected);
-  }
 
   useEffect(() => {
     Animated.timing(transRef, {
@@ -83,6 +51,7 @@ export default function BottomModal({
   }, [state]);
 
   useEffect(() => {
+    console.log("SELECRED OPTIONS IN BOTTOM MODAL",selectedOption)
     if (selectedOption.length === 2) {
       getVariant({
         variables: {
@@ -90,7 +59,7 @@ export default function BottomModal({
           selectedOptions: selectedOption,
         },
       });
-      if (data) setSelectedVariant(data.product.variantBySelectedOptions.id);
+      if (variantData) setSelectedVariant(variantData?.product?.variantBySelectedOptions?.id);
     }
 
     const optionObject = {};
@@ -100,10 +69,10 @@ export default function BottomModal({
     });
 
     setSelectedOptionObj(optionObject);
-  }, [selectedOption, data]);
+  }, [selectedOption, variantData]);
 
-  if (loading) return <Text>Loading Variant Selecting..</Text>;
-  if (error) return <Text>Error!! {error}</Text>;
+  // if (variantLoading) return <Text>Loading Variant Selecting..</Text>;
+  // if (variantError) return <Text>Error!! {error}</Text>;
 
   return (
     <Animated.View
@@ -164,7 +133,7 @@ export default function BottomModal({
                               ? false
                               : true)
                           }
-                          onPress={() => functionCombined(option.name, item)}
+                          onPress={() => handleSelectOption(option.name, item)}
                           className={`border-[.5px] ${
                             Object.entries(selectedOptionObj).length !== 0 &&
                             (filteredVariants.some(
@@ -190,7 +159,7 @@ export default function BottomModal({
                                 (variantOption) =>
                                   variantOption.selectedOptions.Size === item
                               )
-                                ? "text-black"
+                                ? ""
                                 : "text-gray-400")
                             }  text-[14px] font-light uppercase`}
                           >
@@ -201,6 +170,7 @@ export default function BottomModal({
                     </View>
                   </ScrollView>
                 )}
+
                 {option.name === "Color" && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {/* {item.values.map((item) => (
@@ -212,7 +182,7 @@ export default function BottomModal({
                     <View className="flex-row items-center gap-x-3 relative">
                       {option.values.map((item) => (
                         <TouchableOpacity
-                          onPress={() => functionCombined(option.name, item)}
+                          onPress={() => variantSelectionfunctionCombined(option.name, item)}
                           className={`border-[.5px] border-gray-500 rounded-[5px] ${
                             selectedOptionObj[option.name] === item
                               ? "bg-[#252525]"
@@ -233,14 +203,17 @@ export default function BottomModal({
                     </View>
                   </ScrollView>
                 )}
+
+                
               </View>
             ))}
           </View>
 
           <View className="mt-10">
             <TouchableOpacity
+              disabled={variantLoading ? true : false}
               onPress={handleAddCartBtn}
-              className=" flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px] "
+              className={` flex items-center justify-center py-4 w-full ${variantLoading ? 'bg-red-200' : 'bg-red-400'}  rounded-[5px] `}
             >
               <Text className="text-[14px] text-white font-semibold uppercase">
                 Add to bag

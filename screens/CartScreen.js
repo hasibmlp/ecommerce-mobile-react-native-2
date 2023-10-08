@@ -17,8 +17,6 @@ export default function CartScreen() {
 
   const cartItems = useReactiveVar(cartItemsVar);
 
-  console.log(cartItems);
-
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-white">
