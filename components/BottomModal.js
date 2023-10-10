@@ -19,49 +19,41 @@ export default function BottomModal({
   setState,
   options,
   productId,
+  selectedVariant,
   setSelectedVariant,
   handleAddCartBtn,
   handleOptionSelectionProdVariant,
+  prodVariants,
   filteredVariants,
   selectedOption,
   variantSelectionfunctionCombined,
-  handleSelectOption
+  handleSelectOption,
+  colorOptionImages,
 }) {
-  const transRef = useRef(new Animated.Value(100)).current;
+  const transRef = useRef(new Animated.Value(0)).current;
 
   const [selectedOptionObj, setSelectedOptionObj] = useState({});
 
-  const [getVariant, { loading: variantLoading, error: variantError, data: variantData }] = useLazyQuery(
-    GET_PRODUCT_VARIANT,
-    {
-      variables: {
-        productId,
-        selectedOptions: selectedOption,
-      },
-    }
-  );
 
+  // const [getVariant, { loading: variantLoading, error: variantError, data: variantData }] = useLazyQuery(
+  //   GET_PRODUCT_VARIANT,
+  //   {
+  //     variables: {
+  //       productId,
+  //       selectedOptions: selectedOption,
+  //     },
+  //   }
+  // );
 
   useEffect(() => {
     Animated.timing(transRef, {
-      toValue: state ? -100 : 600,
+      toValue: state ? -100 : 400,
       duration: 300,
       useNativeDriver: true,
     }).start();
   }, [state]);
 
   useEffect(() => {
-    console.log("SELECRED OPTIONS IN BOTTOM MODAL",selectedOption)
-    if (selectedOption.length === 2) {
-      getVariant({
-        variables: {
-          productId,
-          selectedOptions: selectedOption,
-        },
-      });
-      if (variantData) setSelectedVariant(variantData?.product?.variantBySelectedOptions?.id);
-    }
-
     const optionObject = {};
 
     selectedOption.map((option) => {
@@ -69,10 +61,21 @@ export default function BottomModal({
     });
 
     setSelectedOptionObj(optionObject);
-  }, [selectedOption, variantData]);
+  }, [selectedOption]);
 
-  // if (variantLoading) return <Text>Loading Variant Selecting..</Text>;
-  // if (variantError) return <Text>Error!! {error}</Text>;
+  useEffect(() => {
+    let getVariantId;
+    if (options.length === 1 && filteredVariants.length > 0) {
+      getVariantId = filteredVariants[0]?.id;
+    } else if (options.length > 1) {
+      getVariantId = filteredVariants?.filter(
+        (variant) =>
+          variant.selectedOptions["Size"] === selectedOptionObj["Size"]
+      )[0]?.id;
+    }
+
+    setSelectedVariant(() => getVariantId);
+  }, [filteredVariants, selectedOptionObj]);
 
   return (
     <Animated.View
@@ -81,7 +84,7 @@ export default function BottomModal({
         borderTopEndRadius: 180,
         transform: [{ scaleX: 2.4 }, { translateY: transRef }],
       }}
-      className="absolute bottom-0 left-0 right-0 z-30 bg-white"
+      className="absolute bottom-0 z-30 bg-white"
     >
       <View className="flex-1 items-center justify-center scale-x-[.42]">
         <View className=" py-10 self-stretch px-5 ">
@@ -97,11 +100,11 @@ export default function BottomModal({
               </Pressable>
             </View>
 
-            {options.map((option) => (
-              <View>
+            {options.map((option, index) => (
+              <View key={index.toString()}>
                 <View className="flex-row justify-between items-center">
                   <Text className="text-[12px] font-normal text-black uppercase mb-3">
-                    {option.name}
+                    {option.name}: {selectedOptionObj[option.name]}
                   </Text>
                   {option.name === "Size" && (
                     <Pressable>
@@ -122,8 +125,9 @@ export default function BottomModal({
                 {option.name === "Size" && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View className="flex-row items-center gap-x-3 relative">
-                      {option.values.map((item) => (
+                      {option.values.map((item, index) => (
                         <TouchableOpacity
+                          key={index.toString()}
                           disabled={
                             Object.entries(selectedOptionObj).length !== 0 &&
                             (filteredVariants.some(
@@ -133,7 +137,13 @@ export default function BottomModal({
                               ? false
                               : true)
                           }
-                          onPress={() => handleSelectOption(option.name, item)}
+                          onPress={() =>
+                            variantSelectionfunctionCombined(
+                              option.name,
+                              item,
+                              options.length
+                            )
+                          }
                           className={`border-[.5px] ${
                             Object.entries(selectedOptionObj).length !== 0 &&
                             (filteredVariants.some(
@@ -173,16 +183,41 @@ export default function BottomModal({
 
                 {option.name === "Color" && (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {/* {item.values.map((item) => (
-                      <View className="h-[130px] w-[80px] bg-gray-300 mr-3">
-                        <Image />
-                      </View>
-                    ))} */}
 
-                    <View className="flex-row items-center gap-x-3 relative">
+                    {colorOptionImages.map((imageOption, index) => (
+                      <TouchableOpacity
+                      key={index.toString()}
+                      onPress={() =>
+                        variantSelectionfunctionCombined(
+                          option.name,
+                          imageOption.color,
+                          options.length
+                        )
+                      }
+                      >
+                        <View className={`w-[100px] h-[150px] border  ${
+                            selectedOptionObj[option.name] === imageOption.color
+                              ? "border-2 border-gray-500"
+                              : "border-gray-300"
+                          } rounded-[5px] overflow-hidden mr-3`}>
+                          <Image
+                            className="w-full h-full rounded-[5px]"
+                            src={imageOption.imageUrl}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+
+                    {/* <View className="flex-row items-center gap-x-3 relative">
                       {option.values.map((item) => (
                         <TouchableOpacity
-                          onPress={() => variantSelectionfunctionCombined(option.name, item)}
+                          onPress={() =>
+                            variantSelectionfunctionCombined(
+                              option.name,
+                              item,
+                              options.length
+                            )
+                          }
                           className={`border-[.5px] border-gray-500 rounded-[5px] ${
                             selectedOptionObj[option.name] === item
                               ? "bg-[#252525]"
@@ -200,20 +235,20 @@ export default function BottomModal({
                           </Text>
                         </TouchableOpacity>
                       ))}
-                    </View>
+                    </View> */}
                   </ScrollView>
                 )}
-
-                
               </View>
             ))}
           </View>
 
           <View className="mt-10">
             <TouchableOpacity
-              disabled={variantLoading ? true : false}
+              disabled={selectedVariant ? false : true}
               onPress={handleAddCartBtn}
-              className={` flex items-center justify-center py-4 w-full ${variantLoading ? 'bg-red-200' : 'bg-red-400'}  rounded-[5px] `}
+              className={` flex items-center justify-center py-4 w-full ${
+                selectedVariant ? "bg-red-400" : "bg-red-200"
+              }  rounded-[5px] `}
             >
               <Text className="text-[14px] text-white font-semibold uppercase">
                 Add to bag

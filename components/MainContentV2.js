@@ -35,10 +35,10 @@ export default function MainContentV2({ toggleGenderMenuBar, setState }) {
   return (
     <View className="relative">
       <Overlay state={toggleGenderMenuBar} setState={setState} />
-      <ImageBanner
-        height={homeData[0].data.banners[0].height}
+      {/* <ImageBanner
+        height={homeData[0]?.data.banners[0]?.height}
         imgUrl={homeData[0].data.banners[0].url}
-      />
+      /> */}
 
       <ContentOutsideTop
         title={homeData[0].data.categories[0].title}

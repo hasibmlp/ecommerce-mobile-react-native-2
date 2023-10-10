@@ -118,9 +118,10 @@ export const GET_PRODUCT = gql`
           amount
         }
       }
-      images(first: 10) {
+      images(first: 100) {
         edges {
           node {
+            id
             url
           }
         }
@@ -129,7 +130,7 @@ export const GET_PRODUCT = gql`
         name
         values
       }
-      variants(first:100) {
+      variants(first: 100) {
         edges {
           node {
             id
@@ -137,6 +138,10 @@ export const GET_PRODUCT = gql`
             selectedOptions {
               name
               value
+            }
+            image {
+              id
+              url
             }
           }
         }
@@ -181,3 +186,97 @@ export const GET_PRODUCT_VARIANT = gql`
     }
   }
 `;
+
+export const GET_VARIANT_BY_ID = gql`
+  query getVariantById($variantId: ID!) {
+    node(id: $variantId) {
+      ... on ProductVariant {
+        id
+        title
+        image {
+          url
+        }
+        price {
+          amount
+        }
+        selectedOptions {
+          name
+          value
+        }
+        product {
+          title
+        }
+      }
+    }
+  }
+`;
+
+export const GET_CART_DETAILS = gql`
+query GetCartItems($cartId: ID!) {
+  cart(
+    id: $cartId
+  ) {
+    id
+    createdAt
+    updatedAt
+    lines(first: 25) {
+      edges {
+        node {
+          id
+          quantity
+          merchandise {
+            ... on ProductVariant {
+              id
+            }
+          }
+          attributes {
+            key
+            value
+          }
+        }
+      }
+    }
+    attributes {
+      key
+      value
+    }
+    cost {
+      totalAmount {
+        amount
+        currencyCode
+      }
+      subtotalAmount {
+        amount
+        currencyCode
+      }
+      totalTaxAmount {
+        amount
+        currencyCode
+      }
+      totalDutyAmount {
+        amount
+        currencyCode
+      }
+    }
+    buyerIdentity {
+      email
+      phone
+      customer {
+        id
+      }
+      countryCode
+      deliveryAddressPreferences {
+        ... on MailingAddress {
+          address1
+          address2
+          city
+          provinceCode
+          countryCodeV2
+          zip
+        }
+      }
+    }
+  }
+}
+
+`

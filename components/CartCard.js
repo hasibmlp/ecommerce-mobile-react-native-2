@@ -1,16 +1,35 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { TrashIcon } from "react-native-heroicons/outline";
+import { ChevronDownIcon, TrashIcon } from "react-native-heroicons/outline";
 import { GET_CART_ITEM } from "../graphql/queries";
-import { cartItemsVar } from "../App";
+import { cartIdVar } from "../App";
+import { REMOVE_CART_ITEM } from "../graphql/mutations";
 
-export default function CartCard({ id }) {
+export default function CartCard({ id, lineId, refetch }) {
+  const cartId = cartIdVar();
+  const [
+    removeCartItem,
+    {
+      loading: removeItemLoading,
+      error: removeItemError,
+      data: removeItemData,
+    },
+  ] = useMutation(REMOVE_CART_ITEM);
+
+  refetch();
+
+  console.log("CART ID IN CART ITEM: ", cartId);
+
   function handleItemRemove(id) {
-    const currentItems = cartItemsVar();
-    const updatedArray = currentItems.filter((item) => item !== id);
-    cartItemsVar(updatedArray)
+    console.log("CART REMOVE BUTTON PRESSED");
+    removeCartItem({
+      variables: {
+        cartId,
+        lineIds: [lineId],
+      },
+    });
   }
 
   const { loading, error, data } = useQuery(GET_CART_ITEM, {
@@ -19,6 +38,7 @@ export default function CartCard({ id }) {
     },
   });
 
+  // console.log('ITEMS AFTER REMOVED SUCCESSFULLY', removeItemData)
 
   if (loading) return <Text>Loading..</Text>;
   if (error) return <Text>Error occured!! {error}</Text>;
@@ -33,9 +53,17 @@ export default function CartCard({ id }) {
         <Text className="text-[16px] text-black font-medium">
           {data.node.product.title}
         </Text>
-        <Text className="text-[13px] text-gray-600 font-light my-3">
-          {data.node.selectedOptions[1].value} • {data.node.selectedOptions[0].value} • Qty 1
-        </Text>
+        <View className="text-[13px] text-gray-600 font-light my-3 flex-row">
+          <Text className="mr-5">{data.node.selectedOptions[1].value}</Text>
+          <View className="flex-row items-center justify-center mr-5">
+            <Text className="mr-1">{data.node.selectedOptions[0].value}</Text>
+            <ChevronDownIcon size={12} color="black" />
+          </View>
+          <View className="flex-row items-center justify-center">
+            <Text className="mr-1">Qty 1</Text>
+            <ChevronDownIcon size={12} color="black" />
+          </View>
+        </View>
         <Text className="text-[16px] text-black font-medium">
           {data.node.price.amount} AED
         </Text>

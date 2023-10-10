@@ -7,19 +7,48 @@ import {
   UserIcon,
   ChevronRightIcon,
 } from "react-native-heroicons/outline";
-import { makeVar, useReactiveVar } from "@apollo/client";
+import { makeVar, useQuery, useReactiveVar } from "@apollo/client";
 
 import CartCard from "../components/CartCard";
-import { cartItemsVar } from "../App";
+import { cartIdVar } from "../App";
+import { GET_CART_DETAILS } from "../graphql/queries";
 
 export default function CartScreen() {
   const navigation = useNavigation();
 
-  const cartItems = useReactiveVar(cartItemsVar);
+  const cartId = useReactiveVar(cartIdVar)
+
+  console.log("CART SCREEN ID", cartId);
+
+  const { loading, error, data, refetch } = useQuery(GET_CART_DETAILS, {
+    variables: {
+      cartId,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  if (loading)
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Loading..</Text>
+      </View>
+    );
+  if (error)
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text>Error occured {error}</Text>
+      </View>
+    );
+
+  const cartItems = data?.cart?.lines?.edges || [];
+  const cartItemsId = [...cartItems].reverse();
+
+  console.log("DATA IN CART",data?.cart?.lines);
 
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-white">
+        
         <View className="w-full relative flex-row justify-center items-center h-[35px]">
           <Text className="text-[16px] text-black font-normal">
             Your Bag (4)
@@ -40,8 +69,13 @@ export default function CartScreen() {
           </View>
           <ChevronRightIcon size={24} color="black" />
         </View>
-        {cartItems.map((item) => (
-          <CartCard key={item} id={item} />
+        {cartItemsId.map((item) => (
+          <CartCard
+            key={item.node.merchandise.id}
+            id={item.node.merchandise.id}
+            lineId={item.node.id}
+            refetch={refetch}
+          />
         ))}
       </ScrollView>
     </View>

@@ -5,7 +5,7 @@ import AppNavigation from "./navigation/AppNavigation";
 import { store } from "./redux/store";
 import { shopifyClient } from "./graphql/shopifyClient";
 
-export const cartItemsVar = makeVar([]);
+export const cartIdVar = makeVar("");
 
 export default function App() {
   return (
@@ -16,5 +16,3 @@ export default function App() {
     </ApolloProvider>
   );
 }
-
-

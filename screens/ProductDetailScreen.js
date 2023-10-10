@@ -20,28 +20,39 @@ import {
   ChevronRightIcon,
   QuestionMarkCircleIcon,
   TagIcon,
+  InformationCircleIcon,
 } from "react-native-heroicons/outline";
-import { useQuery } from "@apollo/client";
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useReactiveVar,
+} from "@apollo/client";
 
-import { GET_PRODUCT } from "../graphql/queries";
+import { GET_PRODUCT, GET_VARIANT_BY_ID } from "../graphql/queries";
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
 import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
 import BottomModal from "../components/BottomModal";
 import Overlay from "../components/Overlay";
-import { cartItemsVar } from "../App";
+import { cartIdVar } from "../App";
+import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
 export default function ProductDetailScreen({ route }) {
+  const cartId = useReactiveVar(cartIdVar);
+
+  const flatListRef = useRef();
   const [bottomModal, setBottomModal] = useState(false);
   const [addToCartbuttonDisabled, setaddToCartbuttonDisabled] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [prodVariants, setProdVariants] = useState([]);
   const [filteredVariants, setFilteredVariants] = useState([]);
+  const [colorOptionImages, setColorOptionImages] = useState([]);
   const [selectedOption, setSelectedOption] = useState([
     {
       name: "Color",
@@ -55,18 +66,62 @@ export default function ProductDetailScreen({ route }) {
       productId: productId,
     },
   });
-  
+  const [
+    getVariantById,
+    { loading: varLoading, error: varError, data: varData },
+  ] = useLazyQuery(GET_VARIANT_BY_ID);
+
+  const [
+    createCart,
+    { loading: cartLoading, error: cartError, data: cartData },
+  ] = useMutation(CREATE_CART);
+
+  const [
+    addCartItem,
+    {
+      loading: addCartItemLoading,
+      error: addCartItemError,
+      data: addCartItemData,
+    },
+  ] = useMutation(ADD_CART_ITEM);
 
   function handleAddCartBtn() {
     if (selectedVariant) {
-      const currentArray = cartItemsVar();
+      console.log("HANDLE CART FUNCTION SUCCEFULLY RUNNING");
 
-      if (!currentArray.includes(selectedVariant)) {
-        const updatedArray = [selectedVariant, ...currentArray];
-        cartItemsVar(updatedArray);
+      
+
+      if (cartId) {
+        console.log("CART ID IS SET");
+        addCartItem({
+          variables: {
+            cartId,
+            productId: selectedVariant,
+          },
+          onCompleted: () => {
+            
+            setBottomModal(false);
+            navigation.navigate("CartScreen");
+          },
+        });
+      } else {
+        console.log("NO CART ID IS SET");
+        createCart({
+          variables: {
+            productQuantity: 1,
+            productId: selectedVariant,
+          },
+          onCompleted: () => {
+            setBottomModal(false);
+            navigation.navigate("CartScreen");
+          },
+        });
       }
-      setaddToCartbuttonDisabled(true);
-      navigation.navigate("CartScreen");
+
+      setaddToCartbuttonDisabled(false);
+      // setTimeout(() => {
+      //   navigation.navigate("CartScreen");
+      // }, 600);
     } else {
       setBottomModal(true);
     }
@@ -96,9 +151,35 @@ export default function ProductDetailScreen({ route }) {
     setSelectedOption(currentSelected);
   }
 
-  function variantSelectionfunctionCombined(optionName, item) {
-    handleOptionSelectionProdVariant(optionName, item);
+  function handleSelectedVariantImage(newFilteredVariants) {
+    const index = images.findIndex(
+      (image) => image.id === newFilteredVariants[0]?.imageId
+    );
+
+    if (index !== -1) {
+      flatListRef.current.scrollToIndex({
+        animated: false,
+        index,
+        viewOffset: 0,
+        viewPosition: 0,
+      });
+    }
+  }
+
+  function variantSelectionfunctionCombined(optionName, item, optionsCount) {
+    if (optionsCount === 1) {
+      handleOptionSelectionProdVariant(optionName, item);
+    } else if (optionsCount > 1) {
+      if (optionName === "Color") {
+        handleOptionSelectionProdVariant(optionName, item);
+      }
+    }
     handleSelectOption(optionName, item);
+
+    setFilteredVariants((prevItem) => {
+      handleSelectedVariantImage(prevItem);
+      return prevItem;
+    });
   }
 
   useLayoutEffect(() => {
@@ -107,10 +188,10 @@ export default function ProductDetailScreen({ route }) {
     });
   }, []);
 
-  useEffect(() => {
-    const currentArray = cartItemsVar();
-    if (currentArray.includes(productId)) setaddToCartbuttonDisabled(true);
-  }, []);
+  // useEffect(() => {
+  //   const currentArray = cartIdVar();
+  //   if (currentArray.includes(productId)) setaddToCartbuttonDisabled(true);
+  // }, []);
 
   useEffect(() => {
     const prodVariantsArray = [];
@@ -119,6 +200,8 @@ export default function ProductDetailScreen({ route }) {
         const productVariantObj = {
           id: edge.node.id,
           quantityAvailable: edge.node.quantityAvailable,
+          imageId: edge.node.image.id,
+          imageUrl: edge.node.image.url,
           selectedOptions: {},
         };
 
@@ -129,25 +212,47 @@ export default function ProductDetailScreen({ route }) {
         prodVariantsArray.push(productVariantObj);
       });
     setProdVariants(prodVariantsArray);
+
+    // const prodVariantImagesArray = []
+    // if(data) {
+    //   data.product.variants.edges.map((edge) => {
+    //     const prodVariantImagesObj = {
+    //       id: edge.node.image.id
+    //     }
+
+    //     prodVariantImagesArray.push(prodVariantImagesObj)
+    //   })
+    //   console.log("VARIANT IMAGES",prodVariantImagesArray)
+    // }
   }, [data]);
 
   useEffect(() => {
     let firstColorOption;
     if (data)
-      firstColorOption = data.product.options.find(
-        (option) => option.name === "Color"
-      )
-        ? data.product.options.find((option) => option.name === "Color")
-            .values[0]
-        : null;
+      if (data.product.options.length === 1) {
+        firstColorOption = data.product.options[0].values[0];
+      } else if (data.product.options.length > 1) {
+        firstColorOption = data.product.options.find(
+          (option) => option.name === "Color"
+        )
+          ? data.product.options.find((option) => option.name === "Color")
+              .values[0]
+          : null;
+      }
     if (prodVariants.length !== 0) {
-      variantSelectionfunctionCombined("Color", firstColorOption);
+      if (data.product.options.length === 1) {
+      }
+      variantSelectionfunctionCombined(
+        data.product.options.length === 1
+          ? data.product.options[0].name
+          : "Color",
+        firstColorOption,
+        data.product.options.length
+      );
     }
   }, [prodVariants, data]);
 
   useEffect(() => {
-    console.log("product detail page")
-
     const selectedSize = selectedOption.find(
       (option) => option.name === "Size"
     );
@@ -161,15 +266,72 @@ export default function ProductDetailScreen({ route }) {
         );
 
         if (!sizeExists || filteredVariants.length === 0) {
-          const updateSelectedOption = selectedOption.filter(option => option.name !== 'Size')
-          setSelectedOption(updateSelectedOption)
+          const updateSelectedOption = selectedOption.filter(
+            (option) => option.name !== "Size"
+          );
+          setSelectedOption(updateSelectedOption);
         }
       }
     }
   }, [selectedOption]);
 
-  if (loading) return <Text>loading product screen..</Text>;
-  if (error) return <Text>Error occured {error}</Text>;
+  useEffect(() => {
+    if (selectedVariant) {
+      getVariantById({
+        variables: {
+          variantId: selectedVariant,
+        },
+      });
+    }
+  }, [selectedVariant]);
+
+  useEffect(() => {
+    const colorOptionImagesArray = [];
+    if (prodVariants) {
+      const seenColor = new Set();
+
+      prodVariants.forEach((item) => {
+        const color = item.selectedOptions.Color;
+
+        if (!seenColor.has(color)) {
+          seenColor.add(color);
+
+          const colorOptionImagesObj = {};
+          colorOptionImagesObj["imageId"] = item.imageId;
+          colorOptionImagesObj["imageUrl"] = item.imageUrl;
+          colorOptionImagesObj["color"] = color;
+          colorOptionImagesArray.push(colorOptionImagesObj);
+        }
+      });
+    }
+
+    setColorOptionImages(() => colorOptionImagesArray);
+  }, [prodVariants]);
+
+  useEffect(() => {
+    if (cartData) {
+      console.log("CART DATA RETURNED ");
+      cartIdVar(cartData?.cartCreate?.cart?.id);
+    }
+  }, [cartData]);
+
+  const images = data?.product?.images?.edges?.map((edge) => {
+    return {
+      url: edge?.node?.url,
+      id: edge?.node?.id,
+    };
+  });
+
+  if (loading)
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text>Loading..</Text>
+      </View>
+    );
+  if (error || varError) return <Text>Error occured {error || varError}</Text>;
+
+  console.log("CART DATA", cartData?.cartCreate?.cart?.id);
+  console.log("CART DATA IF CARD ID PRESENT", addCartItemData);
 
   return (
     <View>
@@ -186,6 +348,7 @@ export default function ProductDetailScreen({ route }) {
         </Text>
       </View>
       <SafeAreaView />
+
       <ScrollView bounces={false}>
         {/* floating back button */}
         {/* <TouchableOpacity
@@ -197,8 +360,10 @@ export default function ProductDetailScreen({ route }) {
 
         <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
           <FlatList
+            key={(_, index) => index.toString()}
+            ref={flatListRef}
             horizontal
-            data={data.product.images.edges}
+            data={images}
             keyExtractor={(_, index) => index.toString()}
             pagingEnabled
             showsHorizontalScrollIndicator={false}
@@ -207,49 +372,105 @@ export default function ProductDetailScreen({ route }) {
                 <View>
                   <Image
                     style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
-                    src={item.node.url}
+                    src={item.url}
                   />
                 </View>
               );
+            }}
+            getItemLayout={(_, index) => {
+              return {
+                length: ITEM_WIDTH,
+                offset: ITEM_WIDTH * index,
+                index,
+              };
             }}
           />
         </View>
 
         <View className="pb-[100px]">
-          <View className="items-center gap-[8px] py-[10px] bg-white">
+          <View className="items-center gap-[8px] py-[10px] bg-white px-2">
             <HeartButton />
             <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center">
               <Text className="text-[11px] text-black uppercase">
                 {data.product.vendor}
               </Text>
             </View>
-            <Text className="text-[20px] font-medium text-black text-center">
+            <Text className="text-[19px] font-medium text-black text-center">
               {data.product.title}
             </Text>
-            <Text className="text-[14px] font-normal text-black">
-              {data.product.description}
+
+            <Text className="text-[20px] font-normal text-red-800">
+              {varData?.node?.price?.amount
+                ? varData?.node?.price?.amount
+                : data.product.priceRange.minVariantPrice.amount}{" "}
+              AED
             </Text>
-            <Text className="text-[18px] font-light text-red-800">
-              {data.product.priceRange.minVariantPrice.amount} AED
+            <Text className="text-[14px] text-gray-500 font-normal">
+              Including VAT
+            </Text>
+
+            <View className=" items-center justify-center border rounded-[5px] border-gray-300 self-stretch">
+              <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
+                <Text className="text-[14px] font-normal text-black ">
+                  Want to pay in instalments?
+                </Text>
+              </View>
+              <View className="flex-row items-center justify-center py-2">
+                <Text className="text-[16px] font-bold text-black mr-1">
+                  tabby
+                </Text>
+                <InformationCircleIcon size={14} color="black" />
+              </View>
+            </View>
+          </View>
+
+          <View className="flex-row items-center justify-center bg-white py-5">
+            <Text className="text-[14px] font-normal text-black">
+              Earn 905 Smile Points.
+            </Text>
+            <Text className="text-[14px] text-red-800 font-normal underline ml-2">
+              Learn Now
             </Text>
           </View>
 
           <Pressable
             onPress={() => setBottomModal(!bottomModal)}
-            className="border-t border-gray-300 py-2 bg-white"
+            className="border-t border-gray-300 py-2 bg-white px-14"
           >
-            <Text className="text-[11px] text-black font-medium uppercase text-center ">
-              size
-            </Text>
-            <View className="flex-row items-center justify-center gap-x-1 mt-3">
-              <Text className="text-[18px] text-black font-light uppercase">
-                26 eu
-              </Text>
-              <ChevronDownIcon size={14} color="black" />
+            <View className="flex-row justify-between items-center">
+              {data.product.options.map((option, index) => (
+                <>
+                  <View
+                    key={index.toString()}
+                    className="items-center justify-center"
+                  >
+                    <Text className="text-[11px] text-black font-medium uppercase text-center ">
+                      {option.name}
+                    </Text>
+                    <View className="flex-row items-center justify-center gap-x-1 mt-3">
+                      <Text className="text-[15px] text-black font-light uppercase">
+                        {selectedOption.find((op) => op.name === option.name)
+                          ? selectedOption
+                              .find((op) => op.name === option.name)
+                              .value.slice(0, 12) +
+                            (selectedOption.find(
+                              (op) => op.name === option.name
+                            ).value.length > 12
+                              ? "..."
+                              : "")
+                          : "Select"}
+                      </Text>
+                      <ChevronDownIcon size={14} color="black" />
+                    </View>
+                  </View>
+                </>
+              ))}
+
+              <View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>
             </View>
           </Pressable>
 
-          <TouchableOpacity className=" border py-5 border-gray-300 bg-white">
+          <TouchableOpacity className=" border-y py-4 border-gray-300 bg-white">
             <View className="flex-row gap-x-2 justify-center items-center">
               <TruckIcon size={26} strokeWidth={1} color="black" />
               <Text className="text-[14px] font-normal text-black uppercase">
@@ -266,8 +487,8 @@ export default function ProductDetailScreen({ route }) {
             </View>
           </TouchableOpacity>
 
-          <View className="flex gap-y-4 py-5 px-4 bg-white">
-            <View className="flex-row gap-x-1 items-center justify-center">
+          <View className="flex py-4 px-4 bg-white">
+            <View className="flex-row gap-x-1 items-center justify-center mb-5">
               <ClockIcon size={20} color="red" />
               <Text className="text-[13px] text-red-500 font-normal">
                 Low in stock: only 1 left
@@ -292,16 +513,7 @@ export default function ProductDetailScreen({ route }) {
             <ShowAndHide title="Delivery % Free Returns" />
           </View>
 
-          <View className="flex-row gap-x-2 bg-gray-100 py-4 px-4">
-            <Text className="text-[12px] text-black font-light uppercase">
-              product code :
-            </Text>
-            <Text className="text-[12px] text-black font-medium uppercase">
-              289238923
-            </Text>
-          </View>
-
-          <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4">
+          <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4 mt-4">
             <View className="flex-row gap-x-1 items-center">
               <QuestionMarkCircleIcon size={22} color="black" strokeWidth={1} />
               <View className="flex-row gap-x-1">
@@ -313,25 +525,10 @@ export default function ProductDetailScreen({ route }) {
                 </Text>
               </View>
             </View>
-            <ChevronRightIcon size={24} color="black" strokeWidth={1} />
+            <ChevronDownIcon size={24} color="black" strokeWidth={1} />
           </Pressable>
 
-          <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4 mt-4">
-            <View className="flex-row gap-x-1 items-center">
-              <TagIcon size={24} color="black" strokeWidth={1} />
-              <View className="flex-row gap-x-1">
-                <Text className="text-[13px] text-black font-light ">
-                  We offer
-                </Text>
-                <Text className="text-[13px] text-black font-medium ">
-                  Price Match
-                </Text>
-              </View>
-            </View>
-            <ChevronDownIcon size={22} color="black" strokeWidth={1} />
-          </Pressable>
-
-          <View className="p-4 bg-white mt-4">
+          <View className="p-4 bg-white my-4">
             <View className="flex-row justify-between">
               <Text className="text-[16px] text-black font-normal ">
                 Emporio Armani
@@ -344,8 +541,8 @@ export default function ProductDetailScreen({ route }) {
             </Text>
           </View>
 
-          <CardSlider title="You May Also Like" mt={3} />
-          <CardSlider title="More from this brand" mt={3} />
+          <CardSlider id={"gid://shopify/Collection/139270488173"} />
+          <CardSlider id={"gid://shopify/Collection/139270488173"} />
         </View>
       </ScrollView>
 
@@ -354,14 +551,17 @@ export default function ProductDetailScreen({ route }) {
         setState={setBottomModal}
         options={data.product.options}
         productId={productId}
+        selectedVariant={selectedVariant}
         setSelectedVariant={setSelectedVariant}
         handleAddCartBtn={handleAddCartBtn}
         handleOptionSelectionProdVariant={handleOptionSelectionProdVariant}
+        prodVariants={prodVariants}
         filteredVariants={filteredVariants}
         selectedOption={selectedOption}
         setSelectedOption={setSelectedOption}
         handleSelectOption={handleSelectOption}
         variantSelectionfunctionCombined={variantSelectionfunctionCombined}
+        colorOptionImages={colorOptionImages}
       />
       <Overlay state={bottomModal} setState={setBottomModal} />
 
