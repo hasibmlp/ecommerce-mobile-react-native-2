@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { ChevronDownIcon, TrashIcon } from "react-native-heroicons/outline";
-import { GET_CART_ITEM } from "../graphql/queries";
+import { GET_CART_DETAILS, GET_CART_ITEM } from "../graphql/queries";
 import { cartIdVar } from "../App";
 import { REMOVE_CART_ITEM } from "../graphql/mutations";
 
@@ -18,17 +18,23 @@ export default function CartCard({ id, lineId, refetch }) {
     },
   ] = useMutation(REMOVE_CART_ITEM);
 
-  refetch();
-
   console.log("CART ID IN CART ITEM: ", cartId);
 
   function handleItemRemove(id) {
     console.log("CART REMOVE BUTTON PRESSED");
     removeCartItem({
       variables: {
-        cartId,
-        lineIds: [lineId],
+        checkoutId: cartId,
+        lineItemIds: [lineId],
       },
+      refetchQueries: [
+        {
+          query: GET_CART_DETAILS,
+          variables: {
+            checkoutId: cartId,
+          },
+        },
+      ],
     });
   }
 

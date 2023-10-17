@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
@@ -20,7 +21,6 @@ export default function CardSlider({ id, products, mt }) {
     },
   });
 
-
   if (loading) return <Text>loading..</Text>;
   if (error) return <Text>error occured {error}</Text>;
 
@@ -30,11 +30,21 @@ export default function CardSlider({ id, products, mt }) {
         <Text className="text-[18px] font-light text-black capitalize">
           {data.collection.title}
         </Text>
-        <Text className="text-[11px] text-red-900 font-normal uppercase underline">
-          View all
-        </Text>
+        <Pressable
+          onPress={() =>
+            navigation.navigate("Collection", { collectionId: id })
+          }
+        >
+          <Text className="text-[11px] text-red-900 font-normal uppercase underline">
+            View all
+          </Text>
+        </Pressable>
       </View>
-      <ScrollView className="px-[15px]" horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView
+        className="px-[15px]"
+        horizontal
+        showsHorizontalScrollIndicator={false}
+      >
         {data.collection.products.edges?.map((product, index) => (
           <TouchableOpacity
             key={index.toString()}

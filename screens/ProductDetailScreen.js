@@ -29,7 +29,11 @@ import {
   useReactiveVar,
 } from "@apollo/client";
 
-import { GET_PRODUCT, GET_VARIANT_BY_ID } from "../graphql/queries";
+import {
+  GET_CART_DETAILS,
+  GET_PRODUCT,
+  GET_VARIANT_BY_ID,
+} from "../graphql/queries";
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
 import FollowButton from "../components/FollowButton";
@@ -89,17 +93,22 @@ export default function ProductDetailScreen({ route }) {
     if (selectedVariant) {
       console.log("HANDLE CART FUNCTION SUCCEFULLY RUNNING");
 
-      
-
       if (cartId) {
         console.log("CART ID IS SET");
         addCartItem({
           variables: {
-            cartId,
-            productId: selectedVariant,
+            checkoutId: cartId,
+            variantId: selectedVariant,
           },
+          refetchQueries: [
+            {
+              query: GET_CART_DETAILS,
+              variables: {
+                checkoutId: cartId,
+              },
+            },
+          ],
           onCompleted: () => {
-            
             setBottomModal(false);
             navigation.navigate("CartScreen");
           },
@@ -311,7 +320,7 @@ export default function ProductDetailScreen({ route }) {
   useEffect(() => {
     if (cartData) {
       console.log("CART DATA RETURNED ");
-      cartIdVar(cartData?.cartCreate?.cart?.id);
+      cartIdVar(cartData?.checkoutCreate?.checkout?.id);
     }
   }, [cartData]);
 
@@ -498,7 +507,7 @@ export default function ProductDetailScreen({ route }) {
               onPress={handleAddCartBtn}
               disabled={addToCartbuttonDisabled ? true : false}
               className={`flex items-center justify-center py-4 w-full ${
-                addToCartbuttonDisabled ? "bg-gray-300" : "bg-red-400"
+                addToCartbuttonDisabled ? "bg-gray-300" : "bg-blue-400"
               }  rounded-[5px]`}
             >
               <Text className="text-[14px] text-white font-semibold uppercase">

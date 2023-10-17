@@ -212,71 +212,181 @@ export const GET_VARIANT_BY_ID = gql`
 `;
 
 export const GET_CART_DETAILS = gql`
-query GetCartItems($cartId: ID!) {
-  cart(
-    id: $cartId
-  ) {
-    id
-    createdAt
-    updatedAt
-    lines(first: 25) {
-      edges {
-        node {
-          id
-          quantity
-          merchandise {
-            ... on ProductVariant {
+  query GetCheckoutList($checkoutId: ID!) {
+    node(id: $checkoutId) {
+      ... on Checkout {
+        id
+        webUrl
+        lineItems(first: 20) {
+          edges {
+            node {
               id
+              variant {
+                id
+              }
             }
           }
-          attributes {
-            key
-            value
-          }
         }
-      }
-    }
-    attributes {
-      key
-      value
-    }
-    cost {
-      totalAmount {
-        amount
-        currencyCode
-      }
-      subtotalAmount {
-        amount
-        currencyCode
-      }
-      totalTaxAmount {
-        amount
-        currencyCode
-      }
-      totalDutyAmount {
-        amount
-        currencyCode
-      }
-    }
-    buyerIdentity {
-      email
-      phone
-      customer {
-        id
-      }
-      countryCode
-      deliveryAddressPreferences {
-        ... on MailingAddress {
+        shippingAddress {
+          firstName
+          lastName
           address1
           address2
           city
-          provinceCode
-          countryCodeV2
-          zip
+          country
+          phone
+        }
+        totalTax {
+          amount
+          currencyCode
+        }
+        subtotalPrice {
+          amount
+          currencyCode
+        }
+        lineItemsSubtotalPrice {
+          amount
+          currencyCode
+        }
+        totalPrice {
+          amount
+          currencyCode
         }
       }
     }
   }
-}
+`;
 
-`
+export const GET_CHECKOUT_DETAILS = gql`
+  query GetCheckoutDetails($checkoutId: ID!) {
+    node(id: $checkoutId) {
+      ... on Checkout {
+        id
+        webUrl
+        lineItems(first: 20) {
+          edges {
+            node {
+              id
+              variant {
+                id
+              }
+            }
+          }
+        }
+        buyerIdentity {
+          __typename
+        }
+        email
+        shippingAddress {
+          firstName
+          lastName
+          phone
+          address1
+          address2
+          city
+          country
+          zip
+        }
+        totalTax {
+          amount
+          currencyCode
+        }
+        totalDuties {
+          amount
+          currencyCode
+        }
+        subtotalPrice {
+          amount
+          currencyCode
+        }
+        totalPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+`;
+
+export const GET_AVAILABLE_SHIPPING_RATES = gql`
+  query GetAvailableShippingRates($checkoutId: ID!) {
+    node(id: $checkoutId) {
+      ... on Checkout {
+        id
+        availableShippingRates {
+          ready
+          shippingRates {
+            handle
+            title
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+        shippingLine {
+          handle
+          title
+          price {
+            amount
+            currencyCode
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_BUYER_DETAILS = gql`
+  query GetBuyerDetails($checkoutId: ID!) {
+    node(id: $checkoutId) {
+      ... on Checkout {
+        id
+        email
+        shippingAddress {
+          firstName
+          lastName
+          address1
+          address2
+          city
+          province
+          country
+          phone
+        }
+      }
+    }
+  }
+`;
+
+export const GET_COLLECTION_BY_ID = gql`
+  query getCollectionById($after: String) {
+    collection(id: "gid://shopify/Collection/139270488173") {
+      id
+      title
+      products(first: 10, after: $after) {
+        edges {
+          cursor
+          node {
+            id
+            title
+            vendor
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            featuredImage {
+              id
+              url
+            }
+          }
+        }
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  }
+`;

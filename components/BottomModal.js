@@ -247,7 +247,7 @@ export default function BottomModal({
               disabled={selectedVariant ? false : true}
               onPress={handleAddCartBtn}
               className={` flex items-center justify-center py-4 w-full ${
-                selectedVariant ? "bg-red-400" : "bg-red-200"
+                selectedVariant ? "bg-blue-400" : "bg-red-200"
               }  rounded-[5px] `}
             >
               <Text className="text-[14px] text-white font-semibold uppercase">

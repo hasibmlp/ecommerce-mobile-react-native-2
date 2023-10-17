@@ -1,5 +1,6 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { relayStylePagination } from "@apollo/client/utilities";
 
 const token = "ff031bf264f816c80da166c05bc93a87";
 
@@ -20,5 +21,21 @@ const authLink = setContext((_, { headers }) => {
 
 export const shopifyClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          products: {
+            keyArgs: false,
+            merge(existing, incoming) {
+              return {
+                ...incoming,
+                edges: [...(existing?.edges || []), ...incoming.edges],
+              };
+            },
+          },
+        },
+      },
+    },
+  }),
 });
