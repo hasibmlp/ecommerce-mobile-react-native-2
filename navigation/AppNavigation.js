@@ -25,6 +25,8 @@ import CheckoutScreen from "../screens/CheckoutScreen";
 import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
 import CheckoutReview from "../components/CheckoutReview";
 import Collection from "../components/Collection";
+import BottomModalV2 from "../components/BottomModalV2";
+import CallBottomModal from "../components/CallBottomModal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -133,6 +135,7 @@ export function HomeTabs() {
   );
 }
 
+
 export default function AppNavigation() {
   return (
     <NavigationContainer>
@@ -154,6 +157,7 @@ export default function AppNavigation() {
           component={NotificationScreen}
         />
       </Stack.Navigator>
+      {/* <CallBottomModal /> */}
     </NavigationContainer>
   );
 }

@@ -21,21 +21,5 @@ const authLink = setContext((_, { headers }) => {
 
 export const shopifyClient = new ApolloClient({
   link: authLink.concat(httpLink),
-  cache: new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          products: {
-            keyArgs: false,
-            merge(existing, incoming) {
-              return {
-                ...incoming,
-                edges: [...(existing?.edges || []), ...incoming.edges],
-              };
-            },
-          },
-        },
-      },
-    },
-  }),
+  cache: new InMemoryCache()
 });

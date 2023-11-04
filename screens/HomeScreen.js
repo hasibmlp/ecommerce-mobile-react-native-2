@@ -38,7 +38,7 @@ export default function HomeScreen() {
 
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1}}>
       <ScrollView scrollEnabled={!toggleGenderMenuBar} className="bg-gray-100">
         <GreetingHeader
           handleToggleMenu={handleToggleMenu}

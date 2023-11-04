@@ -118,18 +118,17 @@ export const GET_PRODUCT = gql`
           amount
         }
       }
-      images(first: 100) {
-        edges {
-          node {
-            id
-            url
-          }
-        }
-      }
       options {
         name
         values
       }
+    }
+  }
+`;
+
+export const GET_PRODUCT_VARIANTS = gql`
+  query getProductVairants($productId: ID!) {
+    product(id: $productId) {
       variants(first: 100) {
         edges {
           node {
@@ -145,6 +144,32 @@ export const GET_PRODUCT = gql`
             }
           }
         }
+      }
+    }
+  }
+`;
+
+export const GET_PRODUCT_IMAGES = gql`
+  query getProductVairants($productId: ID!) {
+    product(id: $productId) {
+      images(first: 100) {
+        edges {
+          node {
+            id
+            url
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PRODUCT_OPTIONS = gql`
+  query getProductOption($productId: ID!) {
+    product(id: $productId) {
+      options {
+        name
+        values
       }
     }
   }
@@ -359,11 +384,18 @@ export const GET_BUYER_DETAILS = gql`
 `;
 
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById($after: String) {
-    collection(id: "gid://shopify/Collection/139270488173") {
+  query getCollectionById($collectionId: ID!, $cursor: String) {
+    collection(id: $collectionId) {
       id
       title
-      products(first: 10, after: $after) {
+      products(first: 18, after: $cursor) {
+        filters {
+          values {
+            id
+            label
+            count
+          }
+        }
         edges {
           cursor
           node {

@@ -12,14 +12,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import {
-  HeartIcon,
   ClockIcon,
   TruckIcon,
   ChevronLeftIcon,
   ChevronDownIcon,
-  ChevronRightIcon,
   QuestionMarkCircleIcon,
-  TagIcon,
   InformationCircleIcon,
 } from "react-native-heroicons/outline";
 import {
@@ -32,6 +29,7 @@ import {
 import {
   GET_CART_DETAILS,
   GET_PRODUCT,
+  GET_PRODUCT_IMAGES,
   GET_VARIANT_BY_ID,
 } from "../graphql/queries";
 import ShowAndHide from "../components/ShowAndHide";
@@ -42,6 +40,7 @@ import BottomModal from "../components/BottomModal";
 import Overlay from "../components/Overlay";
 import { cartIdVar } from "../App";
 import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
+import Skeleton from "../components/Skeleton";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -54,9 +53,6 @@ export default function ProductDetailScreen({ route }) {
   const [bottomModal, setBottomModal] = useState(false);
   const [addToCartbuttonDisabled, setaddToCartbuttonDisabled] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const [prodVariants, setProdVariants] = useState([]);
-  const [filteredVariants, setFilteredVariants] = useState([]);
-  const [colorOptionImages, setColorOptionImages] = useState([]);
   const [selectedOption, setSelectedOption] = useState([
     {
       name: "Color",
@@ -70,6 +66,9 @@ export default function ProductDetailScreen({ route }) {
       productId: productId,
     },
   });
+
+  const {loading: prodImagesLoading, error: prodImagesError, data: prodImagesData} = useQuery(GET_PRODUCT_IMAGES, {variables: {productId}})
+
   const [
     getVariantById,
     { loading: varLoading, error: varError, data: varData },
@@ -136,186 +135,11 @@ export default function ProductDetailScreen({ route }) {
     }
   }
 
-  function handleOptionSelectionProdVariant(option, value) {
-    const filteredVariantsArray = prodVariants.filter(
-      (variant) =>
-        variant.selectedOptions[option] === value &&
-        variant.quantityAvailable > 0
-    );
-    setFilteredVariants(() => filteredVariantsArray);
-  }
-
-  function handleSelectOption(name, value) {
-    const currentSelected = [...selectedOption];
-
-    const existingIndex = currentSelected.findIndex(
-      (option) => option.name === name
-    );
-    if (existingIndex !== -1) {
-      currentSelected.splice(existingIndex, 1);
-    }
-
-    currentSelected.push({ name, value });
-
-    setSelectedOption(currentSelected);
-  }
-
-  function handleSelectedVariantImage(newFilteredVariants) {
-    const index = images.findIndex(
-      (image) => image.id === newFilteredVariants[0]?.imageId
-    );
-
-    if (index !== -1) {
-      flatListRef.current.scrollToIndex({
-        animated: false,
-        index,
-        viewOffset: 0,
-        viewPosition: 0,
-      });
-    }
-  }
-
-  function variantSelectionfunctionCombined(optionName, item, optionsCount) {
-    if (optionsCount === 1) {
-      handleOptionSelectionProdVariant(optionName, item);
-    } else if (optionsCount > 1) {
-      if (optionName === "Color") {
-        handleOptionSelectionProdVariant(optionName, item);
-      }
-    }
-    handleSelectOption(optionName, item);
-
-    setFilteredVariants((prevItem) => {
-      handleSelectedVariantImage(prevItem);
-      return prevItem;
-    });
-  }
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
-
-  // useEffect(() => {
-  //   const currentArray = cartIdVar();
-  //   if (currentArray.includes(productId)) setaddToCartbuttonDisabled(true);
-  // }, []);
-
-  useEffect(() => {
-    const prodVariantsArray = [];
-    if (data)
-      data.product.variants.edges.map((edge) => {
-        const productVariantObj = {
-          id: edge.node.id,
-          quantityAvailable: edge.node.quantityAvailable,
-          imageId: edge.node.image.id,
-          imageUrl: edge.node.image.url,
-          selectedOptions: {},
-        };
-
-        edge.node.selectedOptions.forEach((option) => {
-          productVariantObj.selectedOptions[option.name] = option.value;
-        });
-
-        prodVariantsArray.push(productVariantObj);
-      });
-    setProdVariants(prodVariantsArray);
-
-    // const prodVariantImagesArray = []
-    // if(data) {
-    //   data.product.variants.edges.map((edge) => {
-    //     const prodVariantImagesObj = {
-    //       id: edge.node.image.id
-    //     }
-
-    //     prodVariantImagesArray.push(prodVariantImagesObj)
-    //   })
-    //   console.log("VARIANT IMAGES",prodVariantImagesArray)
-    // }
-  }, [data]);
-
-  useEffect(() => {
-    let firstColorOption;
-    if (data)
-      if (data.product.options.length === 1) {
-        firstColorOption = data.product.options[0].values[0];
-      } else if (data.product.options.length > 1) {
-        firstColorOption = data.product.options.find(
-          (option) => option.name === "Color"
-        )
-          ? data.product.options.find((option) => option.name === "Color")
-              .values[0]
-          : null;
-      }
-    if (prodVariants.length !== 0) {
-      if (data.product.options.length === 1) {
-      }
-      variantSelectionfunctionCombined(
-        data.product.options.length === 1
-          ? data.product.options[0].name
-          : "Color",
-        firstColorOption,
-        data.product.options.length
-      );
-    }
-  }, [prodVariants, data]);
-
-  useEffect(() => {
-    const selectedSize = selectedOption.find(
-      (option) => option.name === "Size"
-    );
-
-    if (selectedSize) {
-      const sizeValueToCheck = selectedSize.value;
-
-      if (filteredVariants) {
-        const sizeExists = filteredVariants.some(
-          (variant) => variant.selectedOptions.Size === sizeValueToCheck
-        );
-
-        if (!sizeExists || filteredVariants.length === 0) {
-          const updateSelectedOption = selectedOption.filter(
-            (option) => option.name !== "Size"
-          );
-          setSelectedOption(updateSelectedOption);
-        }
-      }
-    }
-  }, [selectedOption]);
-
-  useEffect(() => {
-    if (selectedVariant) {
-      getVariantById({
-        variables: {
-          variantId: selectedVariant,
-        },
-      });
-    }
-  }, [selectedVariant]);
-
-  useEffect(() => {
-    const colorOptionImagesArray = [];
-    if (prodVariants) {
-      const seenColor = new Set();
-
-      prodVariants.forEach((item) => {
-        const color = item.selectedOptions.Color;
-
-        if (!seenColor.has(color)) {
-          seenColor.add(color);
-
-          const colorOptionImagesObj = {};
-          colorOptionImagesObj["imageId"] = item.imageId;
-          colorOptionImagesObj["imageUrl"] = item.imageUrl;
-          colorOptionImagesObj["color"] = color;
-          colorOptionImagesArray.push(colorOptionImagesObj);
-        }
-      });
-    }
-
-    setColorOptionImages(() => colorOptionImagesArray);
-  }, [prodVariants]);
 
   useEffect(() => {
     if (cartData) {
@@ -324,26 +148,20 @@ export default function ProductDetailScreen({ route }) {
     }
   }, [cartData]);
 
-  const images = data?.product?.images?.edges?.map((edge) => {
+  const images = prodImagesData?.product?.images?.edges?.map((edge) => {
     return {
       url: edge?.node?.url,
       id: edge?.node?.id,
     };
   });
 
-  if (loading)
-    return (
-      <View className="flex-1 items-center justify-center">
-        <Text>Loading..</Text>
-      </View>
-    );
   if (error || varError) return <Text>Error occured {error || varError}</Text>;
 
   console.log("CART DATA", cartData?.cartCreate?.cart?.id);
   console.log("CART DATA IF CARD ID PRESENT", addCartItemData);
 
   return (
-    <View>
+    <View className="flex-1">
       <SafeAreaView className="bg-white" />
       <View className="items-center justify-center bg-white h-[50px] relative">
         <TouchableOpacity
@@ -352,132 +170,170 @@ export default function ProductDetailScreen({ route }) {
         >
           <ChevronLeftIcon size={20} color="black" />
         </TouchableOpacity>
-        <Text className="text-[20px] font-medium text-black">
-          {data.product.vendor}
-        </Text>
+        {data && (
+          <Text className="text-[20px] font-medium text-black">
+            {data.product.vendor}
+          </Text>
+        )}
+
+        {!data && <Skeleton width={150} height={20} />}
       </View>
       <SafeAreaView />
 
       <ScrollView bounces={false}>
-        {/* floating back button */}
-        {/* <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          className="h-[40px] w-[40px] items-center justify-center rounded-full bg-white absolute z-[1] left-[20px] top-[50px]"
-        >
-          <ChevronLeftIcon size={20} color="black" />
-        </TouchableOpacity> */}
-
         <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
-          <FlatList
-            key={(_, index) => index.toString()}
-            ref={flatListRef}
-            horizontal
-            data={images}
-            keyExtractor={(_, index) => index.toString()}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => {
-              return (
-                <View>
-                  <Image
-                    style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
-                    src={item.url}
-                  />
-                </View>
-              );
-            }}
-            getItemLayout={(_, index) => {
-              return {
-                length: ITEM_WIDTH,
-                offset: ITEM_WIDTH * index,
-                index,
-              };
-            }}
-          />
+          {images && (
+            <FlatList
+              key={(_, index) => index.toString()}
+              ref={flatListRef}
+              horizontal
+              data={images}
+              keyExtractor={(_, index) => index.toString()}
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item }) => {
+                return (
+                  <View>
+                    <Image
+                      style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
+                      src={item.url}
+                    />
+                  </View>
+                );
+              }}
+              getItemLayout={(_, index) => {
+                return {
+                  length: ITEM_WIDTH,
+                  offset: ITEM_WIDTH * index,
+                  index,
+                };
+              }}
+            />
+          )}
+          {!images && <Skeleton width={ITEM_WIDTH} height={ITEM_HEIGHT} />}
         </View>
 
         <View className="pb-[100px]">
           <View className="items-center gap-[8px] py-[10px] bg-white px-2">
             <HeartButton />
-            <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center">
-              <Text className="text-[11px] text-black uppercase">
-                {data.product.vendor}
-              </Text>
-            </View>
-            <Text className="text-[19px] font-medium text-black text-center">
-              {data.product.title}
-            </Text>
 
-            <Text className="text-[20px] font-normal text-red-800">
-              {varData?.node?.price?.amount
-                ? varData?.node?.price?.amount
-                : data.product.priceRange.minVariantPrice.amount}{" "}
-              AED
-            </Text>
-            <Text className="text-[14px] text-gray-500 font-normal">
-              Including VAT
-            </Text>
-
-            <View className=" items-center justify-center border rounded-[5px] border-gray-300 self-stretch">
-              <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
-                <Text className="text-[14px] font-normal text-black ">
-                  Want to pay in instalments?
-                </Text>
+            {!data && (
+              <View className="items-center">
+                <Skeleton
+                  width={100}
+                  height={20}
+                  style={{ marginBottom: 12 }}
+                />
+                <Skeleton width={350} height={20} style={{ marginBottom: 4 }} />
+                <Skeleton
+                  width={300}
+                  height={20}
+                  style={{ marginBottom: 12 }}
+                />
+                <Skeleton width={100} height={20} style={{ marginBottom: 6 }} />
+                <Skeleton
+                  width={350}
+                  height={20}
+                  style={{ marginBottom: 12 }}
+                />
+                <Skeleton
+                  width={100}
+                  height={20}
+                  style={{ marginBottom: 12 }}
+                />
+                <Skeleton
+                  width={150}
+                  height={20}
+                  style={{ marginBottom: 12 }}
+                />
               </View>
-              <View className="flex-row items-center justify-center py-2">
-                <Text className="text-[16px] font-bold text-black mr-1">
-                  tabby
+            )}
+
+            {data && (
+              <View className="items-center">
+                <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center mb-3">
+                  <Text className="text-[11px] text-black uppercase">
+                    {data.product.vendor}
+                  </Text>
+                </View>
+                <Text className="text-[19px] font-medium text-black text-center mb-3">
+                  {data.product.title}
                 </Text>
-                <InformationCircleIcon size={14} color="black" />
-              </View>
-            </View>
-          </View>
 
-          <View className="flex-row items-center justify-center bg-white py-5">
-            <Text className="text-[14px] font-normal text-black">
-              Earn 905 Smile Points.
-            </Text>
-            <Text className="text-[14px] text-red-800 font-normal underline ml-2">
-              Learn Now
-            </Text>
-          </View>
+                <Text className="text-[20px] font-normal text-red-800 mb-[2px]">
+                  {varData?.node?.price?.amount
+                    ? varData?.node?.price?.amount
+                    : data.product.priceRange.minVariantPrice.amount}{" "}
+                  AED
+                </Text>
+                <Text className="text-[14px] text-gray-500 font-normal mb-3">
+                  Including VAT
+                </Text>
 
-          <Pressable
-            onPress={() => setBottomModal(!bottomModal)}
-            className="border-t border-gray-300 py-2 bg-white px-14"
-          >
-            <View className="flex-row justify-between items-center">
-              {data.product.options.map((option, index) => (
-                <>
-                  <View
-                    key={index.toString()}
-                    className="items-center justify-center"
-                  >
-                    <Text className="text-[11px] text-black font-medium uppercase text-center ">
-                      {option.name}
+                <View className=" items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
+                  <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
+                    <Text className="text-[14px] font-normal text-black ">
+                      Want to pay in instalments?
                     </Text>
-                    <View className="flex-row items-center justify-center gap-x-1 mt-3">
-                      <Text className="text-[15px] text-black font-light uppercase">
-                        {selectedOption.find((op) => op.name === option.name)
-                          ? selectedOption
-                              .find((op) => op.name === option.name)
-                              .value.slice(0, 12) +
-                            (selectedOption.find(
-                              (op) => op.name === option.name
-                            ).value.length > 12
-                              ? "..."
-                              : "")
-                          : "Select"}
-                      </Text>
-                      <ChevronDownIcon size={14} color="black" />
-                    </View>
                   </View>
-                </>
-              ))}
+                  <View className="flex-row items-center justify-center py-2">
+                    <Text className="text-[16px] font-bold text-black mr-1">
+                      tabby
+                    </Text>
+                    <InformationCircleIcon size={14} color="black" />
+                  </View>
+                </View>
 
-              <View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>
-            </View>
-          </Pressable>
+                <View className="flex-row items-center justify-center bg-white mb-1">
+                  <Text className="text-[14px] font-normal text-black">
+                    Earn 905 Smile Points.
+                  </Text>
+                  <Text className="text-[14px] text-red-800 font-normal underline ml-2">
+                    Learn Now
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+
+          {data && (
+            <Pressable
+              onPress={() => setBottomModal(!bottomModal)}
+              className="border-t border-gray-300 py-2 bg-white px-14"
+            >
+              <View className="flex-row justify-between items-center">
+                {data && (data.product.options.map((option, index) => (
+                  <>
+                    <View
+                      key={index.toString()}
+                      className="items-center justify-center"
+                    >
+                      <Text className="text-[11px] text-black font-medium uppercase text-center ">
+                        {option.name}
+                      </Text>
+                      <View className="flex-row items-center justify-center gap-x-1 mt-3">
+                        <Text className="text-[15px] text-black font-light uppercase">
+                          {selectedOption.find((op) => op.name === option.name)
+                            ? selectedOption
+                                .find((op) => op.name === option.name)
+                                .value.slice(0, 12) +
+                              (selectedOption.find(
+                                (op) => op.name === option.name
+                              ).value.length > 12
+                                ? "..."
+                                : "")
+                            : "Select"}
+                        </Text>
+                        <ChevronDownIcon size={14} color="black" />
+                      </View>
+                    </View>
+                  </>
+                )))}
+
+                <View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>
+              </View>
+            </Pressable>
+          )}
 
           <TouchableOpacity className=" border-y py-4 border-gray-300 bg-white">
             <View className="flex-row gap-x-2 justify-center items-center">
@@ -496,25 +352,27 @@ export default function ProductDetailScreen({ route }) {
             </View>
           </TouchableOpacity>
 
-          <View className="flex py-4 px-4 bg-white">
-            <View className="flex-row gap-x-1 items-center justify-center mb-5">
-              <ClockIcon size={20} color="red" />
-              <Text className="text-[13px] text-red-500 font-normal">
-                Low in stock: only 1 left
-              </Text>
+          {data && (
+            <View className="flex py-4 px-4 bg-white">
+              <View className="flex-row gap-x-1 items-center justify-center mb-5">
+                <ClockIcon size={20} color="red" />
+                <Text className="text-[13px] text-red-500 font-normal">
+                  Low in stock: only 1 left
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={handleAddCartBtn}
+                disabled={addToCartbuttonDisabled ? true : false}
+                className={`flex items-center justify-center py-4 w-full ${
+                  addToCartbuttonDisabled ? "bg-gray-300" : "bg-blue-400"
+                }  rounded-[5px]`}
+              >
+                <Text className="text-[14px] text-white font-semibold uppercase">
+                  {addToCartbuttonDisabled ? "Added to bag" : "Add to bag"}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={handleAddCartBtn}
-              disabled={addToCartbuttonDisabled ? true : false}
-              className={`flex items-center justify-center py-4 w-full ${
-                addToCartbuttonDisabled ? "bg-gray-300" : "bg-blue-400"
-              }  rounded-[5px]`}
-            >
-              <Text className="text-[14px] text-white font-semibold uppercase">
-                {addToCartbuttonDisabled ? "Added to bag" : "Add to bag"}
-              </Text>
-            </TouchableOpacity>
-          </View>
+          )}
 
           <View>
             <ShowAndHide title="Editor's advice" />
@@ -558,49 +416,15 @@ export default function ProductDetailScreen({ route }) {
       <BottomModal
         state={bottomModal}
         setState={setBottomModal}
-        options={data.product.options}
         productId={productId}
-        selectedVariant={selectedVariant}
-        setSelectedVariant={setSelectedVariant}
+        flatListRef={flatListRef}
         handleAddCartBtn={handleAddCartBtn}
-        handleOptionSelectionProdVariant={handleOptionSelectionProdVariant}
-        prodVariants={prodVariants}
-        filteredVariants={filteredVariants}
         selectedOption={selectedOption}
         setSelectedOption={setSelectedOption}
-        handleSelectOption={handleSelectOption}
-        variantSelectionfunctionCombined={variantSelectionfunctionCombined}
-        colorOptionImages={colorOptionImages}
+        selectedVariant={selectedVariant}
+        setSelectedVariant={setSelectedVariant}
       />
       <Overlay state={bottomModal} setState={setBottomModal} />
-
-      {/* {bottomAction && (
-        <Animated.View
-          style={{
-            transform: [
-              {
-                translateY: scrollY.interpolate({
-                  inputRange: [-1, 0, topEdge -1  , topEdge, topEdge + 1 ],
-                  outputRange: [0, 0, 0, 0, -1],
-                }),
-              },
-            ],
-          }}
-          className="items-center justify-center gap-[15px] bg-white h-[140px] px-[15px] absolute bottom-0 left-0 right-0"
-        >
-          <View className="flex-row gap-[5px]">
-            <ClockIcon size={16} color="red" />
-            <Text className="text-[14px] font-normal text-red-500">
-              Low in stock: only 1 left
-            </Text>
-          </View>
-          <TouchableOpacity className="self-stretch bg-red-800 h-[50px] justify-center items-center rounded-full">
-            <Text className="text-[16px] text-white font-medium uppercase">
-              Add to bag
-            </Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )} */}
     </View>
   );
 }
