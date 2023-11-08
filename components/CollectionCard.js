@@ -11,31 +11,16 @@ import {
   Pressable,
 } from "react-native";
 import { PlusIcon } from "react-native-heroicons/outline";
+import { bottomModaVar, selctedProductForBottomModalVar } from "../App";
 
 const colors = ["red", "blue", "green", "white", "navy"];
 
-export function CollectionCard({
-  product,
-  bottomModalSetState,
-  setSelectedProductId,
-}) {
-  //   console.log("PRODUCT DETAILS: ",product);
+export function CollectionCard({ product }) {
   const navigation = useNavigation();
 
-  const [bottomModal, setBottomModal] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(null);
-  const [selectedOption, setSelectedOption] = useState([
-    {
-      name: "Color",
-      value: "Navy",
-    },
-  ]);
-
   const handleColorOptions = (id) => {
-    setSelectedProductId(id);
-    bottomModalSetState(true)
-
-    
+    bottomModaVar(true);
+    selctedProductForBottomModalVar(id);
   };
 
   return (

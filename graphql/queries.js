@@ -92,7 +92,7 @@ export const GET_COLLECTION = gql`
                 amount
               }
             }
-            images(first: 5) {
+            images(first: 1) {
               edges {
                 node {
                   url
@@ -126,6 +126,41 @@ export const GET_PRODUCT = gql`
   }
 `;
 
+export const GET_PRODUCT_V2 = gql`
+query getProductVairants($productId: ID!) {
+  product(id: $productId) {
+    images(first: 100) {
+      edges {
+        node {
+          id
+          url
+        }
+      }
+    }
+    options {
+      name
+      values
+    }
+    variants(first: 100) {
+      edges {
+        node {
+          id
+          quantityAvailable
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            id
+            url
+          }
+        }
+      }
+    }
+  }
+}
+`
+
 export const GET_PRODUCT_VARIANTS = gql`
   query getProductVairants($productId: ID!) {
     product(id: $productId) {
@@ -152,6 +187,7 @@ export const GET_PRODUCT_VARIANTS = gql`
 export const GET_PRODUCT_IMAGES = gql`
   query getProductVairants($productId: ID!) {
     product(id: $productId) {
+      id
       images(first: 100) {
         edges {
           node {

@@ -89,6 +89,7 @@ export function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <HomeIcon size={size} color="black" strokeWidth={1} />
           ),
+            tabBarVisible: false, //like this
         }}
       />
       <Tab.Screen
@@ -156,8 +157,12 @@ export default function AppNavigation() {
           name="NotificationScreen"
           component={NotificationScreen}
         />
+        <Stack.Screen name="BottomModal" component={CallBottomModal} options={{
+          presentation: 'transparentModal',
+          headerShown: false,
+        }} />
       </Stack.Navigator>
-      {/* <CallBottomModal /> */}
+
     </NavigationContainer>
   );
 }

@@ -1,5 +1,4 @@
 import { Image, Text, View } from "react-native";
-import { batch } from "react-redux";
 
 export default function BrandCard({brand, collectionTitle, collectionDesc , collectionCta, first}) {
 

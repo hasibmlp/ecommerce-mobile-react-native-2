@@ -15,6 +15,7 @@ export default function Overlay({ state, setState }) {
   useEffect(() => {
     Animated.timing(opacityRef, {
       toValue: state ? 0.3 : 0,
+      delay: 200,
       duration: 100,
       useNativeDriver: true,
     }).start();

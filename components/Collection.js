@@ -43,6 +43,7 @@ import BottomModal from "./BottomModal";
 import BottomModalColor from "./BottomModalV2";
 import BottomModalV2 from "./BottomModalV2";
 import CallBottomModal from "./CallBottomModal";
+import Overlay from "./Overlay";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -57,14 +58,8 @@ export default function Collection({ route }) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
   const [showMoreLoading, setShowMoreLoading] = useState(false);
 
-  const [bottomModal, setBottomModal] = useState(false);
+  const [bottomModalOpen, setBottomModalOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const [selectedOption, setSelectedOption] = useState([
-    {
-      name: "Color",
-      value: "Navy",
-    },
-  ]);
   const [SelectedProductId, setSelectedProductId] = useState(null);
 
   const filterActionsLayout = useSharedValue(0);
@@ -82,7 +77,7 @@ export default function Collection({ route }) {
       collectionId,
     },
     fetchPolicy: "network-only",
-  });
+  }); 
 
   function handlePagingation() {
     // if(showMoreLoading) return
@@ -443,8 +438,10 @@ export default function Collection({ route }) {
                 <CollectionCard
                   key={item.node.id}
                   product={item.node}
-                  bottomModalSetState={setBottomModal}
+                  bottomModalOpen={bottomModalOpen}
+                  setBottomModalOpen={setBottomModalOpen}
                   setSelectedProductId={setSelectedProductId}
+                  handleAddCartBtn={handleAddCartBtn}
                 />
 
                 {collData?.collection?.products?.pageInfo?.hasNextPage &&
@@ -520,16 +517,8 @@ export default function Collection({ route }) {
         </Pressable>
       )}
 
-      <CallBottomModal
-        state={bottomModal}
-        setState={setBottomModal}
-        productId={SelectedProductId}
-        handleAddCartBtn={handleAddCartBtn}
-        selectedOption={selectedOption}
-        setSelectedOption={setSelectedOption}
-        selectedVariant={selectedVariant}
-        setSelectedVariant={setSelectedVariant}
-      />
+      <Overlay state={bottomModalOpen} setState={setBottomModalOpen} />
+
       
     </View>
   );

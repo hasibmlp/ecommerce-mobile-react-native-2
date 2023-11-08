@@ -38,7 +38,11 @@ import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
 import BottomModal from "../components/BottomModal";
 import Overlay from "../components/Overlay";
-import { cartIdVar } from "../App";
+import {
+  bottomModaVar,
+  cartIdVar,
+  selctedProductForBottomModalVar,
+} from "../App";
 import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
 import Skeleton from "../components/Skeleton";
 
@@ -50,7 +54,7 @@ export default function ProductDetailScreen({ route }) {
   const cartId = useReactiveVar(cartIdVar);
 
   const flatListRef = useRef();
-  const [bottomModal, setBottomModal] = useState(false);
+  const [bottomModalOpen, setBottomModalOpen] = useState(false);
   const [addToCartbuttonDisabled, setaddToCartbuttonDisabled] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedOption, setSelectedOption] = useState([
@@ -67,7 +71,11 @@ export default function ProductDetailScreen({ route }) {
     },
   });
 
-  const {loading: prodImagesLoading, error: prodImagesError, data: prodImagesData} = useQuery(GET_PRODUCT_IMAGES, {variables: {productId}})
+  const {
+    loading: prodImagesLoading,
+    error: prodImagesError,
+    data: prodImagesData,
+  } = useQuery(GET_PRODUCT_IMAGES, { variables: { productId } });
 
   const [
     getVariantById,
@@ -108,7 +116,7 @@ export default function ProductDetailScreen({ route }) {
             },
           ],
           onCompleted: () => {
-            setBottomModal(false);
+            setBottomModalOpen(false);
             navigation.navigate("CartScreen");
           },
         });
@@ -120,7 +128,7 @@ export default function ProductDetailScreen({ route }) {
             productId: selectedVariant,
           },
           onCompleted: () => {
-            setBottomModal(false);
+            setBottomModalOpen(false);
             navigation.navigate("CartScreen");
           },
         });
@@ -131,7 +139,7 @@ export default function ProductDetailScreen({ route }) {
       //   navigation.navigate("CartScreen");
       // }, 600);
     } else {
-      setBottomModal(true);
+      setBottomModalOpen(true);
     }
   }
 
@@ -298,37 +306,43 @@ export default function ProductDetailScreen({ route }) {
 
           {data && (
             <Pressable
-              onPress={() => setBottomModal(!bottomModal)}
+              onPress={() => {
+                bottomModaVar(true);
+                selctedProductForBottomModalVar(productId);
+              }}
               className="border-t border-gray-300 py-2 bg-white px-14"
             >
               <View className="flex-row justify-between items-center">
-                {data && (data.product.options.map((option, index) => (
-                  <>
-                    <View
-                      key={index.toString()}
-                      className="items-center justify-center"
-                    >
-                      <Text className="text-[11px] text-black font-medium uppercase text-center ">
-                        {option.name}
-                      </Text>
-                      <View className="flex-row items-center justify-center gap-x-1 mt-3">
-                        <Text className="text-[15px] text-black font-light uppercase">
-                          {selectedOption.find((op) => op.name === option.name)
-                            ? selectedOption
-                                .find((op) => op.name === option.name)
-                                .value.slice(0, 12) +
-                              (selectedOption.find(
-                                (op) => op.name === option.name
-                              ).value.length > 12
-                                ? "..."
-                                : "")
-                            : "Select"}
+                {data &&
+                  data.product.options.map((option, index) => (
+                    <>
+                      <View
+                        key={index.toString()}
+                        className="items-center justify-center"
+                      >
+                        <Text className="text-[11px] text-black font-medium uppercase text-center ">
+                          {option.name}
                         </Text>
-                        <ChevronDownIcon size={14} color="black" />
+                        <View className="flex-row items-center justify-center gap-x-1 mt-3">
+                          <Text className="text-[15px] text-black font-light uppercase">
+                            {selectedOption.find(
+                              (op) => op.name === option.name
+                            )
+                              ? selectedOption
+                                  .find((op) => op.name === option.name)
+                                  .value.slice(0, 12) +
+                                (selectedOption.find(
+                                  (op) => op.name === option.name
+                                ).value.length > 12
+                                  ? "..."
+                                  : "")
+                              : "Select"}
+                          </Text>
+                          <ChevronDownIcon size={14} color="black" />
+                        </View>
                       </View>
-                    </View>
-                  </>
-                )))}
+                    </>
+                  ))}
 
                 <View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>
               </View>
@@ -413,18 +427,6 @@ export default function ProductDetailScreen({ route }) {
         </View>
       </ScrollView>
 
-      <BottomModal
-        state={bottomModal}
-        setState={setBottomModal}
-        productId={productId}
-        flatListRef={flatListRef}
-        handleAddCartBtn={handleAddCartBtn}
-        selectedOption={selectedOption}
-        setSelectedOption={setSelectedOption}
-        selectedVariant={selectedVariant}
-        setSelectedVariant={setSelectedVariant}
-      />
-      <Overlay state={bottomModal} setState={setBottomModal} />
     </View>
   );
 }
