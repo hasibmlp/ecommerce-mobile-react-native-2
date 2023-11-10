@@ -36,6 +36,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   useCallback,
+  useContext,
 } from "react";
 import Skeleton from "./Skeleton";
 import { LinearGradient } from "expo-linear-gradient";
@@ -44,6 +45,7 @@ import BottomModalColor from "./BottomModalV2";
 import BottomModalV2 from "./BottomModalV2";
 import CallBottomModal from "./CallBottomModal";
 import Overlay from "./Overlay";
+import { SideBarContext } from "../App";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -61,6 +63,8 @@ export default function Collection({ route }) {
   const [bottomModalOpen, setBottomModalOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [SelectedProductId, setSelectedProductId] = useState(null);
+  
+  const {setSideBarOpen} = useContext(SideBarContext)
 
   const filterActionsLayout = useSharedValue(0);
   const flatListRef = useRef();
@@ -229,12 +233,12 @@ export default function Collection({ route }) {
           className="px-2 py-5"
           showsHorizontalScrollIndicator={false}
         >
-          <View className="flex-row items-center p-2 border border-gray-400 rounded-[5px] mr-2">
+          <Pressable onPress={() => setSideBarOpen(true)} className="flex-row items-center p-2 border border-gray-400 rounded-[5px] mr-2">
             <AdjustmentsHorizontalIcon size={20} color="black" />
             <Text className="ml-1 text-[14px] text-black font-normal uppercase">
               filter
             </Text>
-          </View>
+          </Pressable>
           <View className="flex-row items-center p-2 border border-gray-400 rounded-[5px] mr-2">
             <ArrowsUpDownIcon size={20} color="black" />
             <Text className="ml-1 text-[14px] text-black font-normal uppercase">
