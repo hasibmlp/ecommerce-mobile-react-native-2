@@ -1,0 +1,563 @@
+[
+  {
+    "gender": "men",
+    "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/men_scrub.jpg?v=1695137204",
+    "data": {
+      "gender": "men",
+      "categories": [
+        {
+          "title": "discover",
+          "desc": "large collection of scrubsets and labcoats",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            },
+            {
+              "title": "labcoat",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "complete your looks",
+          "desc": "solid scrub top | pant | printed tops",
+          "media": [
+            {
+              "title": "scrub tops",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+            },
+            {
+              "title": "pant",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            },
+            {
+              "title": "printed tops",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "style your way",
+          "desc": "fashionable jackets and T-shirts",
+          "media": [
+            {
+              "title": "jackets",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            },
+            {
+              "title": "t-shirt",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "collections": [
+        "gid://shopify/Collection/289439154328",
+        "gid://shopify/Collection/289439154328",
+        "gid://shopify/Collection/289439154328"
+      ],
+      "banners": [
+        {
+          "height": 400,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        }
+      ],
+      "bannerCards": [
+        {
+          "title": "Full Sleeve",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "click now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "Most wanted",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "explore",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "postCards": [
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "brandsCollection": {
+        "title": "New In",
+        "desc": "411 new peices from top Brands",
+        "cta": "Shop Now",
+        "brands": [
+          {
+            "name": "Scrub",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad2",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad3",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brand4",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad5",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad6",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          }
+        ]
+      },
+      "portraitCategories": [
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        },
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        },
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        }
+      ],
+      "squreCards": {
+        "title": "Speciality",
+        "cards": [
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          }
+        ]
+      },
+      "subCategories": {
+        "title": "Discover our Accessories",
+        "cards": [
+          {
+            "title": "pins",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          },
+          {
+            "title": "id badges",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          },
+          {
+            "title": "name tags",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          }
+        ]
+      },
+      "genderImages": [
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024",
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/kids_scrubset.jpg?v=1695138029"
+      ]
+    }
+  },
+  {
+    "gender": "women",
+    "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024",
+    "data": {
+      "gender": "women",
+      "categories": [
+        {
+          "title": "discover",
+          "desc": "large collection of scrubsets and labcoats",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+            },
+            {
+              "title": "labcoat",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/pants.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "complete your looks",
+          "desc": "solid scrub top | pant | printed tops",
+          "media": [
+            {
+              "title": "scrub tops",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+            },
+            {
+              "title": "pant",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/pants.jpg?v=1695124024"
+            },
+            {
+              "title": "printed tops",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/prinedtops.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "style your way",
+          "desc": "fashionable jackets and T-shirts",
+          "media": [
+            {
+              "title": "jackets",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            },
+            {
+              "title": "t-shirt",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "collections": [
+        "gid://shopify/Collection/289439154328",
+        "gid://shopify/Collection/289439154328",
+        "gid://shopify/Collection/289439154328"
+      ],
+      "banners": [
+        {
+          "height": 400,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        },
+        {
+          "height": 350,
+          "width": 1000,
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+        }
+      ],
+      "bannerCards": [
+        {
+          "title": "Full Sleeve",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "click now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "Most wanted",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "explore",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "postCards": [
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "heading": "Collections",
+          "title": "Main Collections",
+          "subtitle": "Main sub title",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover now",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "brandsCollection": {
+        "title": "New In",
+        "desc": "411 new peices from top Brands",
+        "cta": "Shop Now",
+        "brands": [
+          {
+            "name": "Scrub",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad2",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad3",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brand4",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad5",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Brnad6",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          }
+        ]
+      },
+      "portraitCategories": [
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        },
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        },
+        {
+          "title": "name",
+          "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+        }
+      ],
+      "squreCards": {
+        "title": "Speciality",
+        "cards": [
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+          }
+        ]
+      },
+      "subCategories": {
+        "title": "Discover our Accessories",
+        "cards": [
+          {
+            "title": "pins",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          },
+          {
+            "title": "id badges",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          },
+          {
+            "title": "name tags",
+            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+          }
+        ]
+      },
+      "genderImages": [
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/men_scrub.jpg?v=1695137204",
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/kids_scrubset.jpg?v=1695138029"
+      ]
+    }
+  },
+  {
+    "gender": "kids",
+    "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024",
+    "data": {
+      "gender": "kids",
+      "bannerCards": [
+        {
+          "title": "Full Sleeve",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "discover",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        },
+        {
+          "title": "Most wanted",
+          "desc": "large collection of scrubsets and labcoats",
+          "cta": "explore",
+          "media": [
+            {
+              "title": "scrubset",
+              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            }
+          ]
+        }
+      ],
+      "genderImages": [
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024",
+        "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/men_scrub.jpg?v=1695137204"
+      ]
+    }
+  }
+]

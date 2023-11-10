@@ -1,7 +1,8 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { HeaderBackButton } from "@react-navigation/elements";
 import {
   ShoppingBagIcon,
   HomeIcon,
@@ -20,23 +21,75 @@ import CartScreen from "../screens/CartScreen";
 import MoreOptionsScreen from "../screens/MoreOptionsScreen";
 import SearchScreen from "../screens/SearchScreen";
 import CategoriesScreen from "../screens/CategoriesScreen";
+import CheckoutScreen from "../screens/CheckoutScreen";
+import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
+import CheckoutReview from "../components/CheckoutReview";
+import Collection from "../components/Collection";
+import BottomModalV2 from "../components/BottomModalV2";
+import CallBottomModal from "../components/CallBottomModal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const TopTab = createMaterialTopTabNavigator();
 
+export function Home() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: "Home" }}
+      />
+      <Stack.Screen
+        name="Collection"
+        component={Collection}
+        options={{ title: "Collection" }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+export function CartScreens() {
+  const navigation = useNavigation();
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Cart" component={CartScreen} />
+      <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
+      <Stack.Screen
+        name="ShippingAddressUpdateScreen"
+        component={CheckoutShippingAddressUpdate}
+        options={{ title: "Shipping Address" }}
+      />
+      <Stack.Screen
+        name="CheckoutReviewScreen"
+        component={CheckoutReview}
+        options={{
+          title: "Checkout Review",
+          headerLeft: () => (
+            <HeaderBackButton
+              onPress={() => {
+                navigation.navigate("Cart");
+              }}
+              label="Bag"
+            />
+          ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 export function HomeTabs() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
         name="HomeScreen"
-        component={HomeScreen}
+        component={Home}
         options={{
-          title: "Home",
           tabBarIcon: ({ color, size }) => (
             <HomeIcon size={size} color="black" strokeWidth={1} />
           ),
+            tabBarVisible: false, //like this
         }}
       />
       <Tab.Screen
@@ -51,7 +104,7 @@ export function HomeTabs() {
       />
       <Tab.Screen
         name="CartScreen"
-        component={CartScreen}
+        component={CartScreens}
         options={{
           tabBarIcon: ({ color, size }) => (
             <ShoppingBagIcon size={size} color="black" strokeWidth={1} />
@@ -83,6 +136,7 @@ export function HomeTabs() {
   );
 }
 
+
 export default function AppNavigation() {
   return (
     <NavigationContainer>
@@ -103,7 +157,12 @@ export default function AppNavigation() {
           name="NotificationScreen"
           component={NotificationScreen}
         />
+        <Stack.Screen name="BottomModal" component={CallBottomModal} options={{
+          presentation: 'transparentModal',
+          headerShown: false,
+        }} />
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 }

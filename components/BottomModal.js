@@ -1,95 +1,154 @@
-import { useEffect, useRef } from "react";
-import { Pressable, Text, TouchableOpacity, View, Animated } from "react-native";
-import { TruckIcon } from "react-native-heroicons/outline";
+import { useContext } from "react";
+import { useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
+import { useEffect, useRef, useState } from "react";
+import { Text, TouchableOpacity, View, Animated } from "react-native";
 
-export default function BottomModal({state, setState}) {
-    const transRef = useRef(new Animated.Value(100)).current
+import { GET_PRODUCT_V2, GET_VARIANT_BY_ID } from "../graphql/queries";
+import VariantHeader from "./Modal/VariantHeader";
+import ModalSkeleton from "./Modal/ModalSkeleton";
+import VariantOption from "./Modal/VariantOption";
+import { VariantContext, bottomModaVar } from "../App";
+import { VariantSelectionContext } from "../contexts/VariantSelectionContext";
 
-    useEffect(() => {
-        Animated.timing(transRef, {
-            toValue: state ? 0 : 600,
-            duration: 300,
-            useNativeDriver: true,
-        }).start()
-    },[state])
+export default function BottomModal({
+  open1,
+  setOpen,
+  productId,
+  flatListRef,
+  handleAddCartBtn,
+  selectedVariant,
+}) {
+  const open = useReactiveVar(bottomModaVar);
+
+  // Overlay
+  const opacityRef = useRef(new Animated.Value(0)).current;
+  // BottomModal
+  const transRef = useRef(new Animated.Value(500)).current;
+  const { color, setColor, size, setSize, type, setType } =
+    useContext(VariantSelectionContext);
+
+  const { data, loading, error } = useQuery(GET_PRODUCT_V2, {
+    variables: { productId },
+    fetchPolicy: "network-only",
+  });
+
+  const imagesv2 = data?.product?.images?.edges.map((edge) => {
+    return {
+      id: edge?.node?.id,
+      url: edge?.node?.url,
+    };
+  });
+
+  const variants = data?.product?.variants.edges.map((edge) => {
+    return edge.node;
+  });
+
+  const optionsv2 = data?.product?.options.map((item) => {
+    return {
+      name: item.name,
+      values: item.values,
+    };
+  });
+
+  const sortedOptions = optionsv2?.sort((a, b) => {
+    if (a.name === "Color" && b.name !== "Color") {
+      return -1;
+    } else if (a.name !== "Color" && b.name === "Color") {
+      return 1;
+    } else if (a.name === "Size" && b.name !== "Size") {
+      return 1;
+    } else if (a.name !== "Size" && b.name === "Size") {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    // Overlay
+    Animated.timing(opacityRef, {
+      toValue: open ? 0.3 : 0,
+      delay: 200,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+
+    // Bottom Modal
+    Animated.timing(transRef, {
+      toValue: open ? 0 : 500,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [open]);
+
+  if (error) {
+    reutrn(
+      <View className="justify-center items-center">
+        <Text>Error occured {error}</Text>
+      </View>
+    );
+  }
+
+  useEffect(() => {
+    setColor(null);
+    setSize(null);
+    setType(null);
+  }, [productId]);
 
   return (
-    <Animated.View style={{ borderTopStartRadius: 180, borderTopEndRadius: 180, transform: [{scaleX: 2.4}, {translateY: transRef}] }} className="absolute bottom-0 left-0 right-0 z-30 bg-white">
-      <View className="flex-1 items-center justify-center scale-x-[.42]">
+    <>
+      {/* overlay */}
+      <Animated.View
+        style={[{ opacity: opacityRef }, !open && { display: "none" }]}
+        className={` absolute top-0 left-0 bottom-0 right-0 bg-black z-40`}
+      >
+        <TouchableOpacity
+          className="h-full w-full"
+          onPress={() => bottomModaVar(false)}
+          onPressIn={() => bottomModaVar(false)}
+        ></TouchableOpacity>
+      </Animated.View>
 
-        <View className=" py-10 self-stretch px-5 ">
-          <View className="gap-y-5">
-            <View className="flex-row justify-between items-center">
-              <Text className="text-[22px] font-normal text-black">
-                Select Size
-              </Text>
-              <Pressable className=" py-1 px-2" onPress={() => setState(false)}>
-                <Text className="text-[14px] font-medium text-black uppercase">
-                  Done
-                </Text>
-              </Pressable>
+      {/* Bottom Modal */}
+      <Animated.View
+        style={{
+          transform: [{ translateY: transRef }],
+        }}
+        className="w-full absolute bottom-0 z-50 bg-white rounded-[15px]"
+      >
+        <View className="flex-1 items-center justify-center ">
+          <View className=" py-10 self-stretch px-5 ">
+            <View className="gap-y-5">
+              <VariantHeader open={open} setOpen={setOpen} />
+              {loading && <ModalSkeleton />}
+              {sortedOptions &&
+                sortedOptions.map((option, index) => (
+                  <VariantOption
+                    key={index.toString()}
+                    option={option}
+                    variants={variants}
+                  />
+                ))}
             </View>
-            <View className="flex-row justify-between items-center">
-              <Text className="text-[12px] font-normal text-black uppercase">
-                Size:
-              </Text>
-              <Pressable>
-                <Text className="text-[12px] font-medium text-red-700 uppercase underline">
-                  size guide
-                </Text>
-              </Pressable>
-            </View>
-            <View className="flex-row items-center gap-x-3 relative">
-              <View className="border-[.5px] border-gray-500 rounded-[5px] py-4 px-4 bg-gray-300">
-                <Text className="text-[14px] font-light text-white uppercase">
-                  xs
-                </Text>
-                <View className=""></View>
-              </View>
-              <View className="border-[.5px] border-gray-500 rounded-[5px] py-4 px-4">
-                <Text className="text-[14px] font-light text-black uppercase">
-                  s
-                </Text>
-              </View>
-              <View className="border-[.5px] border-gray-500 rounded-[5px] py-4 px-4">
-                <Text className="text-[14px] font-light text-black uppercase">
-                  m
-                </Text>
-              </View>
-              <View className="border-[.5px] border-gray-500 rounded-[5px] py-4 px-4">
-                <Text className="text-[14px] font-light text-black uppercase">
-                  l
-                </Text>
-              </View>
-            </View>
-          </View>
 
-          <View className="mt-10">
-            <TouchableOpacity className=" flex items-center justify-center py-4 w-full bg-red-400 rounded-[5px] ">
-              <Text className="text-[14px] text-white font-semibold uppercase">
-                Add to bag
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className=" bg-white flex-row items-center justify-center mt-3">
-              <View className="flex-row justify-center items-center">
-                <TruckIcon size={20} strokeWidth={1} color="black" />
-                <Text className="text-[12px] font-normal text-black uppercase ml-2">
-                  shipping from uae
-                </Text>
+            {
+              <View className="mt-10">
+                <TouchableOpacity
+                  disabled={selectedVariant ? false : true}
+                  onPress={handleAddCartBtn}
+                  className={` flex items-center justify-center py-4 w-full ${
+                    selectedVariant ? "bg-blue-400" : "bg-blue-200"
+                  }  rounded-[5px] `}
+                >
+                  <Text className="text-[14px] text-white font-semibold uppercase">
+                    Add to bag
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <View className="flex-row justify-center items-center">
-                <Text className="text-[14px] font-normal text-black">
-                  Next day delevery to
-                </Text>
-                <Text className="text-[12px] font-normal text-red-800 underline">
-                  Abudhabi
-                </Text>
-              </View>
-            </TouchableOpacity>
+            }
           </View>
         </View>
-      </View>
-    </Animated.View>
+      </Animated.View>
+    </>
   );
 }

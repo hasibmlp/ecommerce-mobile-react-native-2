@@ -1,27 +1,16 @@
-import {
-  SafeAreaView,
-  Text,
-  View,
-  Dimensions,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { SafeAreaView, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {} from "react-native-heroicons/outline";
 
 import HomeHeader from "../components/HomeHeader";
 import GenderSelector from "../components/GenderSelector";
-import MainContent from "../components/MainContent";
 import GreetingHeader from "../components/GreetingHeader";
+import MainContentV2 from "../components/MainContentV2";
 
 export default function HomeScreen() {
   const [toggleGenderMenuBar, setToggleGenderMenuBar] = useState(false);
-
   const navigation = useNavigation();
-  dispatch = useDispatch();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +38,7 @@ export default function HomeScreen() {
           setToggleGenderMenuBar={setToggleGenderMenuBar}
         />
 
-        <MainContent
+        <MainContentV2
           toggleGenderMenuBar={toggleGenderMenuBar}
           setState={setToggleGenderMenuBar}
         />

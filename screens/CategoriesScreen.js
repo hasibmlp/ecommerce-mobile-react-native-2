@@ -348,7 +348,7 @@ export default function CategoriesScreen() {
           <SearchInput text={"Search"} size={14} />
         </View>
 
-        <View className={`women pb-[160px] `}>
+        <View className={`women pb-[160px] `} key={''}>
           {activeContent.map((content) => (
             <CategoryCard
               content={content}

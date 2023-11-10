@@ -90,6 +90,7 @@ export default function InfoSlider() {
     getItemLayout={getItemLayout}
     renderItem={renderItem}
     onScroll={handleScroll}
+    key={(_, index) => index.toString()}
     />
   );
 }

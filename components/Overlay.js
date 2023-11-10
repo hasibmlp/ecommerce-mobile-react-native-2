@@ -15,6 +15,7 @@ export default function Overlay({ state, setState }) {
   useEffect(() => {
     Animated.timing(opacityRef, {
       toValue: state ? 0.3 : 0,
+      delay: 200,
       duration: 100,
       useNativeDriver: true,
     }).start();
@@ -25,11 +26,12 @@ export default function Overlay({ state, setState }) {
   return (
     <Animated.View
       style={{ opacity: opacityRef }}
-      className={` absolute top-0 left-0 bottom-0 right-0 bg-black z-10`}
+      className={` absolute top-0 left-0 bottom-0 right-0 bg-black z-40`}
     >
       <TouchableOpacity
         className="h-full w-full"
         onPress={() => setState(false)}
+        onPressIn={() => setState(false)}
       >
       </TouchableOpacity>
     </Animated.View>

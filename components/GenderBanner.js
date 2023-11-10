@@ -1,11 +1,11 @@
 import { View, Image, Text } from "react-native";
 
-export default function GenderBanner({ gender }) {
+export default function GenderBanner({ gender, imgUrl }) {
   return (
     <View className=" justify-end bg-white mb-3 h-[150px]">
       <Image
         className="w-full h-full absolute top-0 left-0"
-        source={require("../assets/baby.jpg")}
+        src={imgUrl}
       />
       <View className="w-full h-[150px] items-center justify-end">
         <Image

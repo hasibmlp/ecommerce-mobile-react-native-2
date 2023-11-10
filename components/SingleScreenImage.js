@@ -6,7 +6,7 @@ export default function SingleScreenImage({ image, titles }) {
       <View className={`w-[100%] h-[250px] justify-end`}>
         <Image
           className="w-full h-full absolute left-0 top-0"
-          source={image}
+          src={image}
         />
         {titles && (
           <View className="w-full h-[150px] items-center justify-end">
