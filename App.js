@@ -2,18 +2,16 @@ import { Provider } from "react-redux";
 import {
   ApolloProvider,
   makeVar,
-  useQuery,
   useReactiveVar,
 } from "@apollo/client";
 
 import AppNavigation from "./navigation/AppNavigation";
 import { store } from "./redux/store";
 import { shopifyClient } from "./graphql/shopifyClient";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import BottomModal from "./components/BottomModal";
 import { VariantSelectionProvider } from "./contexts/VariantSelectionContext";
 import SideBar from "./components/Sidebar/SideBar";
-import { SafeAreaView } from "react-native";
 
 export const cartIdVar = makeVar("");
 export const bottomModaVar = makeVar(false);
@@ -25,13 +23,25 @@ export default function App() {
   const slectedProudct = useReactiveVar(selctedProductForBottomModalVar);
 
   const [isSideBarOpen, setSideBarOpen] = useState(false)
+  const [filters , setFilters] = useState([])
+  const [activeFilters, setActiveFilters] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [activeFilterInput, setActiveFilterInput] = useState([])
 
   return (
     <ApolloProvider client={shopifyClient}>
       <Provider store={store}>
         <SideBarContext.Provider value={{
             isSideBarOpen,
-            setSideBarOpen
+            setSideBarOpen,
+            filters,
+            setFilters,
+            activeFilters,
+            loading,
+            setLoading,
+            setActiveFilters,
+            activeFilterInput,
+            setActiveFilterInput,
           }}>
           <VariantSelectionProvider>
             <AppNavigation />

@@ -420,16 +420,20 @@ export const GET_BUYER_DETAILS = gql`
 `;
 
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById($collectionId: ID!, $cursor: String) {
+  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!]) {
     collection(id: $collectionId) {
       id
       title
-      products(first: 18, after: $cursor) {
+      products(first: 18, after: $cursor, filters: $filterInput) {
         filters {
+          id
+          label
+          type
           values {
             id
             label
             count
+            input
           }
         }
         edges {

@@ -1,19 +1,24 @@
 import { useContext } from "react";
 import { Pressable, ScrollView, Text } from "react-native";
-import { FilterContext } from "./SideBar";
 import SmallButton from "./Buttons/SmallButton";
+import { SideBarContext } from "../../App";
 
-export default function () {
-     const {activeFilters} = useContext(FilterContext)
-    console.log('ACTIVEFILTERS', activeFilters) 
+export default function ActiveFilter ({style, showsWithActiveOnly=false}) {
+     const {activeFilters} = useContext(SideBarContext)
+
+     console.log('ACTIVE FILTERS: ', activeFilters)
+
+    // if(showsWithActiveOnly === true) return null
     
     return (
         <ScrollView
-            className="w-full px-2 py-3"
+            style={[style]}
+            className="w-full"
             horizontal={true}
             showsHorizontalScrollIndicator={false}
         >
-            {activeFilters && activeFilters.map((activeFilter, index) => { 
+            {activeFilters && activeFilters.map((activeFilter, index) => {
+                if(typeof activeFilter === 'object') return <SmallButton key={index.toString()} title={activeFilter.value} />
                 return <SmallButton key={index.toString()} title={activeFilter} />
             })}
 
