@@ -462,3 +462,24 @@ export const GET_COLLECTION_BY_ID = gql`
     }
   }
 `;
+
+
+export const GET_ALL_PRODUCTS_ID_IN_COLLECTION = gql`
+query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!]) {
+  collection(id: $collectionId) {
+    id
+    products(first: 250, after: $cursor, filters: $filterInput) {
+      edges {
+        cursor
+        node {
+          id
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+`

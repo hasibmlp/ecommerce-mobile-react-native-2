@@ -30,7 +30,7 @@ export default function SideBar() {
 
 function Content () {
     const [activeButton, setActiveButton] = useState('Category1')
-    const {filters} =  useContext(SideBarContext)
+    const {filters, activeFilterInput} =  useContext(SideBarContext)
 
     return (
         <View className="flex-1 flex-row">

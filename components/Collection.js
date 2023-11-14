@@ -7,7 +7,7 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import {
   Dimensions,
   Image,
@@ -30,7 +30,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-import { GET_COLLECTION_BY_ID } from "../graphql/queries";
+import { GET_ALL_PRODUCTS_ID_IN_COLLECTION, GET_COLLECTION_BY_ID } from "../graphql/queries";
 import { CollectionCard } from "./CollectionCard";
 import { LinearGradient } from "expo-linear-gradient";
 import { SideBarContext } from "../App";
@@ -50,6 +50,7 @@ const desc =
 
 export default function Collection({ route }) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
+  const [productTotalCount, setProductToatalProduct] = useState(0)
 
   const navigation = useNavigation();
   const { collectionId } = route.params;
@@ -73,19 +74,71 @@ export default function Collection({ route }) {
     fetchPolicy: "network-only",
   }); 
 
-  // Load filters into setFilters state in ../..App.js
-  useEffect(() => {
-    if(colloctionData) {
-      setFilters(colloctionData?.collection?.products?.filters)
-    }
-  },[colloctionData])
-
+  const [getAllProductId, {
+    loading: allProductsLoading,
+    error: allProductsError,
+    data: allProductsData,
+    fetchMore: allProductsFetchMore
+  }] = useLazyQuery(GET_ALL_PRODUCTS_ID_IN_COLLECTION, {
+    variables: {
+      collectionId,
+      filterInput: activeFilterInput,
+    },
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+  })
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   });
+
+  useEffect(() => {
+    getAllProductId()
+  },[getAllProductId,activeFilterInput])
+
+  useEffect(() => {
+    if(allProductsData && !allProductsLoading){
+
+      let hasNextPage = allProductsData?.collection?.products?.pageInfo?.hasNextPage
+      let allProductsCount = 0
+      let count = 1
+
+      const fetchMoreProducts = async () => {
+          console.log("ALL PRODUCT HAS NEXT PAGE!!!!!!!!!!!")
+          
+          await allProductsFetchMore({
+            variables: {
+              cursor: allProductsData?.collection?.products?.pageInfo.endCursor,
+            },
+            updateQuery: (result, {fetchMoreResult}) => {
+              setProductToatalProduct(prevState => prevState + fetchMoreResult?.collection?.products?.edges?.length)
+              fetchMoreResult.collection.products.pageInfo.hasNextPage = fetchMoreResult.collection.products.pageInfo.hasNextPage
+              return fetchMoreResult
+            }
+          })
+    
+          allProductsCount = allProductsCount + allProductsData?.collection?.products?.edges?.length
+      }
+      
+      if(hasNextPage) {
+        fetchMoreProducts()
+      }else if(productTotalCount === 0) {
+        setProductToatalProduct(allProductsData?.collection?.products?.edges?.length)
+      }
+  
+      console.log("TOTAL PRODUCT COUNT IN COLLECTION COUNT: ",productTotalCount)
+      
+    }
+  },[allProductsData, allProductsLoading])
+
+  // Load filters into setFilters state in ../..App.js
+  useEffect(() => {
+    if(colloctionData) {
+      setFilters(colloctionData?.collection?.products?.filters)
+    }
+  },[colloctionData])
 
   if (colloctionError) {
     return <Text>Error occured: {colloctionError.message}</Text>;
@@ -107,7 +160,7 @@ export default function Collection({ route }) {
         fetchMore={fetchMore}
       />)}
 
-      {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} />)}
+      {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} total={productTotalCount} />)}
 
     </View>
   );
@@ -337,7 +390,7 @@ function ScreenHeader ({headerAnimatedStyle}) {
   )
 }
 
-function PageIndicatorPopup ({flatListRef}) {
+function PageIndicatorPopup ({flatListRef, current = 18, total}) {
   return (
     <Pressable
           className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center "
@@ -350,7 +403,7 @@ function PageIndicatorPopup ({flatListRef}) {
         >
           <ArrowUpIcon size={16} color="black" />
           <Text className="text-[14px] text-gray-800 font-normal ml-1">
-            18 of 566
+            {current} of {total}
           </Text>
         </Pressable>
   )
