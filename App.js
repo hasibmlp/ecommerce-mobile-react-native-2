@@ -27,6 +27,7 @@ export default function App() {
   const [activeFilters, setActiveFilters] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeFilterInput, setActiveFilterInput] = useState([])
+  const [productTotalCount, setProductTotalCount] = useState(0)
 
   return (
     <ApolloProvider client={shopifyClient}>
@@ -42,6 +43,8 @@ export default function App() {
             setActiveFilters,
             activeFilterInput,
             setActiveFilterInput,
+            productTotalCount,
+            setProductTotalCount,
           }}>
           <VariantSelectionProvider>
             <AppNavigation />

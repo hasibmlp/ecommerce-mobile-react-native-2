@@ -50,16 +50,13 @@ const desc =
 
 export default function Collection({ route }) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
-  const [productTotalCount, setProductToatalProduct] = useState(0)
 
   const navigation = useNavigation();
   const { collectionId } = route.params;
   const flatListRef = useRef();
   const filterActionsLayout = useSharedValue(0);
   const scrollY = useSharedValue(0);
-  const {setFilters, activeFilterInput} = useContext(SideBarContext)
-
-  console.log("ACTIVE FILTER INPUT",activeFilterInput)
+  const {setFilters, activeFilterInput, productTotalCount, setProductTotalCount} = useContext(SideBarContext)
 
   const {
     loading: colloctionLoading,
@@ -72,7 +69,7 @@ export default function Collection({ route }) {
       filterInput: activeFilterInput,
     },
     fetchPolicy: "network-only",
-  }); 
+  });
 
   const [getAllProductId, {
     loading: allProductsLoading,
@@ -95,6 +92,7 @@ export default function Collection({ route }) {
   });
 
   useEffect(() => {
+    setProductTotalCount(0)
     getAllProductId()
   },[getAllProductId,activeFilterInput])
 
@@ -106,14 +104,13 @@ export default function Collection({ route }) {
       let count = 1
 
       const fetchMoreProducts = async () => {
-          console.log("ALL PRODUCT HAS NEXT PAGE!!!!!!!!!!!")
           
           await allProductsFetchMore({
             variables: {
               cursor: allProductsData?.collection?.products?.pageInfo.endCursor,
             },
             updateQuery: (result, {fetchMoreResult}) => {
-              setProductToatalProduct(prevState => prevState + fetchMoreResult?.collection?.products?.edges?.length)
+              setProductTotalCount(prevState => prevState + fetchMoreResult?.collection?.products?.edges?.length)
               fetchMoreResult.collection.products.pageInfo.hasNextPage = fetchMoreResult.collection.products.pageInfo.hasNextPage
               return fetchMoreResult
             }
@@ -125,10 +122,8 @@ export default function Collection({ route }) {
       if(hasNextPage) {
         fetchMoreProducts()
       }else if(productTotalCount === 0) {
-        setProductToatalProduct(allProductsData?.collection?.products?.edges?.length)
+        setProductTotalCount(allProductsData?.collection?.products?.edges?.length)
       }
-  
-      console.log("TOTAL PRODUCT COUNT IN COLLECTION COUNT: ",productTotalCount)
       
     }
   },[allProductsData, allProductsLoading])
