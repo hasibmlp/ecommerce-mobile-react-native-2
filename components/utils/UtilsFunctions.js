@@ -50,7 +50,21 @@ function filterActiveInputValues(activeFilter) {
     return isTrue
 }
 
+ function isFilterValueActive (activeFilterInput, option) {
+    let isActive = false
+    activeFilterInput.forEach(activeFilter => {
+        if(activeFilter.label === option.label) isActive = true
+    })
+    return isActive
+}
 
+function checkTabActive(filter) {
+    const valueCounts = filter.values.map(value => value.count > 0)
+    let activeCount = false
+    valueCounts.forEach(count => {
+        if(count === true) return activeCount = true
+    })
+    return activeCount
+}
 
-
-  export {filterActiveInputValues, deepEqual, isObject, isActiveFilterInputMatchesWithValue}
+  export {filterActiveInputValues, deepEqual, isObject, isActiveFilterInputMatchesWithValue, checkTabActive, isFilterValueActive}

@@ -16,7 +16,7 @@ export default function ActiveFilter ({style, showsWithActiveOnly=false}) {
             showsHorizontalScrollIndicator={false}
         >
             {activeFilterInput && activeFilterInput.map((activeFilter, index) => {
-                return <SmallButton key={index.toString()} title={filterActiveInputValues(activeFilter)} />
+                return <SmallButton key={index.toString()} id={activeFilter.id} title={activeFilter.label} />
             })}
         </ScrollView>
     )

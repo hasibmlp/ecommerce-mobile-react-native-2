@@ -36,8 +36,6 @@ import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
 import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
-import BottomModal from "../components/BottomModal";
-import Overlay from "../components/Overlay";
 import {
   bottomModaVar,
   cartIdVar,

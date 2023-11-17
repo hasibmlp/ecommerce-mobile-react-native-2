@@ -1,11 +1,26 @@
-import { FlatList, View } from "react-native";
+import { Dimensions, FlatList, View } from "react-native";
 import Skeleton from "../Skeleton";
 
 const placeholderGridArray = [1, 2, 3, 4];
 
+const SCREEN_WIDHT = Dimensions.get('window').width
+
 export default function CollectionSkeleton () {
     return (
       <View className="flex-1">
+          <Skeleton width={SCREEN_WIDHT} height={200}/>
+          <View className="items-center mt-3">
+            <Skeleton width={100} height={30} />
+            <Skeleton width={200} height={15} style={{marginTop: 12}}/>
+            <Skeleton width={200} height={15} style={{marginTop: 4}}/>
+            <Skeleton width={80} height={15} style={{marginTop: 8}}/>
+          </View>
+          <View className="my-3 flex-row gap-x-2 pl-3">
+            <Skeleton width={100} height={38} style={{borderRadius: 5}} />
+            <Skeleton width={170} height={38} style={{borderRadius: 5}} />
+            <Skeleton width={60} height={38} style={{borderRadius: 5}} />
+            <Skeleton width={60} height={38} style={{borderRadius: 5}} />
+          </View>
             <FlatList
               data={placeholderGridArray}
               keyExtractor={(index) => index.toString()}

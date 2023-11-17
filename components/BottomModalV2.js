@@ -15,6 +15,7 @@ import {
 } from "../graphql/queries";
 import Skeleton from "./Skeleton";
 import { useNavigation } from "@react-navigation/native";
+import BottomModalSkeleton from "./skeletons/BottomModalSkeleton";
 
 export default function BottomModal({
   state,
@@ -38,7 +39,6 @@ export default function BottomModal({
   const { data, loading, error } = useQuery(GET_PRODUCT_V2, {
     variables: { productId },
   });
-  console.log("PRODUCT DATA: ", data);
 
   const imagesv2 = data?.product?.images?.edges.map((edge) => {
     return {
@@ -58,7 +58,6 @@ export default function BottomModal({
     };
   });
 
-  console.log("variants", optionsv2);
 
   const [
     getVariantById,
@@ -308,74 +307,7 @@ export default function BottomModal({
             </View>
             
 
-            {loading && (
-              <View>
-                <View className="mb-5">
-                  <Skeleton width={100} height={20} />
-                </View>
-
-                <View className="flex-row w-full mb-5">
-                  <Skeleton
-                    width={100}
-                    height={150}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={100}
-                    height={150}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={100}
-                    height={150}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={100}
-                    height={150}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                </View>
-
-                <View className="w-full flex-row justify-between mb-5">
-                  <Skeleton width={100} height={20} />
-                  <Skeleton width={100} height={20} />
-                </View>
-
-                <View className="flex-row w-full">
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                  <Skeleton
-                    width={60}
-                    height={50}
-                    style={{ marginRight: 12, borderRadius: 5 }}
-                  />
-                </View>
-              </View>
-            )}
+            {loading && (<BottomModalSkeleton/>)}
 
             {optionsv2 &&
               optionsv2.map((option, index) => (

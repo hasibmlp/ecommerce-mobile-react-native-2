@@ -1,20 +1,18 @@
 import { useContext } from "react";
-import { useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
-import { useEffect, useRef, useState } from "react";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { useEffect, useRef } from "react";
 import { Text, TouchableOpacity, View, Animated } from "react-native";
 
-import { GET_PRODUCT_V2, GET_VARIANT_BY_ID } from "../graphql/queries";
+import { GET_PRODUCT_V2 } from "../graphql/queries";
 import VariantHeader from "./Modal/VariantHeader";
 import ModalSkeleton from "./Modal/ModalSkeleton";
 import VariantOption from "./Modal/VariantOption";
-import { VariantContext, bottomModaVar } from "../App";
+import { bottomModaVar } from "../App";
 import { VariantSelectionContext } from "../contexts/VariantSelectionContext";
 
 export default function BottomModal({
-  open1,
   setOpen,
   productId,
-  flatListRef,
   handleAddCartBtn,
   selectedVariant,
 }) {

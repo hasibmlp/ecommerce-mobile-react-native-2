@@ -37,7 +37,6 @@ import {
   CREATE_EMPTY_CART,
 } from "../graphql/mutations";
 import LoadingScreen from "../components/LoadingScreen";
-import ToggleContainer from "../components/CoupenToggleContainer";
 import Animated, { Layout } from "react-native-reanimated";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";

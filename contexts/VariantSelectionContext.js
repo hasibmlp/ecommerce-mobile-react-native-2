@@ -9,7 +9,6 @@ const VariantSelectionContext = createContext();
 function VariantSelectionProvider({children}) {
   const slectedProudct = useReactiveVar(selctedProductForBottomModalVar);
 
-  console.log(slectedProudct);
 
   const [color, setColor] = useState(null);
   const [size, setSize] = useState(null);

@@ -8,7 +8,6 @@ export default function CallBottomModal({ route }) {
   const [overlayOpen, setOverlayOpen] = useState(true)
   const { open, setOpen, productId } = route.params;
 
-  console.log("OPEN: ",open)
 
   const opacityRef = useRef(new Animated.Value(0)).current;
 

@@ -5,14 +5,14 @@ import ColorSwatch from "../swatches/ColorSwatch"
 import CheckBox from "../Checkbox"
 import OptionLabel from "../OptionLabel"
 import { SideBarContext } from "../../../App"
-import { deepEqual, isActiveFilterInputMatchesWithValue } from "../../utils/UtilsFunctions"
+import { isFilterValueActive } from "../../utils/UtilsFunctions" 
 
 export default function CheckList ({option}) {
     const {setLoading, setActiveFilterInput, activeFilterInput} = useContext(SideBarContext)
-
-    const isActive = isActiveFilterInputMatchesWithValue(activeFilterInput, option.label)
+    let isActive = isFilterValueActive(activeFilterInput, option)
 
     const input = JSON.parse(option.input)
+    const filterValue = {id: option.id, input: input, label: option.label}
     const varinatType = input?.variantOption?.name
     const color = varinatType === 'color' && option.label
 
@@ -20,15 +20,15 @@ export default function CheckList ({option}) {
         setLoading(true)
         setActiveFilterInput(prevState => {
             const preFilterInputs = [...prevState]
-            const inputIndex = preFilterInputs.findIndex(preFilter => deepEqual(preFilter, input))
+            const inputIndex = preFilterInputs.findIndex(preFilter => preFilter.id === option.id)
 
             if(inputIndex > -1) {
                 preFilterInputs.splice(inputIndex, 1)
-                setLoading(false)
+                // setLoading(false)
                 return preFilterInputs
             }else {
-                setLoading(false)
-                return [...preFilterInputs, input]
+                // setLoading(false)
+                return [...preFilterInputs, filterValue]
             }
         })
     }

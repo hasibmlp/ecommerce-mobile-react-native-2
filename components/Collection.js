@@ -42,6 +42,7 @@ import TextBody from "./texts/TextBody";
 import CollectionSkeleton from "./skeletons/CollectionSkeleton";
 import CardSkeleton from "./skeletons/CardSkeleton";
 import HeaderActions from "./actions/HeaderActions";
+import SmallButton from "./Sidebar/Buttons/SmallButton";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -57,6 +58,7 @@ export default function Collection({ route }) {
   const filterActionsLayout = useSharedValue(0);
   const scrollY = useSharedValue(0);
   const {setFilters, activeFilterInput, productTotalCount, setProductTotalCount} = useContext(SideBarContext)
+  const filterInputs = activeFilterInput.map(filterValue => filterValue.input)
 
   const {
     loading: colloctionLoading,
@@ -66,7 +68,7 @@ export default function Collection({ route }) {
   } = useQuery(GET_COLLECTION_BY_ID, {
     variables: {
       collectionId,
-      filterInput: activeFilterInput,
+      filterInput: filterInputs,
     },
     fetchPolicy: "network-only",
   });
@@ -79,7 +81,7 @@ export default function Collection({ route }) {
   }] = useLazyQuery(GET_ALL_PRODUCTS_ID_IN_COLLECTION, {
     variables: {
       collectionId,
-      filterInput: activeFilterInput,
+      filterInput: filterInputs,
     },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true,
@@ -249,6 +251,7 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
 }
 
 function ActionSlider () {
+  const {activeFilterInput} = useContext(SideBarContext)
   return (
     <ScrollView
           horizontal={true}
@@ -257,7 +260,9 @@ function ActionSlider () {
         >
         <FilterButton/>
         <SortButton/>
-        {/* <SmallButton title="Bags"/> */}
+        {activeFilterInput && activeFilterInput.map((activeFilter, index) => {
+                return <SmallButton key={index.toString()} id={activeFilter.id} title={activeFilter.label} />
+            })}
       </ScrollView>
   )
 }
