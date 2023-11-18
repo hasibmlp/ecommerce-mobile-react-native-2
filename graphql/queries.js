@@ -129,6 +129,7 @@ export const GET_PRODUCT = gql`
 export const GET_PRODUCT_V2 = gql`
 query getProductVairants($productId: ID!) {
   product(id: $productId) {
+    id
     images(first: 100) {
       edges {
         node {
@@ -164,6 +165,7 @@ query getProductVairants($productId: ID!) {
 export const GET_PRODUCT_VARIANTS = gql`
   query getProductVairants($productId: ID!) {
     product(id: $productId) {
+      id
       variants(first: 100) {
         edges {
           node {
@@ -193,6 +195,7 @@ export const GET_PRODUCT_IMAGES = gql`
           node {
             id
             url
+            altText
           }
         }
       }
@@ -203,6 +206,7 @@ export const GET_PRODUCT_IMAGES = gql`
 export const GET_PRODUCT_OPTIONS = gql`
   query getProductOption($productId: ID!) {
     product(id: $productId) {
+      id
       options {
         name
         values

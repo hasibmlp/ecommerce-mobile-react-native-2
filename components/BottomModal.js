@@ -117,8 +117,10 @@ export default function BottomModal({
         <View className="flex-1 items-center justify-center ">
           <View className=" py-10 self-stretch px-5 ">
             <View className="gap-y-5">
+              
               <VariantHeader open={open} setOpen={setOpen} />
               {loading && <ModalSkeleton />}
+
               {sortedOptions &&
                 sortedOptions.map((option, index) => (
                   <VariantOption

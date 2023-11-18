@@ -1,18 +1,11 @@
 import { useContext } from "react";
-import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 
 export default function VariantOptionColor({ option, variants }) {
   const { color, setColor } = useContext(VariantSelectionContext);
 
-  const images = variants.map((item) => {
-    return {
-      id: item.image.id,
-      url: item.image.url,
-    };
-  });
-
-  const imagesV2 = option.values.map((value) => {
+  const images = option.values.map((value) => {
     const variant = variants.find(
       (variant) =>
         variant.selectedOptions.find((item) => item.name === "Color").value ===
@@ -32,15 +25,15 @@ export default function VariantOptionColor({ option, variants }) {
       showsHorizontalScrollIndicator={false}
       className="h-[150px]"
     >
-      {imagesV2.map((item, index) => (
+      {images.map((item, index) => (
         <TouchableOpacity
           key={index.toString()}
-          onPress={() => setColor(item.color)}
+          onPress={() => setColor({id: item.id, value: item.color}) }
           className=""
         >
           <View
             className={`w-[100px] h-[150px] border ${
-              color === item.color ? " border-black" : "border-gray-300"
+              color?.value === item.color ? " border-black" : "border-gray-300"
             } rounded-[5px] overflow-hidden mr-3`}
           >
             <Image

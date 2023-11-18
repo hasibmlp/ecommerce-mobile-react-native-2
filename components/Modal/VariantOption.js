@@ -6,7 +6,7 @@ import { useContext } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 
 export default function VariantOption({ option, variants }) {
-  const { color, setColor, size, setSize, type, setType } = useContext(
+  const { color } = useContext(
     VariantSelectionContext
   );
 
@@ -16,7 +16,7 @@ export default function VariantOption({ option, variants }) {
       variants.filter(
         (item) =>
           item.selectedOptions.find((item) => item.name === "Color").value ===
-            color && item.quantityAvailable > 0
+            color?.value && item.quantityAvailable > 0
       );
 
     const availableSizeForColor = filteredArray.map((item) => {
@@ -40,7 +40,7 @@ export default function VariantOption({ option, variants }) {
     <View className="mb-5">
       <View className="flex-row justify-between items-center mb-3">
         <Text className="text-[12px] font-normal text-black uppercase">
-          {option.name}:{option.name === "Color" && color}
+          {option.name}:{option.name === "Color" && color?.value}
         </Text>
         {option.name === "Size" && (
           <Pressable>

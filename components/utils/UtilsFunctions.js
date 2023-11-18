@@ -67,4 +67,21 @@ function checkTabActive(filter) {
     return activeCount
 }
 
-  export {filterActiveInputValues, deepEqual, isObject, isActiveFilterInputMatchesWithValue, checkTabActive, isFilterValueActive}
+function getVariantImages(images, selectedOption) {
+  // get selected variant images if image altText "#color_black" in this format
+  let selectedVariantImages = null
+  if(images && selectedOption){
+    selectedVariantImages = images.filter(image => {
+      if(image.alt) {
+        const myString = image.alt
+        const substrings = myString.split('#');
+        const colorSubstring = substrings.find(substring => substring.startsWith("color_"));
+        const colorValue = colorSubstring ? colorSubstring.substring("color_".length) : null;
+        if (colorValue === selectedOption.toLowerCase().replace(/\s+/g, '_')) return image
+      }
+    })
+  }
+  return selectedVariantImages
+}
+
+  export {filterActiveInputValues, deepEqual, isObject, isActiveFilterInputMatchesWithValue, checkTabActive, isFilterValueActive, getVariantImages}

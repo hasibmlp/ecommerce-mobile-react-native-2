@@ -43,6 +43,7 @@ import CollectionSkeleton from "./skeletons/CollectionSkeleton";
 import CardSkeleton from "./skeletons/CardSkeleton";
 import HeaderActions from "./actions/HeaderActions";
 import SmallButton from "./Sidebar/Buttons/SmallButton";
+import { ScreenHeader } from "./actions/ScreenHeader";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -362,7 +363,7 @@ function CollectionHeader ({scrollY, filterActionsLayout}) {
     <View className="w-full z-20">
 
         <HeaderActions/>
-        <ScreenHeader headerAnimatedStyle={headerAnimatedStyle}/>
+        <ScreenHeader headerAnimatedStyle={headerAnimatedStyle} headerRight={true}/>
 
         <Animated.View
           style={[{backgroundColor:'#fff', shadowColor:'#000', shadowOffset:{width:0, height:4}, shadowOpacity:0.05, elevation:3}, filterSliderAnimatedStyle]}
@@ -371,22 +372,6 @@ function CollectionHeader ({scrollY, filterActionsLayout}) {
           <ActionSlider/>
         </Animated.View>
       </View>
-  )
-}
-
-function ScreenHeader ({headerAnimatedStyle}) {
-  return(
-    <Animated.View
-          style={[{ backgroundColor: "white" }, headerAnimatedStyle]}
-          className="w-full h-[50px] absolute top-[0px] z-20 bg-white flex-row items-center justify-center"
-        >
-          <BackIconButton color="black" style={{position: 'absolute', left: 12}}/>
-          <Text className="text-[18px] text-black font-normal p-3">Coach</Text>
-          <View className="flex-row absolute right-3">
-            <SearchIconButton style={{marginRight: 8}} />
-            <WishListIconButton />
-          </View>
-      </Animated.View>
   )
 }
 
