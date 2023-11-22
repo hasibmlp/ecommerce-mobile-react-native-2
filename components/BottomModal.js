@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { useEffect, useRef } from "react";
 import { Text, TouchableOpacity, View, Animated } from "react-native";
@@ -9,60 +9,23 @@ import ModalSkeleton from "./Modal/ModalSkeleton";
 import VariantOption from "./Modal/VariantOption";
 import { bottomModaVar } from "../App";
 import { VariantSelectionContext } from "../contexts/VariantSelectionContext";
+import { getVariantForSingleOption } from "./utils/UtilsFunctions";
+import Button from "./buttons/Button";
 
 export default function BottomModal({
   setOpen,
   productId,
-  handleAddCartBtn,
-  selectedVariant,
 }) {
+  const [showContent, setShowContent] = useState(true)
   const open = useReactiveVar(bottomModaVar);
-
+  
   // Overlay
   const opacityRef = useRef(new Animated.Value(0)).current;
   // BottomModal
   const transRef = useRef(new Animated.Value(500)).current;
-  const { color, setColor, size, setSize, type, setType } =
-    useContext(VariantSelectionContext);
-
-  const { data, loading, error } = useQuery(GET_PRODUCT_V2, {
-    variables: { productId },
-    fetchPolicy: "network-only",
-  });
-
-  const imagesv2 = data?.product?.images?.edges.map((edge) => {
-    return {
-      id: edge?.node?.id,
-      url: edge?.node?.url,
-    };
-  });
-
-  const variants = data?.product?.variants.edges.map((edge) => {
-    return edge.node;
-  });
-
-  const optionsv2 = data?.product?.options.map((item) => {
-    return {
-      name: item.name,
-      values: item.values,
-    };
-  });
-
-  const sortedOptions = optionsv2?.sort((a, b) => {
-    if (a.name === "Color" && b.name !== "Color") {
-      return -1;
-    } else if (a.name !== "Color" && b.name === "Color") {
-      return 1;
-    } else if (a.name === "Size" && b.name !== "Size") {
-      return 1;
-    } else if (a.name !== "Size" && b.name === "Size") {
-      return -1;
-    } else {
-      return 0;
-    }
-  });
 
   useEffect(() => {
+    open && setShowContent(true)
     // Overlay
     Animated.timing(opacityRef, {
       toValue: open ? 0.3 : 0,
@@ -74,25 +37,12 @@ export default function BottomModal({
     // Bottom Modal
     Animated.timing(transRef, {
       toValue: open ? 0 : 500,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {!open && setShowContent(false)});
   }, [open]);
 
-  if (error) {
-    reutrn(
-      <View className="justify-center items-center">
-        <Text>Error occured {error}</Text>
-      </View>
-    );
-  }
-
-  useEffect(() => {
-    setColor(null);
-    setSize(null);
-    setType(null);
-  }, [productId]);
-
+  
   return (
     <>
       {/* overlay */}
@@ -114,41 +64,94 @@ export default function BottomModal({
         }}
         className="w-full absolute bottom-0 z-50 bg-white rounded-[15px]"
       >
-        <View className="flex-1 items-center justify-center ">
-          <View className=" py-10 self-stretch px-5 ">
-            <View className="gap-y-5">
-              
-              <VariantHeader open={open} setOpen={setOpen} />
-              {loading && <ModalSkeleton />}
-
-              {sortedOptions &&
-                sortedOptions.map((option, index) => (
-                  <VariantOption
-                    key={index.toString()}
-                    option={option}
-                    variants={variants}
-                  />
-                ))}
-            </View>
-
-            {
-              <View className="mt-10">
-                <TouchableOpacity
-                  disabled={selectedVariant ? false : true}
-                  onPress={handleAddCartBtn}
-                  className={` flex items-center justify-center py-4 w-full ${
-                    selectedVariant ? "bg-blue-400" : "bg-blue-200"
-                  }  rounded-[5px] `}
-                >
-                  <Text className="text-[14px] text-white font-semibold uppercase">
-                    Add to bag
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            }
-          </View>
-        </View>
+        {showContent && (<VariantSelectionModal open={open} productId={productId} setOpen={setOpen} />)}
+        
       </Animated.View>
     </>
   );
+}
+
+function VariantSelectionModal({open, productId, setOpen}) {
+  const [activeColor, setActiveColor] = useState(null)
+  const [activeSize, setActiveSize] = useState(null)
+  const [activeType, setActiveType] = useState(null)
+
+  const { data, loading, error } = useQuery(GET_PRODUCT_V2, {
+    variables: { productId },
+    fetchPolicy: "network-only",
+  });
+
+  const imagesv2 = data?.product?.images?.edges.map((edge) => {
+    return {
+      id: edge?.node?.id,
+      url: edge?.node?.url,
+    };
+  });
+
+  const variants = data?.product?.variants.edges.map((edge) => {
+    return edge.node;
+  });
+
+  const options = data?.product?.options.map((item) => {
+    return {
+      name: item.name,
+      values: item.values,
+    };
+  });
+
+  const firstSelectedColor = options?.find(option => option.name === 'Color').values[0]
+  let initialColorOption
+    if(firstSelectedColor){
+      const variant = getVariantForSingleOption(variants, 'Color', firstSelectedColor)
+       initialColorOption = {id: variant?.image?.id, value: firstSelectedColor}
+    }
+
+  const sortedOptions = options?.sort((a, b) => {
+    if (a.name === "Color" && b.name !== "Color") {
+      return -1;
+    } else if (a.name !== "Color" && b.name === "Color") {
+      return 1;
+    } else if (a.name === "Size" && b.name !== "Size") {
+      return 1;
+    } else if (a.name !== "Size" && b.name === "Size") {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+
+  const handleAddCartBtn = () => {}
+
+  if (error) {
+    reutrn(
+      <View className="justify-center items-center">
+        <Text>Error occured {error}</Text>
+      </View>
+    );
+  }
+  
+  return (
+    <View className="flex-1 items-center justify-center ">
+      <View className=" py-10 self-stretch px-5 ">
+        <View className="gap-y-5">
+          <VariantHeader open={open} setOpen={setOpen} />
+          {loading && <ModalSkeleton />}
+          {sortedOptions && sortedOptions.map((option, index) => (
+            <VariantOption
+              key={index.toString()}
+              option={option}
+              variants={variants}
+              activeColor={activeColor}
+              setActiveColor={setActiveColor}
+              activeSize={activeSize}
+              setActiveSize={setActiveSize}
+              activeType={activeType}
+              setActiveType={setActiveType}
+            />
+            ))}
+        </View>
+        <Button label="Add to cart" size="md" onPress={handleAddCartBtn} style={{marginVertical: 12}}/>
+      </View>
+    </View>
+    )
 }

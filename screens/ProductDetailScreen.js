@@ -1,13 +1,11 @@
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
-  Image,
   SafeAreaView,
   Text,
   View,
   ScrollView,
   Dimensions,
-  FlatList,
   Pressable,
   TouchableOpacity,
 } from "react-native";
@@ -19,87 +17,24 @@ import {
   QuestionMarkCircleIcon,
   InformationCircleIcon,
 } from "react-native-heroicons/outline";
-import {
-  useLazyQuery,
-  useMutation,
-  useQuery,
-  useReactiveVar,
-} from "@apollo/client";
 
-import {
-  GET_CART_DETAILS,
-  GET_PRODUCT,
-  GET_PRODUCT_IMAGES,
-  GET_VARIANT_BY_ID,
-} from "../graphql/queries";
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
-import FollowButton from "../components/FollowButton";
 import HeartButton from "../components/HeartButton";
-import {
-  bottomModaVar,
-  cartIdVar,
-  selctedProductForBottomModalVar,
-} from "../App";
-import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
 import Skeleton from "../components/Skeleton";
-import { VariantSelectionContext } from "../contexts/VariantSelectionContext";
-import { getVariantImages } from "../components/utils/UtilsFunctions";
+import { VariantSelectionContext, VariantSelectionProvider } from "../contexts/VariantSelectionContext";
 import Button from "../components/buttons/Button";
 import CollectionContentSkeleton from "../components/skeletons/CollectionContentSkeleton";
-import { ScreenHeader } from "../components/actions/ScreenHeader";
+import ImageCarousel from "../components/Images/ImageCarousel";
+import VariantSelectionModal from "../components/Modal/VariantSelectionModal";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
 export default function ProductDetailScreen({ route }) {
-  const cartId = useReactiveVar(cartIdVar);
-  const {color} = useContext(VariantSelectionContext)
-
-  console.log("COLOR",color)
-
-  const [bottomModalOpen, setBottomModalOpen] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState(null);
   const navigation = useNavigation();
   const { productId } = route.params;
-
-  const { loading, error, data } = useQuery(GET_PRODUCT, {
-    variables: {
-      productId: productId,
-    },
-  });
-
-  const {
-    loading: prodImagesLoading,
-    error: prodImagesError,
-    data: prodImagesData,
-  } = useQuery(GET_PRODUCT_IMAGES, { variables: { productId } });
-
-
-  const [
-    createCart,
-    { loading: cartLoading, error: cartError, data: cartData },
-  ] = useMutation(CREATE_CART);
-
-  const [
-    addCartItem,
-    {
-      loading: addCartItemLoading,
-      error: addCartItemError,
-      data: addCartItemData,
-    },
-  ] = useMutation(ADD_CART_ITEM);
-
-  const options = data?.product?.options
-
-  const images = prodImagesData?.product?.images?.edges?.map((edge) => {
-    return {
-      url: edge?.node?.url,
-      id: edge?.node?.id,
-      alt: edge?.node?.altText
-    };
-  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -107,130 +42,25 @@ export default function ProductDetailScreen({ route }) {
     });
   }, []);
 
-  useEffect(() => {
-    if (cartData) {
-      console.log("CART DATA RETURNED ");
-      cartIdVar(cartData?.checkoutCreate?.checkout?.id);
-    }
-  }, [cartData]);
-
-
-  if (error) return <Text>Error occured {error}</Text>;
-
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-white" />
-      <ProductPageHeader data={data} navigation={navigation} />
-      <ScrollView bounces={false}>
-        <ImageCarousel images={images}/>
-        <ProductContent data={data} options={options} productId={productId}/>
-        <RecommendedCollection />
-      </ScrollView>
-
+        <VariantSelectionProvider productId={productId}>
+          <ProductPageHeader/>
+          <ScrollView bounces={false}>
+              <ImageCarousel/>
+              <ProductContent productId={productId}/>
+            
+            <RecommendedCollection />
+          </ScrollView>
+        </VariantSelectionProvider>
     </View>
   );
 }
 
-
-function ImageCarousel ({images}) {
-  const {color} = useContext(VariantSelectionContext)
-  const flatListRef = useRef();
-  const selectedVariantImages = getVariantImages(images, color?.value)
-  
-  useEffect(() => {
-    if(color?.value && images && selectedVariantImages?.length === 0){
-      const imageIndex = images?.findIndex(image => image.id === color?.id)
-      if(imageIndex > -1) {
-        flatListRef.current.scrollToIndex({
-          index: imageIndex,
-          animated: false
-        })
-      }
-    }
-  },[color])
-
-
-  if(!images) return <Skeleton width={ITEM_WIDTH} height={ITEM_HEIGHT} />
-  return (
-    <View style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}>
-        <FlatList
-          key={(_, index) => index.toString()}
-          ref={flatListRef}
-          horizontal
-          data={selectedVariantImages && selectedVariantImages?.length !== 0 ? selectedVariantImages : images}
-          keyExtractor={(_, index) => index.toString()}
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => {
-            return (
-              <View>
-                <Image
-                  style={{ width: ITEM_WIDTH, height: ITEM_HEIGHT }}
-                  src={item.url}
-                />
-              </View>
-            );
-          }}
-          getItemLayout={(_, index) => {
-            return {
-              length: ITEM_WIDTH,
-              offset: ITEM_WIDTH * index,
-              index,
-            };
-          }}
-        />
-    </View>
-  )
-}
-
-function ProductContent ({data, options, productId}) {
-
-  // function handleAddCartBtn() {
-  //   if (selectedVariant) {
-  //     console.log("HANDLE CART FUNCTION SUCCEFULLY RUNNING");
-
-  //     if (cartId) {
-  //       console.log("CART ID IS SET");
-  //       addCartItem({
-  //         variables: {
-  //           checkoutId: cartId,
-  //           variantId: selectedVariant,
-  //         },
-  //         refetchQueries: [
-  //           {
-  //             query: GET_CART_DETAILS,
-  //             variables: {
-  //               checkoutId: cartId,
-  //             },
-  //           },
-  //         ],
-  //         onCompleted: () => {
-  //           setBottomModalOpen(false);
-  //           navigation.navigate("CartScreen");
-  //         },
-  //       });
-  //     } else {
-  //       console.log("NO CART ID IS SET");
-  //       createCart({
-  //         variables: {
-  //           productQuantity: 1,
-  //           productId: selectedVariant,
-  //         },
-  //         onCompleted: () => {
-  //           setBottomModalOpen(false);
-  //           navigation.navigate("CartScreen");
-  //         },
-  //       });
-  //     }
-
-  //     setaddToCartbuttonDisabled(false);
-  //     // setTimeout(() => {
-  //     //   navigation.navigate("CartScreen");
-  //     // }, 600);
-  //   } else {
-  //     setBottomModalOpen(true);
-  //   }
-  // }
+function ProductContent ({productId}) {
+  const {data, options} = useContext(VariantSelectionContext)
+  const [isModalVisisble, setModalVisible] = useState(false)
 
   return (
     <View className="mb-4">
@@ -240,8 +70,15 @@ function ProductContent ({data, options, productId}) {
         <HeartButton />
         {data && (<ProductInfo data={data}/>)}
       </View>
+
+      {options && options[0].values[0] !== "Default Title" && (
+      <>
+      <VariantSelectionButton onPress={() => setModalVisible(true)}/>
+      <VariantSelectionModal context={VariantSelectionContext} visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)} />
+      </>
       
-      {options && (<VariantSelectionButton options={options} productId={productId}/>)}
+      )}
+      
       <ShippingDetails/>
       {data && (<AddToCartContainer />)}
       <ToggleContainer/>
@@ -250,23 +87,19 @@ function ProductContent ({data, options, productId}) {
   )
 }
 
-function VariantSelectionButton ({options, productId}) {
-  const {color, size, type} = useContext(VariantSelectionContext)
-  console.log(options)
+function VariantSelectionButton ({onPress}) {
+  const {options, activeColor, activeSize, activeType} = useContext(VariantSelectionContext)
   return (
     <Pressable
-      onPress={() => {
-        bottomModaVar(true);
-        selctedProductForBottomModalVar(productId);
-      }}
-      className="border-t border-gray-300 py-2 bg-white px-14"
+      onPress={onPress}
+      className={`border-t border-gray-300 py-2 bg-white px-14 ${options.length === 1 && 'items-center'}`}
     >
       <View className="flex-row justify-between items-center">
         {options && options.map((option, index) => (
-            <SelectionButton key={index.toString()} label={option.name} selectedoption={option.name === 'Color' ? color?.value : option.name === 'Size' ? size : type} />
+            <SelectionButton key={index.toString()} label={option.name} selectedoption={option.name === 'Color' ? activeColor?.value : option.name === 'Size' ? activeSize : activeType} />
           ))}
 
-        <View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>
+        {options.length > 1 && (<View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>)}
       </View>
     </Pressable>
   )
@@ -430,7 +263,10 @@ function RecommendedCollection() {
   )
 }
 
-function ProductPageHeader({data, navigation}) {
+function ProductPageHeader() {
+  const {data} = useContext(VariantSelectionContext)
+  const navigation = useNavigation()
+
   return (
     <View className="items-center justify-center bg-white h-[50px] relative">
         <TouchableOpacity

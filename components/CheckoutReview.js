@@ -73,7 +73,6 @@ export default function CheckoutReview() {
     });
   }
 
-  //   console.log("CHECKOUT SHIPPING METHOD MUTATION: ", shippingMethodData);
 
   useEffect(() => {
     if (shippingLineRatesData) {
@@ -105,8 +104,6 @@ export default function CheckoutReview() {
         <Text>Error occured {detailError.message}</Text>
       </View>
     );
-
-  console.log("SHIPPING RATED DATA ", detailData);
 
   return (
     <ScrollView>

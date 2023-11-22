@@ -107,26 +107,51 @@ export const GET_COLLECTION = gql`
 `;
 
 export const GET_PRODUCT = gql`
-  query singleProduct($productId: ID!) {
-    product(id: $productId) {
-      id
-      vendor
-      title
-      description
-      priceRange {
-        minVariantPrice {
-          amount
+query getProductVairants($productId: ID!) {
+  product(id: $productId) {
+    id
+    vendor
+    title
+    description
+    priceRange {
+      minVariantPrice {
+        amount
+      }
+    }
+    images(first: 100) {
+      edges {
+        node {
+          id
+          url
+          altText
         }
       }
-      options {
-        name
-        values
+    }
+    options {
+      name
+      values
+    }
+    variants(first: 100) {
+      edges {
+        node {
+          id
+          quantityAvailable
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            id
+            url
+          }
+        }
       }
     }
   }
-`;
+}
+`
 
-export const GET_PRODUCT_V2 = gql`
+export const GET_PRODUCT_VARIANTS_AND_IMAGES_AND_OPTIONS = gql`
 query getProductVairants($productId: ID!) {
   product(id: $productId) {
     id
@@ -135,6 +160,7 @@ query getProductVairants($productId: ID!) {
         node {
           id
           url
+          altText
         }
       }
     }
@@ -446,15 +472,21 @@ export const GET_COLLECTION_BY_ID = gql`
             id
             title
             vendor
+
             priceRange {
               minVariantPrice {
                 amount
                 currencyCode
               }
             }
-            featuredImage {
+            featuredImage{
+              altText
               id
               url
+            }
+            options {
+              name
+              values
             }
           }
         }

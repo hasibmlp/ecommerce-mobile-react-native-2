@@ -35,33 +35,33 @@ export default function BottomModalSkeleton () {
 
             <View className="flex-row w-full">
                 <Skeleton
-                width={60}
-                height={50}
+                width={20}
+                height={30}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
                 <Skeleton
-                width={60}
-                height={50}
+                width={50}
+                height={40}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
                 <Skeleton
-                width={60}
-                height={50}
+                width={50}
+                height={40}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
                 <Skeleton
-                width={60}
-                height={50}
+                width={50}
+                height={40}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
                 <Skeleton
-                width={60}
-                height={50}
+                width={50}
+                height={40}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
                 <Skeleton
-                width={60}
-                height={50}
+                width={50}
+                height={40}
                 style={{ marginRight: 12, borderRadius: 5 }}
                 />
             </View>

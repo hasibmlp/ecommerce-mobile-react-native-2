@@ -70,7 +70,6 @@ export default function CheckoutShippingAddressUpdate() {
     },
   });
 
-  console.log("BUYER IDENTITY:", buyerData);
 
   const [
     updateCheckoutEmail,
@@ -85,7 +84,6 @@ export default function CheckoutShippingAddressUpdate() {
   useEffect(() => {
     if (emailData && shippingData) {
       if (checkoutId !== emailData.checkoutEmailUpdateV2.checkout.id) {
-        console.log("EMAIL CHANGE DETECTED AFTER CHANGE MADE");
         cartIdVar(emailData.checkoutEmailUpdateV2.checkout.id);
       }
 
@@ -173,7 +171,6 @@ export default function CheckoutShippingAddressUpdate() {
             const shippingValues = { ...values };
             delete shippingValues.email;
 
-            console.log("SHIPPING ADDRESS: ", shippingAddress);
 
             updateCheckoutEmail({
               variables: {

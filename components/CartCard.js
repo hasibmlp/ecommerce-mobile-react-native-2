@@ -18,10 +18,7 @@ export default function CartCard({ id, lineId, refetch }) {
     },
   ] = useMutation(REMOVE_CART_ITEM);
 
-  console.log("CART ID IN CART ITEM: ", cartId);
-
   function handleItemRemove(id) {
-    console.log("CART REMOVE BUTTON PRESSED");
     removeCartItem({
       variables: {
         checkoutId: cartId,
@@ -44,7 +41,8 @@ export default function CartCard({ id, lineId, refetch }) {
     },
   });
 
-  // console.log('ITEMS AFTER REMOVED SUCCESSFULLY', removeItemData)
+  console.log("CART DATA",data)
+
 
   if (loading) return <Text>Loading..</Text>;
   if (error) return <Text>Error occured!! {error}</Text>;
@@ -60,15 +58,12 @@ export default function CartCard({ id, lineId, refetch }) {
           {data.node.product.title}
         </Text>
         <View className="text-[13px] text-gray-600 font-light my-3 flex-row">
-          <Text className="mr-5">{data.node.selectedOptions[1].value}</Text>
-          <View className="flex-row items-center justify-center mr-5">
-            <Text className="mr-1">{data.node.selectedOptions[0].value}</Text>
-            <ChevronDownIcon size={12} color="black" />
-          </View>
-          <View className="flex-row items-center justify-center">
-            <Text className="mr-1">Qty 1</Text>
-            <ChevronDownIcon size={12} color="black" />
-          </View>
+          {data.node.selectedOptions.map((option, index) => (
+            <Text key={index} className={`mr-5 ${index === data.node.selectedOptions.length - 1 ? '' : 'mb-5'}`}>
+              {option.value}
+            </Text>
+          ))} 
+          <Text className="">Qty 1</Text>
         </View>
         <Text className="text-[16px] text-black font-medium">
           {data.node.price.amount} AED

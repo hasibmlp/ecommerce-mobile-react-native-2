@@ -35,9 +35,6 @@ import { CollectionCard } from "./CollectionCard";
 import { LinearGradient } from "expo-linear-gradient";
 import { SideBarContext } from "../App";
 import Button from "./buttons/Button";
-import BackIconButton from "./buttons/BackIconButton";
-import SearchIconButton from "./buttons/SearchIconButton";
-import WishListIconButton from "./buttons/WishListIconButton";
 import TextBody from "./texts/TextBody";
 import CollectionSkeleton from "./skeletons/CollectionSkeleton";
 import CardSkeleton from "./skeletons/CardSkeleton";
@@ -158,6 +155,8 @@ export default function Collection({ route }) {
         fetchMore={fetchMore}
       />)}
 
+      
+
       {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} total={productTotalCount} />)}
 
     </View>
@@ -216,7 +215,7 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   return (
     <View className="pb-1 px-1">
           <Animated.FlatList
-            data={colloctionData?.collection?.products?.edges}
+            data={colloctionData?.collection?.products?.edges} 
             ref={flatListRef}
             keyExtractor={(item) => item.node.id}
             horizontal={false}

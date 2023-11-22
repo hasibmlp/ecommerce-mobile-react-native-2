@@ -4,31 +4,30 @@ import VariantOptionColor from "./VariantOptionColor";
 import VariantOptionType from "./VariantOptionType";
 import { useContext } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
+import { PreVariantSelectionContext } from "../../contexts/PreVariantSelectionContext";
+import Skeleton from "../Skeleton";
 
-export default function VariantOption({ option, variants }) {
-  const { color } = useContext(
-    VariantSelectionContext
-  );
+export default function VariantOption({ option, context }) {
+  const {variants, activeColor} = useContext(context)
 
   const getAvailableVariant = () => {
     const filteredArray =
       variants &&
       variants.filter(
         (item) =>
-          item.selectedOptions.find((item) => item.name === "Color").value ===
-            color?.value && item.quantityAvailable > 0
+          item.selectedOptions.find((item) => item.name === "Color")?.value ===
+          activeColor?.value && item.quantityAvailable > 0
       );
 
     const availableSizeForColor = filteredArray.map((item) => {
-      return item.selectedOptions.find((item) => item.name === "Size").value;
+      return item.selectedOptions.find((item) => item.name === "Size")?.value;
     });
     const availableTypeForColor = filteredArray.map((item) => {
       return (
         item.selectedOptions.find((item) => item.name === "TYPE") &&
-        item.selectedOptions.find((item) => item.name === "TYPE").value
+        item.selectedOptions.find((item) => item.name === "TYPE")?.value
       );
     });
-    // console.log("AVAILABLE SIZE FOR SELECTED COLOR ",availableTypeForColor)
 
     return { availableSizeForColor, availableTypeForColor };
   };
@@ -38,9 +37,9 @@ export default function VariantOption({ option, variants }) {
 
   return (
     <View className="mb-5">
-      <View className="flex-row justify-between items-center mb-3">
+      <View className="flex-row justify-between items-center mb-3 px-5">
         <Text className="text-[12px] font-normal text-black uppercase">
-          {option.name}:{option.name === "Color" && color?.value}
+          {option.name}:{option.name === "Color" && activeColor?.value}
         </Text>
         {option.name === "Size" && (
           <Pressable>
@@ -54,17 +53,19 @@ export default function VariantOption({ option, variants }) {
       {option.name === "Color" ? (
         <VariantOptionColor
           option={option}
-          variants={variants}
+          context={context}
         />
       ) : option.name === "Size" ? (
         <VariantOptionSize
           option={option}
           availableSizeForColor={availableSizeForColor}
+          context={context}
         />
       ) : (
         <VariantOptionType
           option={option}
           availableTypeForColor={availableTypeForColor}
+          context={context}
         />
       )}
     </View>

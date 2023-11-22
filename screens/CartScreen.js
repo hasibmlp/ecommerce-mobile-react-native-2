@@ -46,7 +46,6 @@ export default function CartScreen() {
 
   const cartId = useReactiveVar(cartIdVar);
 
-  console.log("CART SCREEN ID", cartId);
 
   const [
     createEmptyCart,
@@ -111,9 +110,7 @@ export default function CartScreen() {
   const cartItems = cartDetailsData?.node?.lineItems?.edges || [];
   const cartItemsId = [...cartItems].reverse();
 
-  // console.log("cartDetailsData IN CART", cartDetailsData?.node?.lineItems?.edges);
 
-  console.log(cartId);
 
   return (
     <View className="flex-1">

@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity } from "react-native";
 
-export default function Button ({label, type='primary', size='md', style, flex, onPress }) {
+export default function Button ({label, type='primary', size='md', style, flex, onPress, active=true }) {
 
     let buttonSize
     if(size === 'sm') buttonSize = {conntainer: 'p-2', text: 'text-[13px]'}
@@ -14,7 +14,7 @@ export default function Button ({label, type='primary', size='md', style, flex, 
 
 
     return (
-        <TouchableOpacity onPress={onPress} style={[style]} className={`${flex ? 'flex-1' : ''} ${buttonStyle.container} items-center`}>
+        <TouchableOpacity disabled={!active} onPress={onPress} style={[style]} className={`${flex ? 'flex-1' : ''} ${buttonStyle.container} ${!active && 'bg-blue-200'} items-center`}>
             <Text className={`${buttonStyle.text} font-medium uppercase`}>{label}</Text>
         </TouchableOpacity>
     )
