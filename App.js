@@ -18,33 +18,10 @@ export const SideBarContext = createContext()
 
 export default function App() {
 
-  const [isSideBarOpen, setSideBarOpen] = useState(false)
-  const [filters , setFilters] = useState([])
-  const [activeFilters, setActiveFilters] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [activeFilterInput, setActiveFilterInput] = useState([])
-  const [productTotalCount, setProductTotalCount] = useState(0)
-
-  return (
+  return ( 
     <ApolloProvider client={shopifyClient}>
       <Provider store={store}>
-        <SideBarContext.Provider value={{
-            isSideBarOpen,
-            setSideBarOpen,
-            filters,
-            setFilters,
-            activeFilters,
-            loading,
-            setLoading,
-            setActiveFilters,
-            activeFilterInput,
-            setActiveFilterInput,
-            productTotalCount,
-            setProductTotalCount,
-          }}>
             <AppNavigation />
-            {isSideBarOpen && (<SideBar />)} 
-        </SideBarContext.Provider>
       </Provider>
     </ApolloProvider>
   );

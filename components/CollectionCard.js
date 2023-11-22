@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Text,
   View,
@@ -10,6 +10,8 @@ import { PlusIcon } from "react-native-heroicons/outline";
 import ImageCarousel from "./Images/ImageCarousel";
 import VariantSelectionModal from "./Modal/VariantSelectionModal";
 import { PreVariantSelectionContext, PreVariantSelectionProvider } from "../contexts/PreVariantSelectionContext";
+import CardSkeleton from "./skeletons/CardSkeleton";
+import { FilterSelectionContext } from "../contexts/FilterSelectionContext";
 
 const colors = ["red", "blue", "green", "white", "navy"];
 
@@ -24,7 +26,7 @@ export function CollectionCard({ product }) {
   handlePress= () => {
     navigation.navigate("ProductDetailScreen", { productId: product.id })
   }
- 
+
   return (
     <View
       key={product.id}

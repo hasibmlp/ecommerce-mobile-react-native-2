@@ -16,6 +16,7 @@ import {
   Text,
   View,
   SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import {
   AdjustmentsHorizontalIcon,
@@ -41,6 +42,9 @@ import CardSkeleton from "./skeletons/CardSkeleton";
 import HeaderActions from "./actions/HeaderActions";
 import SmallButton from "./Sidebar/Buttons/SmallButton";
 import { ScreenHeader } from "./actions/ScreenHeader";
+import SideBarModal from "./Modal/SideBarModal";
+import FilterBody from "./Modal/FilterBody";
+import { FilterSelectionContext, FilterSelectionProvider } from "../contexts/FilterSelectionContext";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -48,14 +52,34 @@ const desc =
   "American House of leather. Couch, values authenticiy and innovation. Founded on 1991, as a family running bussiness";
 
 export default function Collection({ route }) {
+  const [isSideBarVisible, setSideBarVisible] = useState(false)
+  const handleSideBarClose = () => setSideBarVisible(false)
+  return (
+
+
+    <View className="flex-1 items-center bg-white">
+      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
+      <FilterSelectionProvider>
+        <CollectionData route={route} openSideBar={() => setSideBarVisible(true)}/>
+        <SideBarModal visible={isSideBarVisible} >
+          <FilterBody onClose={handleSideBarClose}/>
+        </SideBarModal>
+      </FilterSelectionProvider>
+    </View>
+  );
+}
+
+function CollectionData ({route, openSideBar}) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
+  const [productTotalCount, setProductTotalCount] = useState(0)
+
+  const {setFilters, activeFilterInput} = useContext(FilterSelectionContext)
 
   const navigation = useNavigation();
   const { collectionId } = route.params;
   const flatListRef = useRef();
   const filterActionsLayout = useSharedValue(0);
   const scrollY = useSharedValue(0);
-  const {setFilters, activeFilterInput, productTotalCount, setProductTotalCount} = useContext(SideBarContext)
   const filterInputs = activeFilterInput.map(filterValue => filterValue.input)
 
   const {
@@ -82,7 +106,7 @@ export default function Collection({ route }) {
       filterInput: filterInputs,
     },
     fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true,
+    // notifyOnNetworkStatusChange: true,
   })
 
   useLayoutEffect(() => {
@@ -128,7 +152,6 @@ export default function Collection({ route }) {
     }
   },[allProductsData, allProductsLoading])
 
-  // Load filters into setFilters state in ../..App.js
   useEffect(() => {
     if(colloctionData) {
       setFilters(colloctionData?.collection?.products?.filters)
@@ -140,30 +163,27 @@ export default function Collection({ route }) {
   }
 
   return (
-    <View className="flex-1 items-center bg-white">
-      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
+        <>
+          <CollectionHeader scrollY={scrollY} filterActionsLayout={filterActionsLayout} />
+          {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)}
+          {(<CollectionBody
+            colloctionData={colloctionData}
+            colloctionLoading={colloctionLoading}
+            flatListRef={flatListRef}
+            filterActionsLayout={filterActionsLayout}
+            scrollY={scrollY}
+            setShowPageIndicator={setShowPageIndicator}
+            fetchMore={fetchMore}
+            openSideBar={openSideBar}
+          />)}
 
-      <CollectionHeader scrollY={scrollY} filterActionsLayout={filterActionsLayout} />
-
-      {colloctionLoading && (<CollectionSkeleton/>)}
-      {!colloctionLoading && (<CollectionBody
-        colloctionData={colloctionData}
-        flatListRef={flatListRef}
-        filterActionsLayout={filterActionsLayout}
-        scrollY={scrollY}
-        setShowPageIndicator={setShowPageIndicator}
-        fetchMore={fetchMore}
-      />)}
-
-      
-
-      {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} total={productTotalCount} />)}
-
-    </View>
-  );
+          {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} total={productTotalCount} />)}
+        </>
+  )
 }
 
-function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore}) {
+
+function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore, openSideBar}) {
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -207,7 +227,8 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
         }}
         className="w-full"
       >
-        <ActionSlider/>
+        <ActionSlider onPress={openSideBar}/>
+
       </View>
     </View>
   ));
@@ -250,15 +271,15 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   )
 }
 
-function ActionSlider () {
-  const {activeFilterInput} = useContext(SideBarContext)
+function ActionSlider ({onPress}) {
+  const {activeFilterInput} = useContext(FilterSelectionContext)
   return (
     <ScrollView
           horizontal={true}
           className="px-2 py-4"
           showsHorizontalScrollIndicator={false}
         >
-        <FilterButton/>
+        <FilterButton onPress={onPress}/>
         <SortButton/>
         {activeFilterInput && activeFilterInput.map((activeFilter, index) => {
                 return <SmallButton key={index.toString()} id={activeFilter.id} title={activeFilter.label} />
@@ -279,11 +300,10 @@ return (
 )
 }
 
-function FilterButton () {
+function FilterButton ({onPress}) {
   [isFilterActive, setFilterActive] = useState(false)
-  const {setSideBarOpen} = useContext(SideBarContext)
 return (
-    <Pressable onPress={() => setSideBarOpen(true)} className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${isFilterActive ? ' bg-black' : 'bg-white'} mr-2 flex-row items-center`}>
+    <Pressable onPress={onPress} className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${isFilterActive ? ' bg-black' : 'bg-white'} mr-2 flex-row items-center`}>
       <AdjustmentsHorizontalIcon size={20} color={`${isFilterActive ? 'white' : 'black'}`} />
       <Text className={`text-[14px] ${isFilterActive ? 'text-white' : 'text-black'} font-normal uppercase ml-1`}>
         filter {isFilterActive ? '(' + 0 + ')' : ''}

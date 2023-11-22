@@ -6,9 +6,10 @@ import CheckBox from "../Checkbox"
 import OptionLabel from "../OptionLabel"
 import { SideBarContext } from "../../../App"
 import { isFilterValueActive } from "../../utils/UtilsFunctions" 
+import { FilterSelectionContext } from "../../../contexts/FilterSelectionContext"
 
 export default function CheckList ({option}) {
-    const {setLoading, setActiveFilterInput, activeFilterInput} = useContext(SideBarContext)
+    const {setLoading, setActiveFilterInput, activeFilterInput} = useContext(FilterSelectionContext)
     let isActive = isFilterValueActive(activeFilterInput, option)
 
     const input = JSON.parse(option.input)

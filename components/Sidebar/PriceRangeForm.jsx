@@ -6,10 +6,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { SideBarContext } from "../../App";
 import * as yup from 'yup'
 import ErrorMessage from "./ErrorMessage";
+import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";
 
 
 export default function PriceRangeForm({option, priceRangeFilter}) {
-    const {setActiveFilterInput, setLoading} = useContext(SideBarContext)
+    const {setActiveFilterInput, setLoading} = useContext(FilterSelectionContext)
     
 
     const validationSchema = yup.object({
