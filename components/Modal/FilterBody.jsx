@@ -48,10 +48,10 @@ function Content ({openSideBar}) {
             <View className="basis-[30%] bg-blue-50 h-full">
                 
                 <ScrollView className="" showsVerticalScrollIndicator={false} scrollEnabled={false}>
-                    {filters.map((filter) => {  
+                    {filters.map((filter) => {
                         const isTabActive = checkTabActive(filter)
 
-                        if(filter.values.length === 0) return null 
+                        if(filter.values.length === 0) return null
                         let isFilterValuesSelected = false
                         activeFilterInput.forEach(activeFilter => {
                             filter.values.forEach(value => {

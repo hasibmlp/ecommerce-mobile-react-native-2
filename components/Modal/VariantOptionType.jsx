@@ -1,12 +1,11 @@
 
 import { useContext } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 
 export default function VariantOptionType({ option, availableTypeForColor, context }) {
   const {activeType, setActiveType} = useContext(context)
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="">
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5">
       <View className="flex-row items-center gap-x-3 relative">
         {option.values.map((item, index) => (
           <TouchableOpacity

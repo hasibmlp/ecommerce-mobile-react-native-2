@@ -472,13 +472,6 @@ export const GET_COLLECTION_BY_ID = gql`
             id
             title
             vendor
-
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
             featuredImage{
               altText
               id
