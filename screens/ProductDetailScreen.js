@@ -177,21 +177,27 @@ function ToggleContainer() {
 }
 
 function ActionButton () {
+  const [isModalVisible, setModalVisible] = useState(false)
   return (
-    <Pressable className="flex-row gap-x-1 items-center justify-between bg-white p-4 mt-4">
-        <View className="flex-row gap-x-1 items-center">
-          <QuestionMarkCircleIcon size={22} color="black" strokeWidth={1} />
-          <View className="flex-row gap-x-1">
-            <Text className="text-[13px] text-black font-medium ">
-              Need help?
-            </Text>
-            <Text className="text-[13px] text-black font-light ">
-              Call, Whatsapp , or email us
-            </Text>
+    <View>
+      <Pressable onPress={() => setModalVisible(true)} className="flex-row gap-x-1 items-center justify-between bg-white p-4 mt-4">
+          <View className="flex-row gap-x-1 items-center">
+            <QuestionMarkCircleIcon size={22} color="black" strokeWidth={1} />
+            <View className="flex-row gap-x-1">
+              <Text className="text-[13px] text-black font-medium ">
+                Need help?
+              </Text>
+              <Text className="text-[13px] text-black font-light ">
+                Call, Whatsapp , or email us
+              </Text>
+            </View>
           </View>
-        </View>
-        <ChevronDownIcon size={24} color="black" strokeWidth={1} />
-      </Pressable>
+          <ChevronDownIcon size={24} color="black" strokeWidth={1} />
+        </Pressable>
+      <BottomModal visible={isModalVisible} onClose={() => setModalVisible(false)}>
+        <View className="h-[100px]"></View>
+      </BottomModal>
+    </View>
   )
 }
 
