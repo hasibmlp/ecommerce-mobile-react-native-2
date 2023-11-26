@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { PlusIcon } from "react-native-heroicons/outline";
 import ImageCarousel from "./Images/ImageCarousel";
-import VariantSelectionModal from "./Modal/VariantSelectionModal";
+// import VariantSelectionModal from "./Modal/VariantSelectionModal";
 import { PreVariantSelectionContext, PreVariantSelectionProvider } from "../contexts/PreVariantSelectionContext";
 import CardSkeleton from "./skeletons/CardSkeleton";
 import { FilterSelectionContext } from "../contexts/FilterSelectionContext";
@@ -77,7 +77,7 @@ export function CollectionCard({ product }) {
               )}
             </Pressable>
 
-            <VariantSelectionModal context={PreVariantSelectionContext} visible={isModalVisisble} productId={product.id} onClose={() => setModalVisible(false)} setImages={setImages2}/>
+            {/* <VariantSelectionModal context={PreVariantSelectionContext} visible={isModalVisisble} productId={product.id} onClose={() => setModalVisible(false)} setImages={setImages2}/> */}
           </>
         )}
 

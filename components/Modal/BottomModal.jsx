@@ -3,7 +3,8 @@ import VariantSelectionModalContent from "./VariantSelectionModalContent"
 import { useEffect, useRef, useState } from "react";
 import { PreVariantSelectionProvider } from "../../contexts/PreVariantSelectionContext";
 
-export default function VariantSelectionModal({productId, visible, onClose, context, setImages }) {
+export default function BottomModal({visible, children, onClose}) {
+    const [isModalVisible, setModalVisible] = useState(false)
     const [isContentAnimated, setContentAnimated] = useState(false)
 
     // BottomModal
@@ -20,40 +21,41 @@ export default function VariantSelectionModal({productId, visible, onClose, cont
         toValue: 500,
         duration: 200,
         useNativeDriver: true,
-        }).start(onClose);
+        }).start(() => setModalVisible(false));
 
     }, [isContentAnimated]);
 
     useEffect(() => {
-        if(visible === true) setContentAnimated(true)
+        if(visible === true) {
+            setModalVisible(true)
+            setContentAnimated(true)
+        }else {
+            setContentAnimated(false)
+        }
     },[visible])
 
 
     return (
             <Modal
                 transparent={true}
-                visible={visible}
+                visible={isModalVisible}
                 >
                 <View className="flex-1">
 
-                {(<ModalOverlay visible={visible} handleClose={() => {setContentAnimated(false)}} />)}
+                {(<ModalOverlay visible={isModalVisible} handleClose={onClose} />)}
 
                 <Animated.View
                     style={{transform: [{ translateY: transRef }],}}
                     className="w-full absolute bottom-0 z-50 bg-white rounded-[15px] overflow-hidden"
                 >
-                    <PreVariantSelectionProvider productId={productId} getImages={setImages} handleClose={() => {setContentAnimated(false)}}>
-                        <VariantSelectionModalContent
-                            productId={productId} 
-                            handleClose={() => {setContentAnimated(false)}}
-                            context={context}
-                        />
-                    </PreVariantSelectionProvider>
+                    {children}
                 </Animated.View>
 
                 </View>
             </Modal>
         )}
+
+        
 
     function ModalOverlay ({visible, handleClose}) {
         const opacityRef = useRef(new Animated.Value(0)).current;

@@ -27,9 +27,10 @@ import { VariantSelectionContext, VariantSelectionProvider } from "../contexts/V
 import Button from "../components/buttons/Button";
 import CollectionContentSkeleton from "../components/skeletons/CollectionContentSkeleton";
 import ImageCarousel from "../components/Images/ImageCarousel";
-import VariantSelectionModal from "../components/Modal/VariantSelectionModal";
+import BottomModal from "../components/Modal/BottomModal";
 import { useQuery } from "@apollo/client";
 import { COLOR_SWATCH_IMAGES, GET_COLOR_SWATCH_IMAGES } from "../graphql/queries";
+import VariantSelection from "../components/Modal/VariantSelection";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -63,6 +64,7 @@ export default function ProductDetailScreen({ route }) {
 function ProductContent ({productId}) {
   const {data, options} = useContext(VariantSelectionContext)
   const [isModalVisisble, setModalVisible] = useState(false)
+  
 
   return (
     <View className="mb-4">
@@ -74,13 +76,13 @@ function ProductContent ({productId}) {
       </View>
 
       {options && options[0].values[0] !== "Default Title" && (
-      <>
-      <VariantSelectionButton onPress={() => setModalVisible(true)}/>
-      <VariantSelectionModal context={VariantSelectionContext} visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)} />
-      </>
-      
+        <>
+        <VariantSelectionButton onPress={() => setModalVisible(!isModalVisisble)}/>
+        <BottomModal visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)}>
+          <VariantSelection productId={productId} context={VariantSelectionContext} handleClose={() => setModalVisible(false)}/>
+        </BottomModal>
+        </>
       )}
-      
       <ShippingDetails/>
       {data && (<AddToCartContainer />)}
       <ToggleContainer/>
@@ -94,7 +96,7 @@ function VariantSelectionButton ({onPress}) {
 
   const {data, loading, error} = useQuery(GET_COLOR_SWATCH_IMAGES)
   const COLOR_SWATCH_IMAGES = data && JSON.parse(data?.collection?.metafield?.value)
-  const activeColorSwatchImageUrl = COLOR_SWATCH_IMAGES.find(item => item?.value === activeColor?.value.toLowerCase().replace(/\s+/g, '_'))?.url
+  const activeColorSwatchImageUrl = COLOR_SWATCH_IMAGES?.find(item => item?.value === activeColor?.value.toLowerCase().replace(/\s+/g, '_'))?.url
 
   return (
     <Pressable

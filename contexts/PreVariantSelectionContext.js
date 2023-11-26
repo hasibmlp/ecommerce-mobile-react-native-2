@@ -8,7 +8,7 @@ import { getVariantForOptions, getVariantForSingleOption } from "../components/u
 
 const PreVariantSelectionContext = createContext()
 
-function PreVariantSelectionProvider({children, productId, getImages, handleClose}) {
+function PreVariantSelectionProvider({children, productId, handleClose}) {
     const [activeColor, setActiveColor] = useState(null)
     const [activeSize, setActiveSize] = useState(null)
     const [activeType, setActiveType] = useState(null)
