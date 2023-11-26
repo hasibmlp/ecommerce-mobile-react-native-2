@@ -238,7 +238,7 @@ function TagContainer({label}) {
 function PriceContainer({amount}) {
   const {price, comparePrice, currencyCode} = amount
   const discountPercentage = Math.round(((comparePrice - price) / comparePrice) * 100)
-  const isDiscountApplyed = price > comparePrice
+  const isDiscountApplyed = price < comparePrice
   return(
     <View className="items-center">
       <View className="flex-row items-center">
