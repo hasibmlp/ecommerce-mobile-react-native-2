@@ -8,6 +8,7 @@ import {
   Dimensions,
   Pressable,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import {
   ClockIcon,
@@ -27,6 +28,8 @@ import Button from "../components/buttons/Button";
 import CollectionContentSkeleton from "../components/skeletons/CollectionContentSkeleton";
 import ImageCarousel from "../components/Images/ImageCarousel";
 import VariantSelectionModal from "../components/Modal/VariantSelectionModal";
+import { useQuery } from "@apollo/client";
+import { COLOR_SWATCH_IMAGES, GET_COLOR_SWATCH_IMAGES } from "../graphql/queries";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -50,7 +53,6 @@ export default function ProductDetailScreen({ route }) {
           <ScrollView bounces={false}>
               <ImageCarousel/>
               <ProductContent productId={productId}/>
-            
             <RecommendedCollection />
           </ScrollView>
         </VariantSelectionProvider>
@@ -88,7 +90,12 @@ function ProductContent ({productId}) {
 }
 
 function VariantSelectionButton ({onPress}) {
-  const {options, activeColor, activeSize, activeType} = useContext(VariantSelectionContext)
+  const {options, activeColor} = useContext(VariantSelectionContext)
+
+  const {data, loading, error} = useQuery(GET_COLOR_SWATCH_IMAGES)
+  const COLOR_SWATCH_IMAGES = data && JSON.parse(data?.collection?.metafield?.value)
+  const activeColorSwatchImageUrl = COLOR_SWATCH_IMAGES.find(item => item?.value === activeColor?.value.toLowerCase().replace(/\s+/g, '_'))?.url
+
   return (
     <Pressable
       onPress={onPress}
@@ -96,7 +103,7 @@ function VariantSelectionButton ({onPress}) {
     >
       <View className="flex-row justify-between items-center">
         {options && options.map((option, index) => (
-            <SelectionButton key={index.toString()} label={option.name} selectedoption={option.name === 'Color' ? activeColor?.value : option.name === 'Size' ? activeSize : activeType} />
+            <SelectionButton key={index.toString()} option={option} activeColorSwatchImageUrl={activeColorSwatchImageUrl} />
           ))}
 
         {options.length > 1 && (<View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>)}
@@ -105,18 +112,33 @@ function VariantSelectionButton ({onPress}) {
   )
 }
 
-function SelectionButton ({label, selectedoption}) {
+function SelectionButton ({option, activeColorSwatchImageUrl}) {
+  const {activeColor, activeSize, activeType} = useContext(VariantSelectionContext)
+  const label = option.name
+  const selectedOption = option.name === 'Color' ? activeColor?.value : option.name === 'Size' ? activeSize : activeType
+
+
   return (
-    <View className="items-center justify-center">
+      <View className="items-center justify-center">
         <Text className="text-[11px] text-black font-medium uppercase text-center ">
           {label}
         </Text>
         <View className="flex-row items-center justify-center gap-x-1 mt-3">
+          {option.name === 'Color' && activeColorSwatchImageUrl && (<ColorSwatch activeColor={activeColorSwatchImageUrl}/>)}
           <Text className="text-[15px] text-black font-light uppercase">
-            {selectedoption ? selectedoption : 'Select'}
+            {selectedOption ? selectedOption : 'Select'}
           </Text>
           <ChevronDownIcon size={14} color="black" />
         </View>
+      </View>
+  )
+}
+
+function ColorSwatch({activeColor}) {
+  return (
+    <View className="w-4 h-4 rounded-full overflow-hidden mr-2">
+      {activeColor && (<Image src={activeColor} className="w-full h-full"/>)}
+      {!activeColor && (<Image source={require('../assets/grid-placeholder-image.png')} className="w-full h-full"/>)}
     </View>
   )
 }

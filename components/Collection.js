@@ -234,7 +234,7 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   ));
   
   return (
-    <View className="pb-1 px-1">
+    <View className="pb-14 px-1">
           <Animated.FlatList
             data={colloctionData?.collection?.products?.edges} 
             ref={flatListRef}

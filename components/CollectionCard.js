@@ -37,7 +37,7 @@ export function CollectionCard({ product }) {
       }} className="w-full h-[300px] overflow-hidden rounded-[2px]">
         {images && (
           <Pressable onPress={handlePress}>
-            <Image className="w-full h-full" src={product.featuredImage.url} />
+            <Image className="w-full h-full" src={product?.featuredImage?.url} />
           </Pressable>
         )}
       </View>

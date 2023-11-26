@@ -69,7 +69,19 @@ export const GET_HOMESCREEN_DATA = gql`
 export const GET_HOME_DATA = gql`
   query homeData {
     collection(id: "gid://shopify/Collection/460284723479") {
+      id
       metafield(key: "mobile_app", namespace: "mobile") {
+        value
+      }
+    }
+  }
+`;
+
+export const GET_COLOR_SWATCH_IMAGES = gql`
+  query colorSwatchImages {
+    collection(id: "gid://shopify/Collection/460284723479") {
+      id
+      metafield(key: "color_swatch_images", namespace: "custom") {
         value
       }
     }
