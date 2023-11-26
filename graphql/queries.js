@@ -125,11 +125,22 @@ query getProductVairants($productId: ID!) {
     vendor
     title
     description
-    priceRange {
-      minVariantPrice {
-        amount
-      }
+    priceRange{
+    maxVariantPrice{
+      amount
+      currencyCode
     }
+    minVariantPrice{
+      amount
+      currencyCode
+    }
+  }
+  compareAtPriceRange{
+    minVariantPrice{
+      amount
+      currencyCode
+    }
+  }
     images(first: 100) {
       edges {
         node {

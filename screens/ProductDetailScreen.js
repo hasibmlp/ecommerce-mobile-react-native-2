@@ -206,13 +206,19 @@ function ActionButton () {
 }
 
 function ProductInfo({data}) {
+  const amount = {
+    price: data?.product?.priceRange.minVariantPrice.amount,
+    comparePrice: data?.product?.compareAtPriceRange?.minVariantPrice.amount,
+    currencyCode: data?.product?.priceRange.minVariantPrice.currencyCode
+  }
+
   return (
     <View className="items-center">
       <TagContainer label={data.product.vendor}/>
       <Text className="text-[19px] font-medium text-black text-center mb-3">
         {data.product.title}
       </Text>
-      <PriceContainer amount={data.product.priceRange.minVariantPrice.amount}/>
+      <PriceContainer amount={amount}/>
       <InstallmentContainer/>
       <SmilePointsContainer/>
     </View>
@@ -230,13 +236,28 @@ function TagContainer({label}) {
 }
 
 function PriceContainer({amount}) {
+  const {price, comparePrice, currencyCode} = amount
+  const discountPercentage = Math.round(((comparePrice - price) / comparePrice) * 100)
+  const isDiscountApplyed = price > comparePrice
   return(
-    <View>
-      <Text className="text-[20px] font-normal text-red-800 mb-[2px]">
-          {amount} AED
-      </Text>
+    <View className="items-center">
+      <View className="flex-row items-center">
+        <Text className="text-[18px] font-normal text-blue-800 mb-[2px]">
+            {price} {currencyCode}
+        </Text>
+        {isDiscountApplyed && (
+          <>
+            <Text className="text-[14px] font-normal text-black mb-[2px] ml-2 line-through">
+              {comparePrice} {currencyCode}
+            </Text>
+          < Text className="text-[14px] font-normal text-black mb-[2px] ml-1">
+              {discountPercentage}% offer
+            </Text>
+          </>
+        )}
+      </View>
       <Text className="text-[14px] text-gray-500 font-normal mb-3">
-        Including VAT
+        excluding VAT
       </Text>
     </View>
   )
