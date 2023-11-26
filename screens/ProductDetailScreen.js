@@ -1,5 +1,6 @@
 import { useContext, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import * as Linking from 'expo-linking';
 import {
   SafeAreaView,
   Text,
@@ -17,6 +18,7 @@ import {
   ChevronDownIcon,
   QuestionMarkCircleIcon,
   InformationCircleIcon,
+  ChevronRightIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
@@ -31,6 +33,7 @@ import BottomModal from "../components/Modal/BottomModal";
 import { useQuery } from "@apollo/client";
 import { COLOR_SWATCH_IMAGES, GET_COLOR_SWATCH_IMAGES } from "../graphql/queries";
 import VariantSelection from "../components/Modal/VariantSelection";
+import { LinearGradient } from "expo-linear-gradient";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -87,6 +90,7 @@ function ProductContent ({productId}) {
       {data && (<AddToCartContainer />)}
       <ToggleContainer/>
       <ActionButton />
+      <InstagramContainer/>
     </View>
   )
 }
@@ -313,5 +317,39 @@ function ProductPageHeader() {
 
         {!data && <Skeleton width={150} height={20} />}
       </View>
+  )
+}
+
+function InstagramContainer() {
+  return (
+    <Pressable onPress={() => Linking.openURL("https://www.instagram.com/scrubs_n_clogs")} className="h-20 flex-row items-center justify-between px-4 bg-white mt-4 overflow-hidden">
+      <LinearGradient
+        style={{width: ITEM_WIDTH}}
+        className=" h-full absolute right-0 z-[-1]"
+        colors={['rgba(0, 0, 0, 0.13)', 'rgba(0, 0, 0, 0.24)']}
+        start={{x: 0, y: 1}}
+      />
+      <View className="flex-row items-center ">
+        <View className="w-8 h-8">
+          <Image className="w-full h-full" source={require("../assets/instalogo.png")}/>
+        </View>
+        <Text className="text-[15px] w-[250] text-white font-bold ml-2">Follow us on instagram for excited offers</Text>
+      </View>
+      <ChevronRightIcon size={24} color="black" strokeWidth={1} />
+      <View className="absolute right-0 z-[-2] w-[210px] flex-row flex-wrap rotate-[20deg]">
+            <InstagramImageCard/>
+            <InstagramImageCard/>
+            <InstagramImageCard/>
+            <InstagramImageCard/>
+      </View>
+    </Pressable>
+  )
+}
+
+function InstagramImageCard() {
+  return (
+    <View className="w-24 h-28 bg-blue-300 rounded-[10px] m-1 overflow-hidden">
+      <Image className="w-full h-full" source={require("../assets/baby.jpg")}/>
+    </View>
   )
 }
