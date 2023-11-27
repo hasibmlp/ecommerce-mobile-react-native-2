@@ -74,22 +74,21 @@ function ProductContent ({productId}) {
   
 
   return (
-    <View className="mb-4">
+    <View className="">
       {!data && (<CollectionContentSkeleton/>)}
+        <View className="w-full bg-white items-center py-3">
+          <HeartButton />
+          {data && (<ProductInfo data={data}/>)}
+        </View>
 
-      <View className="items-center gap-[8px] py-[10px] bg-white px-2">
-        <HeartButton />
-        {data && (<ProductInfo data={data}/>)}
-      </View>
-
-      {options && options[0].values[0] !== "Default Title" && (
-        <>
-        <VariantSelectionButton onPress={() => setModalVisible(!isModalVisisble)}/>
-        <BottomModal title={"Select Color/ Size"} visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)}>
-          <VariantSelection productId={productId} context={VariantSelectionContext} handleClose={() => setModalVisible(false)}/>
-        </BottomModal>
-        </>
-      )}
+        {options && options[0].values[0] !== "Default Title" && (
+          <>
+          <VariantSelectionButton onPress={() => setModalVisible(!isModalVisisble)}/>
+          <BottomModal title={"Select Color/ Size"} visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)}>
+            <VariantSelection productId={productId} context={VariantSelectionContext} handleClose={() => setModalVisible(false)}/>
+          </BottomModal>
+          </>
+        )}
 
       {data && (<AddToCartContainer />)}
       <ToggleContainer/>
@@ -251,17 +250,15 @@ function ProductInfo({data}) {
   }
 
   return (
-    <View className="items-center w-[90%]">
-      <TagContainer label={"new arrival"}/>
-      <View className=" py-2">
+    <View className="w-full items-center">
+      <TagContainer label={data.product.vendor}/>
+      <View className="py-3 w-[90%]">
         <Text className="text-[20px] font-normal text-black text-center pb-2">
           {data.product.title}
         </Text>
-        <Text className="text-[12px] font-normal text-black text-center uppercase">
-          {data.product.vendor}
-        </Text>
-      </View>
       <PriceContainer amount={amount}/>
+      </View>
+      <OfferAnnouncement text={data.product.metafield?.value}/>
       <InstallmentContainer/>
       <SmilePointsContainer/>
     </View>
@@ -270,7 +267,7 @@ function ProductInfo({data}) {
 
 function TagContainer({label}) {
   return (
-    <View className="p-1 bg-[#ddd] rounded-[2px] items-center">
+    <View className="p-1 bg-gray-200 rounded-[2px] items-center">
       <Text className="text-[10px] text-black uppercase">
         {label}
       </Text>
@@ -285,30 +282,39 @@ function PriceContainer({amount}) {
   return(
     <View className="items-center">
       <View className="flex-row items-center">
-        <Text className="text-[18px] font-normal text-blue-800 mb-[2px]">
+        <Text className="text-[18px] font-normal text-blue-800 ">
             {price} {currencyCode}
         </Text>
         {isDiscountApplyed && (
           <>
-            <Text className="text-[14px] font-normal text-black mb-[2px] ml-2 line-through">
+            <Text className="text-[14px] font-normal text-black ml-2 line-through">
               {comparePrice} {currencyCode}
             </Text>
-          < Text className="text-[14px] font-normal text-black mb-[2px] ml-1">
+          < Text className="text-[14px] font-normal text-black ml-1">
               {discountPercentage}% offer
             </Text>
           </>
         )}
       </View>
-      <Text className="text-[14px] text-gray-500 font-normal mb-3">
+      <Text className="text-[14px] text-gray-500 font-normal">
         excluding VAT
       </Text>
     </View>
   )
 }
 
+function OfferAnnouncement({text}) {
+  if(!text) return null
+  return (
+    <View className="w-full bg-white p-3 bg-gray-100 mb-3">
+          <Text className="w-[80%] mx-auto text-[12px] text-gray-800 text-center font-normal leading-4">text={text}</Text>
+      </View>
+  )
+}
+
 function InstallmentContainer () {
   return (
-    <View className="w-[80%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
+    <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
         <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
           <Text className="text-[14px] font-normal text-black ">
             Want to pay in instalments?

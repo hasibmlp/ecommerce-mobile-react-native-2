@@ -172,6 +172,9 @@ query getProductVairants($productId: ID!) {
         }
       }
     }
+    metafield(key: "offer_announcement_text", namespace: "mobile") {
+        value
+    }
   }
 }
 `
