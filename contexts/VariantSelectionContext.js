@@ -15,6 +15,8 @@ function VariantSelectionProvider({children, productId}) {
   const [activeColor, setActiveColor] = useState(null)
   const [activeSize, setActiveSize] = useState(null)
   const [activeType, setActiveType] = useState(null)
+  const [currentlyNotInStock, setCurrentlyNotInStock] = useState(false)
+  const [isButtonActive, setButtonActive] = useState(false)
 
   const navigation = useNavigation()
   const cartId = useReactiveVar(cartIdVar);
@@ -79,9 +81,7 @@ function VariantSelectionProvider({children, productId}) {
   });
 
   const isCurrentlyInStock = () => {
-    console.log('color', activeColor)
-    console.log('size', activeSize)
-    console.log('type', activeType)
+
     isVariantAviable = true
     const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
     const variant = getVariantForOptions(variants, option)
@@ -137,6 +137,26 @@ const handleAddCartBtn = () => {
     }
   }, [cartData]);
 
+  useEffect(() => {
+    if(variants) {
+      const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
+      const variant = getVariantForOptions(variants, option)
+      console.log(variant)
+      if(variant) {
+        if(variant?.currentlyNotInStock)setCurrentlyNotInStock(true)
+        else setCurrentlyNotInStock(false)
+      } 
+
+      // set add to cart activation
+      if(variant && variant.availableForSale) setButtonActive(true)
+      else setButtonActive(false)
+
+    }
+  
+},[activeColor, activeSize, activeType])
+
+console.log(isButtonActive)
+
   return (
     <VariantSelectionContext.Provider
       value={{
@@ -151,7 +171,9 @@ const handleAddCartBtn = () => {
         activeType,
         setActiveType,
         isCurrentlyInStock,
-        handleAddCartBtn
+        handleAddCartBtn,
+        currentlyNotInStock,
+        isButtonActive,
       }}
     >{children}</VariantSelectionContext.Provider>
   );

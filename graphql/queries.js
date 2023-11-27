@@ -159,6 +159,8 @@ query getProductVairants($productId: ID!) {
         node {
           id
           quantityAvailable
+          availableForSale
+          currentlyNotInStock
           selectedOptions {
             name
             value

@@ -5,7 +5,7 @@ export default function VariantSelection({productId, handleClose, context}) {
     return (
         <PreVariantSelectionProvider productId={productId} handleClose={handleClose}>
             <VariantSelectionModalContent
-                productId={productId} 
+                productId={productId}
                 handleClose={handleClose}
                 context={context}
             />

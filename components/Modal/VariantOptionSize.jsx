@@ -5,6 +5,10 @@ import { VariantSelectionContext } from "../../contexts/VariantSelectionContext"
 
 export default function VariantOptionSize({ option, availableSizeForColor, context }) {
   const {activeSize, setActiveSize} = useContext(context)
+  const avilableOption = availableSizeForColor.length > 0 ? availableSizeForColor :  option.values
+  const isButtonActive = ''
+
+  console.log("AVAILABLE OPTIONS: ",avilableOption)
 
   const handlePress = (item) => {
     setActiveSize(item)
@@ -13,24 +17,24 @@ export default function VariantOptionSize({ option, availableSizeForColor, conte
   return (
     <ScrollView className="px-5" horizontal showsHorizontalScrollIndicator={false}>
       <View className="flex-row items-center gap-x-3 relative">
-        {option.values.map((item, index) => (
+        {avilableOption.map((option, index) => (
           <TouchableOpacity
             key={index.toString()}
-            onPress={() => handlePress(item)}
+            onPress={() => handlePress(option.size)}
             className={`border-[.5px] rounded-[5px] py-3 px-3 ${
-              !availableSizeForColor.includes(item)
+              !option.availableForSale
                 ? "bg-gray-100 border-gray-300"
                 : ""
-            } ${activeSize === item ? "bg-black" : ""}`}
+            } ${activeSize === option.size ? "bg-black" : ""}`}
           >
             <Text
               className={` text-[14px] font-light uppercase ${
-                !availableSizeForColor.includes(item)
+                !option.availableForSale
                   ? "text-gray-500"
                   : "text-black"
-              } ${activeSize === item ? "text-white" : ""}`}
+              } ${activeSize === option.size ? "text-white" : ""}`}
             >
-              {item}
+              {option.size}
             </Text>
           </TouchableOpacity>
         ))}

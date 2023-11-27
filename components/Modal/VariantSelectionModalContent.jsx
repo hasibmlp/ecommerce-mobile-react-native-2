@@ -6,25 +6,29 @@ import Button from "../buttons/Button";
 import ModalSkeleton from "./ModalSkeleton";
 
 export default function VariantSelectionModalContent({handleClose, context}) {
-  const {options, handleAddCartBtn, activeColor, activeSize, activeType, isCurrentlyInStock} = useContext(context)
-  const [isVariantInStock, setVariantInStock] = useState(true)
-  const [buttonActive, setButtonActive ] = useState(false)
+  const {options, handleAddCartBtn, activeColor, activeSize, activeType, currentlyNotInStock, isButtonActive} = useContext(context)
   const [loading, setLoading] = useState(true)
+  const [buttonActive, setButtonActive] = useState(false)
+
+  const run = () => {
+    if(currentlyNotInStock) {
+
+    }
+  }
 
   useEffect(() => {
     options && setLoading(false)
   },[options])
 
   useEffect(() => {
-      const optionArray = []
-      activeColor && !optionArray.includes(option => option?.name === 'Color') &&  optionArray.push(activeColor)
-      activeSize && !optionArray.includes(option => option === activeSize) && optionArray.push(activeSize)
-      activeType && !optionArray.includes(option => option === activeType) && optionArray.push(activeType)
+    const optionArray = []
+    activeColor && !optionArray.includes(option => option?.name === 'Color') &&  optionArray.push(activeColor)
+    activeSize && !optionArray.includes(option => option === activeSize) && optionArray.push(activeSize)
+    activeType && !optionArray.includes(option => option === activeType) && optionArray.push(activeType)
 
-    if(optionArray.length === options?.length && (activeColor || activeSize || activeType)) {
-       setVariantInStock(isCurrentlyInStock())
-       setButtonActive(true)
-    }
+  if(optionArray.length === options?.length && (activeColor || activeSize || activeType)) {
+      setButtonActive(true)
+  }
   },[activeColor, activeSize, activeType])
     
     return (
@@ -40,7 +44,7 @@ export default function VariantSelectionModalContent({handleClose, context}) {
               />
               ))}
           </View>
-          <Button label={`${isVariantInStock ? 'Add to cart' : 'Notify me'}`} size="md" onPress={isVariantInStock ? handleAddCartBtn : () => {}} active={buttonActive} style={{marginVertical: 12, marginHorizontal: 20}}/>
+          <Button label={`${currentlyNotInStock ? 'Notify me': 'Add to cart' } `} size="md" onPress={currentlyNotInStock ? () => {} : handleAddCartBtn} active={isButtonActive} style={{marginVertical: 12, marginHorizontal: 20}}/>
         </View>
       </View>
       )

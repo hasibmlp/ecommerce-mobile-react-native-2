@@ -16,11 +16,14 @@ export default function VariantOption({ option, context }) {
       variants.filter(
         (item) =>
           item.selectedOptions.find((item) => item.name === "Color")?.value ===
-          activeColor?.value && item.quantityAvailable > 0
+          activeColor?.value
       );
 
     const availableSizeForColor = filteredArray.map((item) => {
-      return item.selectedOptions.find((item) => item.name === "Size")?.value;
+      return {
+        size: item.selectedOptions.find((item) => item.name === "Size")?.value,
+        availableForSale: item.quantityAvailable <= 0 ? item.availableForSale ? item.currentlyNotInStock ? false : true : false : true
+      }
     });
     const availableTypeForColor = filteredArray.map((item) => {
       return (
