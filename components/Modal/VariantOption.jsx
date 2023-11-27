@@ -2,13 +2,16 @@ import { Pressable, Text, View } from "react-native";
 import VariantOptionSize from "./VariantOptionSize";
 import VariantOptionColor from "./VariantOptionColor";
 import VariantOptionType from "./VariantOptionType";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 import { PreVariantSelectionContext } from "../../contexts/PreVariantSelectionContext";
 import Skeleton from "../Skeleton";
+import MyModal from "./MyModal";
+import { XMarkIcon } from "react-native-heroicons/outline";
 
 export default function VariantOption({ option, context }) {
   const {variants, activeColor} = useContext(context)
+  const [isModalVisible, setModalVisible] = useState(false)
 
   const getAvailableVariant = () => {
     const filteredArray =
@@ -45,11 +48,23 @@ export default function VariantOption({ option, context }) {
           {option.name}:{option.name === "Color" && activeColor?.value}
         </Text>
         {option.name === "Size" && (
-          <Pressable>
+          <>
+          <Pressable onPress={() => setModalVisible(true)}>
             <Text className="text-[12px] font-medium text-red-700 uppercase underline">
               size guide
             </Text>
           </Pressable>
+
+          <MyModal visible={isModalVisible} slide="toUp">
+          <View>
+            <View className="h-10 flex-row items-center justify-end px-3">
+              <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+                <XMarkIcon size={24} color="black"/>
+              </Pressable>
+            </View>
+          </View>
+          </MyModal>
+          </>
         )}
       </View>
 

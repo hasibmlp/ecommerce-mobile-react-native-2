@@ -42,7 +42,7 @@ import CardSkeleton from "./skeletons/CardSkeleton";
 import HeaderActions from "./actions/HeaderActions";
 import SmallButton from "./Sidebar/Buttons/SmallButton";
 import { ScreenHeader } from "./actions/ScreenHeader";
-import SideBarModal from "./Modal/SideBarModal";
+import MyModal from "./Modal/MyModal";
 import FilterBody from "./Modal/FilterBody";
 import { FilterSelectionContext, FilterSelectionProvider } from "../contexts/FilterSelectionContext";
 
@@ -61,9 +61,9 @@ export default function Collection({ route }) {
       <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
       <FilterSelectionProvider>
         <CollectionData route={route} openSideBar={() => setSideBarVisible(true)}/>
-        <SideBarModal visible={isSideBarVisible} >
+        <MyModal visible={isSideBarVisible} >
           <FilterBody onClose={handleSideBarClose}/>
-        </SideBarModal>
+        </MyModal>
       </FilterSelectionProvider>
     </View>
   );

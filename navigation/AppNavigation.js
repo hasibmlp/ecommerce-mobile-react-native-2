@@ -11,8 +11,6 @@ import {
   RectangleStackIcon,
 } from "react-native-heroicons/outline";
 
-import { View, Text, SafeAreaView } from "react-native";
-
 import HomeScreen from "../screens/HomeScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
 import FavouriteScreen from "../screens/FavouriteScreen";
@@ -25,7 +23,6 @@ import CheckoutScreen from "../screens/CheckoutScreen";
 import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
 import CheckoutReview from "../components/CheckoutReview";
 import Collection from "../components/Collection";
-import BottomModalV2 from "../components/BottomModalV2";
 import CallBottomModal from "../components/CallBottomModal";
 
 const Stack = createNativeStackNavigator();
@@ -44,6 +41,10 @@ export function Home() {
         name="Collection"
         component={Collection}
         options={{ title: "Collection" }}
+      />
+      <Stack.Screen
+        name="ProductDetailScreen"
+        component={ProductDetailScreen}
       />
     </Stack.Navigator>
   );
@@ -147,10 +148,6 @@ export default function AppNavigation() {
           options={{
             headerShown: false,
           }}
-        />
-        <Stack.Screen
-          name="ProductDetailScreen"
-          component={ProductDetailScreen}
         />
         <Stack.Screen name="FavouriteScreen" component={FavouriteScreen} />
         <Stack.Screen

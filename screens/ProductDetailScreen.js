@@ -21,6 +21,7 @@ import {
   ChevronRightIcon,
   PhoneIcon,
   ArrowRightIcon,
+  XMarkIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
@@ -38,6 +39,7 @@ import VariantSelection from "../components/Modal/VariantSelection";
 import { LinearGradient } from "expo-linear-gradient";
 import WhatsappIcon from "../components/icons/WhatsappIcon";
 import EmailIcon from "../components/icons/EmailIcon";
+import MyModal from "../components/Modal/MyModal";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -313,6 +315,7 @@ function OfferAnnouncement({text}) {
 }
 
 function InstallmentContainer () {
+  const [isModalVisible, setModalVisible] = useState(false)
   return (
     <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
         <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
@@ -320,25 +323,47 @@ function InstallmentContainer () {
             Want to pay in instalments?
           </Text>
         </View>
-        <View className="flex-row items-center justify-center py-2">
+        <Pressable onPress={() => setModalVisible(true)} className="flex-row items-center justify-center py-2">
           <Text className="text-[16px] font-bold text-black mr-1">
             tabby
           </Text>
           <InformationCircleIcon size={14} color="black" />
+        </Pressable>
+
+        <MyModal visible={isModalVisible} slide="toUp">
+        <View>
+          <View className="h-10 flex-row items-center justify-end px-3">
+            <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+              <XMarkIcon size={24} color="black"/>
+            </Pressable>
+          </View>
         </View>
+      </MyModal>
       </View>
   )
 }
 
 function SmilePointsContainer () {
+  const [isModalVisisble, setModalVisible] = useState(false)
   return(
     <View className="flex-row items-center justify-center bg-white mb-1">
       <Text className="text-[14px] font-normal text-black">
         Earn 905 Smile Points.
       </Text>
-      <Text className="text-[14px] text-red-800 font-normal underline ml-2">
-        Learn Now
-      </Text>
+      <Pressable onPress={() => setModalVisible(true)}>
+        <Text className="text-[14px] text-red-800 font-normal underline ml-2">
+          Learn Now
+        </Text>
+      </Pressable>
+      <MyModal visible={isModalVisisble} slide="toUp">
+        <View>
+          <View className="h-10 flex-row items-center justify-end px-3">
+            <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+              <XMarkIcon size={24} color="black"/>
+            </Pressable>
+          </View>
+        </View>
+      </MyModal>
     </View>
   )
 }
