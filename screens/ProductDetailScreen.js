@@ -90,7 +90,7 @@ function ProductContent ({productId}) {
         </BottomModal>
         </>
       )}
-      <ShippingDetails/>
+
       {data && (<AddToCartContainer />)}
       <ToggleContainer/>
       <ActionButton />
@@ -109,36 +109,36 @@ function VariantSelectionButton ({onPress}) {
   return (
     <Pressable
       onPress={onPress}
-      className={`border-t border-gray-300 py-2 bg-white px-14 ${options.length === 1 && 'items-center'}`}
+      className={`w-full bg-white py-2 justify-center border-y border-gray-300`}
     >
-      <View className="flex-row justify-between items-center">
+      <View className="w-full flex-row justify-between items-center px-5">
         {options && options.map((option, index) => (
-            <SelectionButton key={index.toString()} option={option} activeColorSwatchImageUrl={activeColorSwatchImageUrl} />
+            <SelectionButton style={index !== options.length-1 ? {marginRight: 40} : {}} key={index.toString()} option={option} activeColorSwatchImageUrl={activeColorSwatchImageUrl} />
           ))}
 
-        {options.length > 1 && (<View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>)}
       </View>
+        {options.length === 2 && (<View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>)}
     </Pressable>
   )
 }
 
-function SelectionButton ({option, activeColorSwatchImageUrl}) {
+function SelectionButton ({option, activeColorSwatchImageUrl, style}) {
   const {activeColor, activeSize, activeType} = useContext(VariantSelectionContext)
   const label = option.name
   const selectedOption = option.name === 'Color' ? activeColor?.value : option.name === 'Size' ? activeSize : activeType
 
 
   return (
-      <View className="items-center justify-center">
-        <Text className="text-[11px] text-black font-medium uppercase text-center ">
+      <View style={style} className={` w-5 h-10 flex-1`}>
+        <Text className="text-[12px] text-black font-medium uppercase text-center ">
           {label}
         </Text>
-        <View className="flex-row items-center justify-center gap-x-1 mt-3">
+        <View className="flex-row items-center justify-center mt-3">
           {option.name === 'Color' && activeColorSwatchImageUrl && (<ColorSwatch activeColor={activeColorSwatchImageUrl}/>)}
-          <Text className="text-[15px] text-black font-light uppercase">
-            {selectedOption ? selectedOption : 'Select'}
+          <Text className="text-[12px] text-black font-light uppercase mr-[2px]">
+            {selectedOption ? selectedOption.length > 10 ? selectedOption.slice(0, 10) + '...' : selectedOption : 'Select'}
           </Text>
-          <ChevronDownIcon size={14} color="black" />
+          <ChevronDownIcon size={11} color="black" />
         </View>
       </View>
   )
@@ -200,7 +200,7 @@ function ActionButton () {
               </Text>
             </View>
           </View>
-          <ChevronDownIcon size={24} color="black" strokeWidth={1} />
+          <ChevronDownIcon size={20} color="black" strokeWidth={1} />
         </Pressable>
         <BottomModal title="Need Help?" visible={isModalVisible} onClose={() => setModalVisible(false)}>
           <View className="pb-14">
@@ -251,11 +251,16 @@ function ProductInfo({data}) {
   }
 
   return (
-    <View className="items-center">
-      <TagContainer label={data.product.vendor}/>
-      <Text className="text-[19px] font-medium text-black text-center mb-3">
-        {data.product.title}
-      </Text>
+    <View className="items-center w-[90%]">
+      <TagContainer label={"new arrival"}/>
+      <View className=" py-2">
+        <Text className="text-[20px] font-normal text-black text-center pb-2">
+          {data.product.title}
+        </Text>
+        <Text className="text-[12px] font-normal text-black text-center uppercase">
+          {data.product.vendor}
+        </Text>
+      </View>
       <PriceContainer amount={amount}/>
       <InstallmentContainer/>
       <SmilePointsContainer/>
@@ -265,8 +270,8 @@ function ProductInfo({data}) {
 
 function TagContainer({label}) {
   return (
-    <View className="py-[5px] w-full max-w-[100px] bg-[#ddd] rounded-[2px] items-center mb-3">
-      <Text className="text-[11px] text-black uppercase">
+    <View className="p-1 bg-[#ddd] rounded-[2px] items-center">
+      <Text className="text-[10px] text-black uppercase">
         {label}
       </Text>
     </View>
@@ -303,7 +308,7 @@ function PriceContainer({amount}) {
 
 function InstallmentContainer () {
   return (
-    <View className=" items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
+    <View className="w-[80%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
         <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
           <Text className="text-[14px] font-normal text-black ">
             Want to pay in instalments?
@@ -336,12 +341,6 @@ function AddToCartContainer() {
   const handleAddCartBtn = () => {}
   return (
     <View className="flex py-4 px-4 bg-white">
-        <View className="flex-row gap-x-1 items-center justify-center mb-5">
-          <ClockIcon size={20} color="red" />
-          <Text className="text-[13px] text-red-500 font-normal">
-            Low in stock: only 1 left
-          </Text>
-        </View>
         <Button label="Add to cart" size="md" onPress={handleAddCartBtn}/>
       </View>
   )

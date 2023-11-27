@@ -22,8 +22,8 @@ export default function ShowAndHide({title}) {
         onPress={() => setShowBody(!showBody)}
         className="flex-row justify-between px-[15px] py-[15px] items-center"
       >
-        <Text className="text-[16px] text-gray-800 font-normal">{title}</Text>
-        <PlusIcon size={24} color="black" strokeWidth={1} />
+        <Text className="text-[15px] text-gray-800 font-normal">{title}</Text>
+        <PlusIcon size={20} color="black" strokeWidth={1} />
       </Pressable>
       {showBody ? <View className='px-[15px] pb-[15px]'><Text className="text-[14px] text-gray-600 font-normal">hey there! i am visible now..</Text></View> : null}
     </Animated.View>
