@@ -1,9 +1,7 @@
-import { Animated, Modal, TouchableOpacity, View } from "react-native"
-import VariantSelectionModalContent from "./VariantSelectionModalContent"
+import { Animated, Modal, Pressable, Text, TouchableOpacity, View } from "react-native"
 import { useEffect, useRef, useState } from "react";
-import { PreVariantSelectionProvider } from "../../contexts/PreVariantSelectionContext";
 
-export default function BottomModal({visible, children, onClose}) {
+export default function BottomModal({visible, children, onClose, title}) {
     const [isModalVisible, setModalVisible] = useState(false)
     const [isContentAnimated, setContentAnimated] = useState(false)
 
@@ -48,7 +46,10 @@ export default function BottomModal({visible, children, onClose}) {
                     style={{transform: [{ translateY: transRef }],}}
                     className="w-full absolute bottom-0 z-50 bg-white rounded-[15px] overflow-hidden"
                 >
-                    {children}
+                    <View>
+                        <BottomModalHeader title={title} handleClose={onClose} />
+                        {children}
+                    </View>
                 </Animated.View>
 
                 </View>
@@ -82,3 +83,20 @@ export default function BottomModal({visible, children, onClose}) {
           </Animated.View>
         )
     }
+
+function BottomModalHeader({ handleClose, title }) {
+        return (
+          <View className=" flex-row justify-between items-center px-5 pb-4 pt-6">
+            <Text className="text-[22px] font-light text-black">{title}</Text>
+            <Pressable
+              className=" py-2 px-3"
+              onPress={handleClose}
+            >
+              <Text className="text-[14px] font-medium text-black uppercase">
+                Done
+              </Text>
+            </Pressable>
+          </View>
+        );
+      }
+      

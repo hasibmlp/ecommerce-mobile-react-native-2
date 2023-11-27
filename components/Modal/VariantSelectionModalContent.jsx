@@ -29,9 +29,8 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     return (
       <View className="items-center justify-center bg-white">
-        <View className="pb-10 pt-5 self-stretch">
+        <View className="pb-10 self-stretch">
           <View className="">
-            <VariantHeader handleClose={handleClose} />
             {!options && <ModalSkeleton />}
             {options && options.map((option, index) => (
               <VariantOption

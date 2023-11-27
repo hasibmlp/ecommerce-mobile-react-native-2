@@ -1,11 +1,10 @@
 
 import { Pressable, Text, View } from "react-native";
-import { bottomModaVar } from "../../App";
 
-export default function VariantHeader({ handleClose }) {
+export default function BottomModalHeader({ handleClose, title }) {
   return (
     <View className=" flex-row justify-between items-center mb-3 px-5">
-      <Text className="text-[22px] font-normal text-black">Select Size</Text>
+      <Text className="text-[22px] font-normal text-black">{title}</Text>
       <Pressable
         className=" py-2 px-3"
         onPress={handleClose}

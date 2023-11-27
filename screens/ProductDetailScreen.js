@@ -19,6 +19,8 @@ import {
   QuestionMarkCircleIcon,
   InformationCircleIcon,
   ChevronRightIcon,
+  PhoneIcon,
+  ArrowRightIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
@@ -34,6 +36,8 @@ import { useQuery } from "@apollo/client";
 import { COLOR_SWATCH_IMAGES, GET_COLOR_SWATCH_IMAGES } from "../graphql/queries";
 import VariantSelection from "../components/Modal/VariantSelection";
 import { LinearGradient } from "expo-linear-gradient";
+import WhatsappIcon from "../components/icons/WhatsappIcon";
+import EmailIcon from "../components/icons/EmailIcon";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -81,7 +85,7 @@ function ProductContent ({productId}) {
       {options && options[0].values[0] !== "Default Title" && (
         <>
         <VariantSelectionButton onPress={() => setModalVisible(!isModalVisisble)}/>
-        <BottomModal visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)}>
+        <BottomModal title={"Select Color/ Size"} visible={isModalVisisble} productId={productId} onClose={() => setModalVisible(false)}>
           <VariantSelection productId={productId} context={VariantSelectionContext} handleClose={() => setModalVisible(false)}/>
         </BottomModal>
         </>
@@ -198,10 +202,44 @@ function ActionButton () {
           </View>
           <ChevronDownIcon size={24} color="black" strokeWidth={1} />
         </Pressable>
-      <BottomModal visible={isModalVisible} onClose={() => setModalVisible(false)}>
-        <View className="h-[100px]"></View>
-      </BottomModal>
+        <BottomModal title="Need Help?" visible={isModalVisible} onClose={() => setModalVisible(false)}>
+          <View className="pb-14">
+            <View className="pb-8">
+              <View className=" w-[90%] mx-auto pb-3">
+                <Text className="text-[14px] text-gray-800 font-light leading-5">If you need to speak with one of our customer case representative you can react us here, We are avilable between 10am - 10pm</Text>
+              </View>
+              <View className="flex-row justify-between items-center w-[90%] mx-auto">
+                <InformationContainerIcon  label="Phone" icon={<PhoneIcon size={24} color="black" strokeWidth={1} />} onClick={() => Linking.openURL('tel:+97124913000')}/>
+                <InformationContainerIcon label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} />
+                <InformationContainerIcon  label="Mail" icon={<EmailIcon/>} onClick={() => Linking.openURL("mailto:helloscrubsandclogs.com")}/>
+              </View>
+            </View>
+            <InformationPanel label="Shipping Policy" style={{borderBottomWidth: 1, borderBottomColor: '#D3D3D3'}} rightIcon={<ChevronRightIcon size={24} color="black"/>}/>
+            <InformationPanel label="Returns & Refunds" style={{borderBottomWidth: 1, borderBottomColor: '#D3D3D3'}} rightIcon={<ChevronRightIcon size={24} color="black"/>}/>
+          </View>
+        </BottomModal>
     </View>
+  )
+}
+
+function InformationContainerIcon({label, icon, onClick}) {
+  return (
+    <Pressable onPress={onClick} className="w-28 h-20 border border-gray-500 rounded-[5px] items-center justify-center">
+      {icon}
+      <Text className="text-[12px] text-black font-normal uppercase mt-2">{label}</Text>
+    </Pressable>
+  )
+}
+
+function InformationPanel({children, label, rightIcon, style}) {
+  return(
+    <Pressable style={style} onPress={() => {}} className="flex-row gap-x-1 items-center justify-between bg-white p-4">
+      {children && (<View>{children}</View>)}
+      {label && !children && (<Text className="text-[16px] text-black font-normal">{label}</Text>)}
+      <View className="right-auto">
+        {rightIcon}
+      </View>
+    </Pressable>
   )
 }
 
