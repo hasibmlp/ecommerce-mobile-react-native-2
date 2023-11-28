@@ -2,7 +2,7 @@
 import { useContext } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
-export default function VariantOptionType({ option, availableTypeForColor, context }) {
+export default function VariantOptionType({ option, context }) {
   const {activeType, setActiveType} = useContext(context)
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-5">
@@ -11,16 +11,15 @@ export default function VariantOptionType({ option, availableTypeForColor, conte
           <TouchableOpacity
             key={index.toString()}
             onPress={() => (activeType === item ? setActiveType(null) : setActiveType(item))}
-            disabled={!availableTypeForColor.includes(item)}
             className={`border-[.5px] rounded-[5px] py-3 px-3 ${
-              !availableTypeForColor.includes(item)
+              false
                 ? "bg-gray-100 border-gray-300"
                 : ""
             } ${activeType === item ? "bg-black" : ""}`}
           >
             <Text
               className={` text-[14px] font-light uppercase ${
-                !availableTypeForColor.includes(item)
+                false
                   ? "text-gray-500"
                   : "text-black"
               } ${activeType === item ? "text-white" : ""}`}

@@ -136,7 +136,7 @@ function PreVariantSelectionProvider({children, productId, handleClose}) {
       }
     }, [cartData]);
 
-    
+  
     return (
         <PreVariantSelectionContext.Provider
             value={{

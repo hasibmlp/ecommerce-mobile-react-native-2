@@ -13,33 +13,34 @@ export default function VariantOption({ option, context }) {
   const {variants, activeColor} = useContext(context)
   const [isModalVisible, setModalVisible] = useState(false)
 
-  const getAvailableVariant = () => {
-    const filteredArray =
-      variants &&
-      variants.filter(
-        (item) =>
-          item.selectedOptions.find((item) => item.name === "Color")?.value ===
-          activeColor?.value
-      );
+  // const getAvailableVariant = () => {
+  //   const filteredArray =
+  //     variants &&
+  //     variants.filter(
+  //       (item) =>
+  //         item.selectedOptions.find((item) => item.name === "Color")?.value ===
+  //         activeColor?.value
+  //     );
 
-    const availableSizeForColor = filteredArray.map((item) => {
-      return {
-        size: item.selectedOptions.find((item) => item.name === "Size")?.value,
-        availableForSale: item.quantityAvailable <= 0 ? item.availableForSale ? item.currentlyNotInStock ? false : true : false : true
-      }
-    });
-    const availableTypeForColor = filteredArray.map((item) => {
-      return (
-        item.selectedOptions.find((item) => item.name === "TYPE") &&
-        item.selectedOptions.find((item) => item.name === "TYPE")?.value
-      );
-    });
+  //   const availableSizeForColor = filteredArray.map((item) => {
+      
+  //     const size = (item.selectedOptions.find((item) => item.name === "Size")?.value)
+  //     return {
+  //       size: item.selectedOptions.find((item) => item.name === "Size")?.value,
+  //       availableForSale: item.quantityAvailable <= 0 ? item.availableForSale ? item.currentlyNotInStock ? false : true : false : true
+  //     }
+  //   });
+  //   const availableTypeForColor = filteredArray.map((item) => {
+  //     return (
+  //       item.selectedOptions.find((item) => item.name === "TYPE") &&
+  //       item.selectedOptions.find((item) => item.name === "TYPE")?.value
+  //     );
+  //   });
 
-    return { availableSizeForColor, availableTypeForColor };
-  };
+  //   console.log("AVAILABLE SIZE FOR COLOR",[... new Set(availableSizeForColor.map(item => item.size))])
 
-  const availableSizeForColor = getAvailableVariant().availableSizeForColor;
-  const availableTypeForColor = getAvailableVariant().availableTypeForColor;
+  //   return { availableSizeForColor, availableTypeForColor };
+  // };
 
   return (
     <View className="mb-5">
@@ -76,13 +77,11 @@ export default function VariantOption({ option, context }) {
       ) : option.name === "Size" ? (
         <VariantOptionSize
           option={option}
-          availableSizeForColor={availableSizeForColor}
           context={context}
         />
       ) : (
         <VariantOptionType
           option={option}
-          availableTypeForColor={availableTypeForColor}
           context={context}
         />
       )}

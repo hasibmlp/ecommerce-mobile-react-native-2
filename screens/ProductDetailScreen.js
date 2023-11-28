@@ -113,10 +113,12 @@ function HeaderLeft() {
 
 function HeaderRight() {
   const {data} = useContext(VariantSelectionContext)
+  console.log(data?.product.onlineStoreUrl)
   const onShare = async () => {
     console.log("PRESSED")
     const result = await Share.share({
       title: data.product.onlineStoreUrl,
+      message: data.product.title,
       url: data.product.onlineStoreUrl
     })
     console.log("ON SHARE", result)

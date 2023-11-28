@@ -30,6 +30,7 @@ export default function VariantSelectionModalContent({handleClose, context}) {
       setButtonActive(true)
   }
   },[activeColor, activeSize, activeType])
+
     
     return (
       <View className="items-center justify-center bg-white">

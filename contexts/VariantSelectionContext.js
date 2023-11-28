@@ -155,7 +155,21 @@ const handleAddCartBtn = () => {
   
 },[activeColor, activeSize, activeType])
 
-console.log(isButtonActive)
+useEffect(() => {
+  const optionArray = []
+  activeColor && !optionArray.includes(option => option?.name === 'Color') &&  optionArray.push(activeColor)
+  activeSize && !optionArray.includes(option => option === activeSize) && optionArray.push(activeSize)
+  activeType && !optionArray.includes(option => option === activeType) && optionArray.push(activeType)
+
+  console.log("OPTIONS ARRAY",optionArray)
+
+  // const variant = getVariantForSingleOption(variants, 'Color', 'Navy')
+
+  if(optionArray === options?.length -1){
+
+  }
+  
+},[activeColor, activeSize, activeType])
 
   return (
     <VariantSelectionContext.Provider
