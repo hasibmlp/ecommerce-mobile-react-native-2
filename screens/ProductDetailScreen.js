@@ -10,6 +10,7 @@ import {
   Pressable,
   TouchableOpacity,
   Image,
+  Share,
 } from "react-native";
 import {
   ClockIcon,
@@ -22,6 +23,7 @@ import {
   PhoneIcon,
   ArrowRightIcon,
   XMarkIcon,
+  ArrowUpOnSquareIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
@@ -40,6 +42,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import WhatsappIcon from "../components/icons/WhatsappIcon";
 import EmailIcon from "../components/icons/EmailIcon";
 import MyModal from "../components/Modal/MyModal";
+import HeaderActions from "../components/actions/HeaderActions";
+import { ScreenHeader } from "../components/actions/ScreenHeader";
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -48,6 +54,14 @@ const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { productId } = route.params;
+  const scrollRef = useSharedValue(0)
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (e) => {
+      scrollRef.value = e.contentOffset.y;
+    },
+  });
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -59,15 +73,59 @@ export default function ProductDetailScreen({ route }) {
     <View className="flex-1">
       <SafeAreaView className="bg-white" />
         <VariantSelectionProvider productId={productId}>
-          <ProductPageHeader/>
-          <ScrollView bounces={false}>
-              <ImageCarousel/>
-              <ProductContent productId={productId}/>
-            <RecommendedCollection />
-          </ScrollView>
+          <View>
+            <Header/>
+            <Animated.ScrollView bounces={false} onScroll={scrollHandler}  scrollEventThrottle={1}>
+                <ImageCarousel/>
+                <ProductContent productId={productId}/>
+              <RecommendedCollection />
+            </Animated.ScrollView>
+          </View>
         </VariantSelectionProvider>
     </View>
   );
+}
+
+function Header() {
+  const {data} = useContext(VariantSelectionContext)
+  return (
+    <ScreenHeaderV2
+        title={data?.product?.title}
+        left={(<HeaderLeft/>)}
+        right={(
+          <HeaderRight/>
+        )}
+      />
+  )
+}
+
+function HeaderLeft() {
+  const navigation = useNavigation()
+  return (
+    <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        className="p-1 items-center justify-center"
+      >
+        <ChevronLeftIcon size={24} color="black" />
+      </TouchableOpacity>
+  )
+}
+
+function HeaderRight() {
+  const {data} = useContext(VariantSelectionContext)
+  const onShare = async () => {
+    console.log("PRESSED")
+    const result = await Share.share({
+      title: data.product.onlineStoreUrl,
+      url: data.product.onlineStoreUrl
+    })
+    console.log("ON SHARE", result)
+  }
+  return (
+    <TouchableOpacity onPress={onShare} className="p-1 items-center justify-center absolute right-4 " >
+      <ArrowUpOnSquareIcon size={22} color="black" />
+    </TouchableOpacity>
+  )
 }
 
 function ProductContent ({productId}) {
@@ -386,25 +444,79 @@ function RecommendedCollection() {
   )
 }
 
+function ScreenHeaderV2({scrollY, layout, title, left, right}) {
+
+  const beginToAnimate =  200
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
+      scrollY?.value,
+      [
+        90,
+        beginToAnimate,
+      ],
+      [0, 1]
+    );
+    return {
+      opacity: opacity,
+    };
+  });
+
+
+  return (
+    <View className="w-full h-10 absolute top-0 z-50">
+
+    <View className="items-center justify-center h-[50px] relativ flex-row justify-between px-4">
+        <View className="flex-row items-center">{left}</View>
+          
+        <View className="flex-row items-center">{right}</View>
+    </View>
+
+    {/* <View className="h-10 w-full items-center bg-blue-300 justify-center absolute top-0 ">
+        <View className="h-full absolute left-3 flex-row items-center">{left}</View>
+        <Text className="text-[14px] font-medium text-black">
+          {title?.length > 20 ? title.slice(0, 20) + '...' : title}
+        </Text>
+        <View className="h-full absolute right-3 flex-row items-center">{right}</View>
+    </View> */}
+
+      {/* <ProductPageHeader/> */}
+    </View>
+  )
+}
+
 function ProductPageHeader() {
   const {data} = useContext(VariantSelectionContext)
   const navigation = useNavigation()
+
+  const onShare = async () => {
+    console.log("PRESSED")
+    const result = await Share.share({
+      title: data.product.onlineStoreUrl,
+      url: data.product.onlineStoreUrl
+    })
+    console.log("ON SHARE", result)
+  }
 
   return (
     <View className="items-center justify-center bg-white h-[50px] relative">
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="h-[40px] w-[40px] items-center justify-center absolute left-4 "
+          className="p-1 items-center justify-center absolute left-4 "
         >
           <ChevronLeftIcon size={20} color="black" />
         </TouchableOpacity>
         {data && (
-          <Text className="text-[20px] font-medium text-black">
-            {data.product.vendor}
+          <Text className="text-[14px] font-medium text-black">
+            {data.product.title.length > 20 ? data.product.title.slice(0, 20) + '...' : data.product.title}
           </Text>
         )}
 
-        {!data && <Skeleton width={150} height={20} />}
+        {!data && <Skeleton width={150} height={15} style={{borderRadius: 100}}/>}
+
+        <TouchableOpacity onPress={onShare} className="p-1 items-center justify-center absolute right-4 " >
+          <ArrowUpOnSquareIcon size={20} color="black" />
+        </TouchableOpacity>
       </View>
   )
 }

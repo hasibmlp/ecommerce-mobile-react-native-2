@@ -125,6 +125,7 @@ query getProductVairants($productId: ID!) {
     vendor
     title
     description
+    onlineStoreUrl
     priceRange{
     maxVariantPrice{
       amount
