@@ -24,6 +24,7 @@ import {
   ArrowRightIcon,
   XMarkIcon,
   ArrowUpOnSquareIcon,
+  ArrowUpTrayIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
@@ -74,7 +75,7 @@ export default function ProductDetailScreen({ route }) {
       <SafeAreaView className="bg-white" />
         <VariantSelectionProvider productId={productId}>
           <View>
-            <Header/>
+            <Header scrollRef={scrollRef}/>
             <Animated.ScrollView bounces={false} onScroll={scrollHandler}  scrollEventThrottle={1}>
                 <ImageCarousel/>
                 <ProductContent productId={productId}/>
@@ -86,16 +87,27 @@ export default function ProductDetailScreen({ route }) {
   );
 }
 
-function Header() {
+function Header({scrollRef}) {
   const {data} = useContext(VariantSelectionContext)
   return (
     <ScreenHeaderV2
-        title={data?.product?.title}
         left={(<HeaderLeft/>)}
         right={(
           <HeaderRight/>
         )}
+        titleContainer={<TitleConainer/>}
+        scrollRef={scrollRef}
       />
+  )
+}
+
+function TitleConainer() {
+  const {data} = useContext(VariantSelectionContext)
+  return (
+    <View className="w-[70%] h-full items-center justify-end p-2">
+      <Text className="text-[20px] font-noraml text-black">{data?.product?.vendor}</Text>
+      <Text className="text-[12px] font-noraml text-gray-500 mt-[2px] whitespace-nowrap">{data?.product?.title?.length > 36 ? data?.product?.title.slice(0, 36) + '...' : data?.product?.title}</Text>
+    </View>
   )
 }
 
@@ -106,7 +118,7 @@ function HeaderLeft() {
         onPress={() => navigation.goBack()}
         className="p-1 items-center justify-center"
       >
-        <ChevronLeftIcon size={24} color="black" />
+        <ChevronLeftIcon size={28} color="black" strokeWidth={1}/>
       </TouchableOpacity>
   )
 }
@@ -125,7 +137,7 @@ function HeaderRight() {
   }
   return (
     <TouchableOpacity onPress={onShare} className="p-1 items-center justify-center absolute right-4 " >
-      <ArrowUpOnSquareIcon size={22} color="black" />
+      <ArrowUpTrayIcon size={24} color="black" strokeWidth={1}/>
     </TouchableOpacity>
   )
 }
@@ -446,17 +458,14 @@ function RecommendedCollection() {
   )
 }
 
-function ScreenHeaderV2({scrollY, layout, title, left, right}) {
+function ScreenHeaderV2({scrollRef, layout, title, left, right, titleContainer}) {
 
   const beginToAnimate =  200
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
-      scrollY?.value,
-      [
-        90,
-        beginToAnimate,
-      ],
+      scrollRef.value,
+      [0,100],
       [0, 1]
     );
     return {
@@ -465,22 +474,24 @@ function ScreenHeaderV2({scrollY, layout, title, left, right}) {
   });
 
 
+
   return (
     <View className="w-full h-10 absolute top-0 z-50">
 
-    <View className="items-center justify-center h-[50px] relativ flex-row justify-between px-4">
+    <View className="items-center justify-center h-12 relativ flex-row justify-between px-4">
         <View className="flex-row items-center">{left}</View>
           
         <View className="flex-row items-center">{right}</View>
     </View>
 
-    {/* <View className="h-10 w-full items-center bg-blue-300 justify-center absolute top-0 ">
-        <View className="h-full absolute left-3 flex-row items-center">{left}</View>
-        <Text className="text-[14px] font-medium text-black">
+    <Animated.View style={headerAnimatedStyle} className="h-12 w-full items-center bg-white justify-center absolute top-0">
+        <View className="h-full absolute left-4 flex-row items-center">{left}</View>
+        {!titleContainer && (<Text className="text-[16px] font-normal text-black">
           {title?.length > 20 ? title.slice(0, 20) + '...' : title}
-        </Text>
-        <View className="h-full absolute right-3 flex-row items-center">{right}</View>
-    </View> */}
+        </Text>)}
+        {titleContainer && titleContainer}
+        <View className="h-full absolute right-4 flex-row items-center">{right}</View>
+    </Animated.View>
 
       {/* <ProductPageHeader/> */}
     </View>
