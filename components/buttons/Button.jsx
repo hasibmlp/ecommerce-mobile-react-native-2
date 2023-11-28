@@ -1,4 +1,6 @@
 import { Text, TouchableOpacity } from "react-native";
+const themeColor = 'bg-[#4baaca]'
+
 
 export default function Button ({label, type='primary', size='md', style, flex, onPress, active=true }) {
 
@@ -10,7 +12,7 @@ export default function Button ({label, type='primary', size='md', style, flex, 
     let buttonStyle
     if (type === 'secondary')  buttonStyle =  {container: `bg-white border border-blue-300 rounded-[5px] ${buttonSize.conntainer}`, text: 'text-blue-500'}
     else if (type === 'action') buttonStyle =  {container: '', text: `text-red-800 underline ${buttonSize.text}`}
-    else buttonStyle =  {container: `bg-blue-400 py-4 rounded-[5px] ${buttonSize.conntainer}`, text: 'text-white'}
+    else buttonStyle =  {container: `${themeColor} py-4 rounded-[5px] ${buttonSize.conntainer}`, text: 'text-white'}
 
 
     return (

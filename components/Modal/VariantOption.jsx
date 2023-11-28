@@ -9,6 +9,8 @@ import Skeleton from "../Skeleton";
 import MyModal from "./MyModal";
 import { XMarkIcon } from "react-native-heroicons/outline";
 
+const textColor = 'text-[#4baaca]'
+
 export default function VariantOption({ option, context }) {
   const {variants, activeColor} = useContext(context)
   const [isModalVisible, setModalVisible] = useState(false)
@@ -51,7 +53,7 @@ export default function VariantOption({ option, context }) {
         {option.name === "Size" && (
           <>
           <Pressable onPress={() => setModalVisible(true)}>
-            <Text className="text-[12px] font-medium text-red-700 uppercase underline">
+            <Text className={`text-[12px] font-medium ${textColor} uppercase underline`}>
               size guide
             </Text>
           </Pressable>

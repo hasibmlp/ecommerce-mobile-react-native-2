@@ -1,4 +1,4 @@
-import { Animated, Modal, Pressable, Text, TouchableOpacity, View } from "react-native"
+import { Animated, Easing, Modal, Pressable, Text, TouchableOpacity, View } from "react-native"
 import { useEffect, useRef, useState } from "react";
 
 export default function BottomModal({visible, children, onClose, title}) {
@@ -11,13 +11,15 @@ export default function BottomModal({visible, children, onClose, title}) {
     useEffect(() => {
         isContentAnimated && Animated.timing(transRef, {
         toValue: 0,
-        duration: 200,
+        duration: 300,
+        easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
         useNativeDriver: true,
         }).start();
 
         !isContentAnimated && Animated.timing(transRef, {
         toValue: 500,
-        duration: 200,
+        duration: 300,
+        easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
         useNativeDriver: true,
         }).start(() => setModalVisible(false));
 
@@ -40,7 +42,7 @@ export default function BottomModal({visible, children, onClose, title}) {
                 >
                 <View className="flex-1">
 
-                {(<ModalOverlay visible={isModalVisible} handleClose={onClose} />)}
+                {(<ModalOverlay visible={visible} handleClose={onClose} />)}
 
                 <Animated.View
                     style={{transform: [{ translateY: transRef }],}}
@@ -62,17 +64,23 @@ export default function BottomModal({visible, children, onClose, title}) {
         const opacityRef = useRef(new Animated.Value(0)).current;
 
         useEffect(() => {
-            Animated.timing(opacityRef, {
-              toValue: 0.3,
-              delay: 100,
+            visible && Animated.timing(opacityRef, {
+              toValue: 0.4,
+              easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
+              useNativeDriver: true,
+            }).start();
+
+            !visible && Animated.timing(opacityRef, {
+              toValue: 0,
               duration: 200,
+              easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
               useNativeDriver: true,
             }).start();
         },[visible])
 
         return (
             <Animated.View
-            style={[{ opacity: opacityRef }, !visible && { display: "none" }]}
+            style={[{ opacity: opacityRef }]}
             className={` absolute top-0 bottom-0 left-0 bottom-0 right-0 bg-black z-50 `}
           >
             <TouchableOpacity

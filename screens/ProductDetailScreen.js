@@ -46,11 +46,15 @@ import MyModal from "../components/Modal/MyModal";
 import HeaderActions from "../components/actions/HeaderActions";
 import { ScreenHeader } from "../components/actions/ScreenHeader";
 import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import SmileIcon from "../components/icons/SmileIcon";
 
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
 const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
+
+const themeColor = 'bg-[#4baaca]'
+const textColor = 'text-[#4baaca]'
 
 export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
@@ -164,8 +168,19 @@ function ProductContent ({productId}) {
           </>
         )}
 
-      {data && (<AddToCartContainer />)}
+      {data && (<AddToCartContainer/>)}
       <ToggleContainer/>
+       <OfferAnnouncement text={data?.product.metafield?.value}/>
+       <InformationPanel style={{marginVertical: 12}} alignment="center">
+          <View className="flex-row">
+            <SmileIcon />
+            <Text className="text-[14px] font-light text-gray-800 ml-2 mr-1">
+              We reward with Smile.
+            </Text>
+            <Text className={`text-[14px] font-normal ${textColor} underline`}>Learn how.</Text>
+          </View>
+       </InformationPanel>
+      <InstallmentContainer/> 
       <ActionButton />
       <InstagramContainer/>
     </View>
@@ -208,7 +223,7 @@ function SelectionButton ({option, activeColorSwatchImageUrl, style}) {
         </Text>
         <View className="flex-row items-center justify-center mt-3">
           {option.name === 'Color' && activeColorSwatchImageUrl && (<ColorSwatch activeColor={activeColorSwatchImageUrl}/>)}
-          <Text className="text-[12px] text-black font-light uppercase mr-[2px]">
+          <Text className="text-[14px] text-black font-light uppercase mr-[2px]">
             {selectedOption ? selectedOption.length > 10 ? selectedOption.slice(0, 10) + '...' : selectedOption : 'Select'}
           </Text>
           <ChevronDownIcon size={11} color="black" />
@@ -250,9 +265,10 @@ function ShippingDetails () {
 function ToggleContainer() {
   return (
     <View>
-        <ShowAndHide title="Editor's advice" />
+        <ShowAndHide title="Product Details" />
         <ShowAndHide title="Size & Fit" />
-        <ShowAndHide title="Delivery % Free Returns" />
+        <ShowAndHide title="Shipping &  Return policy" />
+        <ShowAndHide title="Washing instruction" />
       </View>
   )
 }
@@ -304,9 +320,13 @@ function InformationContainerIcon({label, icon, onClick}) {
   )
 }
 
-function InformationPanel({children, label, rightIcon, style}) {
+function InformationPanel({children, label, rightIcon, style, alignment="left"}) {
+  let alignmentStyle
+   if(alignment === 'center') alignmentStyle = 'justify-center'
+   else if (alignment === 'end') alignmentStyle = 'justify-end'
+   else alignmentStyle = 'justify-start'
   return(
-    <Pressable style={style} onPress={() => {}} className="flex-row gap-x-1 items-center justify-between bg-white p-4">
+    <Pressable style={style} onPress={() => {}} className={`flex-row gap-x-1 items-center ${alignmentStyle} bg-white p-4`}>
       {children && (<View>{children}</View>)}
       {label && !children && (<Text className="text-[16px] text-black font-normal">{label}</Text>)}
       <View className="right-auto">
@@ -332,9 +352,6 @@ function ProductInfo({data}) {
         </Text>
       <PriceContainer amount={amount}/>
       </View>
-      <OfferAnnouncement text={data.product.metafield?.value}/>
-      <InstallmentContainer/>
-      <SmilePointsContainer/>
     </View>
   )
 }
@@ -356,12 +373,12 @@ function PriceContainer({amount}) {
   return(
     <View className="items-center">
       <View className="flex-row items-center">
-        <Text className="text-[18px] font-normal text-blue-800 ">
+        <Text className={`text-[18px] font-normal ${textColor}`}>
             {price} {currencyCode}
         </Text>
         {isDiscountApplyed && (
           <>
-            <Text className="text-[14px] font-normal text-black ml-2 line-through">
+            <Text className="text-[14px] font-normal text-black ml-2">
               {comparePrice} {currencyCode}
             </Text>
           < Text className="text-[14px] font-normal text-black ml-1">
@@ -370,7 +387,7 @@ function PriceContainer({amount}) {
           </>
         )}
       </View>
-      <Text className="text-[14px] text-gray-500 font-normal">
+      <Text className="text-[14px] text-gray-500 font-normal mt-1">
         excluding VAT
       </Text>
     </View>
@@ -389,44 +406,45 @@ function OfferAnnouncement({text}) {
 function InstallmentContainer () {
   const [isModalVisible, setModalVisible] = useState(false)
   return (
-    <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch mb-3">
-        <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
-          <Text className="text-[14px] font-normal text-black ">
-            Want to pay in instalments?
-          </Text>
-        </View>
-        <Pressable onPress={() => setModalVisible(true)} className="flex-row items-center justify-center py-2">
-          <Text className="text-[16px] font-bold text-black mr-1">
-            tabby
-          </Text>
-          <InformationCircleIcon size={14} color="black" />
-        </Pressable>
-
-        <MyModal visible={isModalVisible} slide="toUp">
-        <View>
-          <View className="h-10 flex-row items-center justify-end px-3">
-            <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
-              <XMarkIcon size={24} color="black"/>
-            </Pressable>
+    <View className="w-full bg-white py-3">
+      <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch">
+          <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
+            <Text className="text-[14px] font-normal text-black ">
+              Want to pay in instalments?
+            </Text>
           </View>
+          <Pressable onPress={() => setModalVisible(true)} className="flex-row items-center justify-center py-2">
+            <Text className="text-[16px] font-bold text-black mr-1">
+              tabby
+            </Text>
+            <InformationCircleIcon size={14} color="black" />
+          </Pressable>
+
+          <MyModal visible={isModalVisible} slide="toUp">
+          <View>
+            <View className="h-10 flex-row items-center justify-end px-3">
+              <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+                <XMarkIcon size={24} color="black"/>
+              </Pressable>
+            </View>
+          </View>
+        </MyModal>
         </View>
-      </MyModal>
-      </View>
+    </View>
   )
 }
 
 function SmilePointsContainer () {
   const [isModalVisisble, setModalVisible] = useState(false)
   return(
-    <View className="flex-row items-center justify-center bg-white mb-1">
-      <Text className="text-[14px] font-normal text-black">
-        Earn 905 Smile Points.
-      </Text>
-      <Pressable onPress={() => setModalVisible(true)}>
-        <Text className="text-[14px] text-red-800 font-normal underline ml-2">
-          Learn Now
+    <View onPress={() => setModalVisible(true)} className="flex-row items-center justify-center bg-blue-300 border-t border-gray-300 pt-3 pb-3">
+
+        <SmileIcon />
+        <Text className="text-[14px] font-normal text-gray-700">
+          We reward with Smile,
         </Text>
-      </Pressable>
+        
+
       <MyModal visible={isModalVisisble} slide="toUp">
         <View>
           <View className="h-10 flex-row items-center justify-end px-3">
@@ -562,7 +580,7 @@ function InstagramContainer() {
 
 function InstagramImageCard() {
   return (
-    <View className="w-24 h-28 bg-blue-300 rounded-[10px] m-1 overflow-hidden">
+    <View className={`w-24 h-28 bg-blue-300 rounded-[10px] m-1 overflow-hidden`}>
       <Image className="w-full h-full" source={require("../assets/baby.jpg")}/>
     </View>
   )
