@@ -49,7 +49,7 @@ export function CollectionCard({ product }) {
           </Text>
         )}
 
-        {product.options[0].values[0] !== "Default Title" && (
+        {product.options[0].values[0] !== "Default Title" && product.options.some(op => op.name === 'Color') && product.options.find(op => op.name === 'Color')?.values.length > 1 && (
           <ColorSwatchesContainer product={product} />
         )}
 
@@ -79,7 +79,7 @@ function ColorSwatchesContainer({product}) {
           {product?.options.find(op => op.name === 'Color')?.values.slice(0, 4).map((item, index) => (
             <ColorSwatchImage size="sm" value={item} style={{marginRight: 2}} disableWhenUnavailable={true} />
           ))}
-          {product?.options.find(op => op.name === 'Color').values.length > 4 && (
+          {product?.options.find(op => op.name === 'Color')?.values.length > 4 && (
             <View className="w-[12px] h-[12px] rounded-full mr-1 bg-white border border-gray-400 items-center justify-center">
               <PlusIcon size={11} color="black" />
             </View>
@@ -97,7 +97,7 @@ function ColorSwatchesContainer({product}) {
 function PreSelectionColor({options, variants, handlePress}) {
 
   const option = options.find(op => op.name === 'Color')
-  const colorOption = option.values.map((value) => {
+  const colorOption = option?.values.map((value) => {
     const variant = getVariantForSingleOption(variants, 'Color', value)
     return {
       id: option.id,

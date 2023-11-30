@@ -11,7 +11,7 @@ import { getVariantForOptions, getVariantForSingleOption } from "../components/u
 
 const VariantSelectionContext = createContext();
 
-function VariantSelectionProvider({children, productId, variantId}) {
+function VariantSelectionProvider({children, productId, variantId, colorValue}) {
 
   const [selectedVariant, setSelectedVariant] = useState({})
   const [activeOptions, setActiveOptions] = useState([])

@@ -57,7 +57,7 @@ const textColor = 'text-[#4baaca]'
 
 export default function ProductDetailScreen({ route, variantId }) {
   const navigation = useNavigation();
-  const { productId } = route.params;
+  const { productId, colorValue } = route.params;
   const scrollRef = useSharedValue(0)
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -76,7 +76,7 @@ export default function ProductDetailScreen({ route, variantId }) {
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-white" />
-        <VariantSelectionProvider productId={productId} variantId={variantId} >
+        <VariantSelectionProvider productId={productId} variantId={variantId} colorValue={colorValue} >
           <View>
             <HeaderActions scrollRef={scrollRef}/>
             <Animated.ScrollView bounces={false} onScroll={scrollHandler}  scrollEventThrottle={1}>
