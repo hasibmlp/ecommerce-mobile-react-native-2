@@ -152,6 +152,7 @@ query getProductVairants($productId: ID!) {
       }
     }
     options {
+      id
       name
       values
     }

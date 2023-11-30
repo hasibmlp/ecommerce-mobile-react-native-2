@@ -5,19 +5,36 @@ import { VariantSelectionContext } from "../../contexts/VariantSelectionContext"
 import Skeleton from "../Skeleton";
 
 export default function VariantOptionColor({ option, context }) {
-  const {variants, activeColor, setActiveColor} = useContext(context)
+  const {variants, setActiveOptions, activeOptions} = useContext(context)
 
-  const images = option.values.map((value) => {
+
+  const colorOption = option.values.map((value) => {
     const variant = getVariantForSingleOption(variants, 'Color', value)
     return {
-      id: variant.image.id,
-      url: variant.image.url,
-      colorValue: value,
+      id: option.id,
+      name: option.name,
+      value: value,
+      image: {
+        id: variant.image.id,
+        url: variant.image.url,
+      },
     };
   });
 
-  handlePress = (imageId, colorValue) => {
-    setActiveColor({id: imageId, value: colorValue})
+  handlePress = (optionId, optionName,  optionValue, image) => {
+    setActiveOptions(prevState => {
+      const prevOptions = [...prevState]
+      const findIndex = prevOptions.findIndex(option => option.name === optionName)
+      if(findIndex > -1) {
+        prevOptions.splice(findIndex , 1)
+        prevOptions.push({id: optionId, name: optionName, value: optionValue, image})
+      }else {
+        prevOptions.push({id: optionId, name: optionName, value: optionValue, image})
+      }
+      return prevOptions
+    })
+
+
   }
 
   return (
@@ -26,20 +43,20 @@ export default function VariantOptionColor({ option, context }) {
       showsHorizontalScrollIndicator={false}
       className="h-[150px] px-5"
     >
-      {images.map((item, index) => (
+      {colorOption.map((item, index) => (
         <TouchableOpacity
           key={index.toString()}
-          onPress={() => handlePress(item.id, item.colorValue)}
+          onPress={() => handlePress(item.id, item.name, item.value,  item.image)}
           className=""
         >
           <View
             className={`w-[100px] h-[150px] border ${
-              activeColor?.value === item.colorValue ? " border-black" : "border-gray-300"
+              activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === item.value ? " border-black" : "border-gray-300"
             } rounded-[5px] overflow-hidden mr-3`}
           >
             <Image
               className="w-[100px] h-[150px] rounded-[5px]"
-              src={item.url}
+              src={item.image.url}
             />
           </View>
         </TouchableOpacity>

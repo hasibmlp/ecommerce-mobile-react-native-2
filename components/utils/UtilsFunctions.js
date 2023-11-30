@@ -87,7 +87,7 @@ function getVariantImages(images, selectedOption) {
 function getVariantForSingleOption(variants, option, value) {
   const variant = variants.find(
     (variant) =>
-      variant.selectedOptions.find((item) => item.name === option).value ===
+      variant.selectedOptions.find((item) => item.name === option)?.value ===
       value
   );
   return variant
@@ -102,7 +102,7 @@ function getVariantForOptions(variants, option) {
     const optionValue = option[i].value
     
     if(optionName && optionValue) {
-      filteredVariants = filteredVariants.filter(variant => variant.selectedOptions.find(option => option.name === optionName).value === optionValue)
+      filteredVariants = filteredVariants.filter(variant => variant.selectedOptions.find(option => option.name === optionName)?.value === optionValue)
 
       // if (filteredVariants.length === 0) {  
       //   throw new Error(`Option value for ${optionName} doesn't match. Provide another value.`);

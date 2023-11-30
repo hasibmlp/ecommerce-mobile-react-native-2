@@ -17,7 +17,7 @@ export default function ShowAndHide({title}) {
   const [showBody, setShowBody] = useState(false);
 
   return (
-    <Animated.View layout={Layout} className='border-t border-gray-300 bg-white'>
+    <Animated.View layout={Layout} className='border-b border-gray-300 bg-white'>
       <Pressable
         onPress={() => setShowBody(!showBody)}
         className="flex-row justify-between px-[15px] py-[15px] items-center"

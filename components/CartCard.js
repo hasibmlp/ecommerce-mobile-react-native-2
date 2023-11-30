@@ -41,8 +41,6 @@ export default function CartCard({ id, lineId, refetch }) {
     },
   });
 
-  console.log("CART DATA",data)
-
 
   if (loading) return <Text>Loading..</Text>;
   if (error) return <Text>Error occured!! {error}</Text>;

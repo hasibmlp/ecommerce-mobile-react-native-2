@@ -11,12 +11,10 @@ import { getVariantForOptions, getVariantForSingleOption } from "../components/u
 
 const VariantSelectionContext = createContext();
 
-function VariantSelectionProvider({children, productId}) {
-  const [activeColor, setActiveColor] = useState(null)
-  const [activeSize, setActiveSize] = useState(null)
-  const [activeType, setActiveType] = useState(null)
-  const [currentlyNotInStock, setCurrentlyNotInStock] = useState(false)
-  const [isButtonActive, setButtonActive] = useState(false)
+function VariantSelectionProvider({children, productId, variantId}) {
+
+  const [selectedVariant, setSelectedVariant] = useState({})
+  const [activeOptions, setActiveOptions] = useState([])
 
   const navigation = useNavigation()
   const cartId = useReactiveVar(cartIdVar);
@@ -54,17 +52,11 @@ function VariantSelectionProvider({children, productId}) {
 
   const options = data?.product?.options.map((item) => {
     return {
+      id: item?.id,
       name: item?.name,
       values: item?.values,
     };
   });
-
-  const firstSelectedColor = options?.find(option => option.name === 'Color')?.values[0]
-  let initialColorOption
-    if(firstSelectedColor){
-      const variant = getVariantForSingleOption(variants, 'Color', firstSelectedColor)
-       initialColorOption = {id: variant?.image?.id, value: firstSelectedColor}
-    }
 
   const sortedOptions = options?.sort((a, b) => {
     if (a.name === "Color" && b.name !== "Color") {
@@ -80,30 +72,14 @@ function VariantSelectionProvider({children, productId}) {
     }
   });
 
-  const isCurrentlyInStock = () => {
+  console.log("ACTIVE OPTIONS",activeOptions)
 
-    isVariantAviable = true
-    const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
-    const variant = getVariantForOptions(variants, option)
-    console.log(variant)
-    if(variant && variant?.quantityAvailable > 0) isVariantAviable = true
-    else isVariantAviable = false
-
-    return isVariantAviable 
-}
-
-const handleAddCartBtn = () => {
-
-  const option = [{name: 'Color', value: activeColor.value}, {name: 'Size', value: activeSize}]
-  const variant = getVariantForOptions(variants, option)
-  console.log(variant.id)
-
+const handleAddCartBtn = (onClose) => {
   if (cartId) {
-    console.log("CART ID IS SET");
     addCartItem({
       variables: {
         checkoutId: cartId,
-        variantId: variant.id,
+        variantId: selectedVariant.id,
       },
       refetchQueries: [
         {
@@ -114,62 +90,81 @@ const handleAddCartBtn = () => {
         },
       ],
       onCompleted: () => {
+        typeof(onClose) === 'function' && onClose()
         navigation.navigate("CartScreen");
       },
     });
   } else {
-    console.log("NO CART ID IS SET");
     createCart({
       variables: {
         productQuantity: 1,
-        productId: variant.id,
+        productId: selectedVariant.id,
       },
       onCompleted: () => {
+        typeof(onClose) === 'function' && onClose()
         navigation.navigate("CartScreen"); 
       },
     });
   }
 }
 
-  useEffect(() => {
-    if (cartData) {
-      cartIdVar(cartData?.checkoutCreate?.checkout?.id);
-    }
-  }, [cartData]);
-
-  useEffect(() => {
-    if(variants) {
-      const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
-      const variant = getVariantForOptions(variants, option)
-      console.log(variant)
-      if(variant) {
-        if(variant?.currentlyNotInStock)setCurrentlyNotInStock(true)
-        else setCurrentlyNotInStock(false)
-      } 
-
-      // set add to cart activation
-      if(variant && variant.availableForSale) setButtonActive(true)
-      else setButtonActive(false)
-
-    }
-  
-},[activeColor, activeSize, activeType])
+useEffect(() => {
+  if (cartData) {
+    cartIdVar(cartData?.checkoutCreate?.checkout?.id);
+  }
+}, [cartData]);
 
 useEffect(() => {
-  const optionArray = []
-  activeColor && !optionArray.includes(option => option?.name === 'Color') &&  optionArray.push(activeColor)
-  activeSize && !optionArray.includes(option => option === activeSize) && optionArray.push(activeSize)
-  activeType && !optionArray.includes(option => option === activeType) && optionArray.push(activeType)
-
-  console.log("OPTIONS ARRAY",optionArray)
-
-  // const variant = getVariantForSingleOption(variants, 'Color', 'Navy')
-
-  if(optionArray === options?.length -1){
-
+  if(variants && variants.length === 1) {
+    setSelectedVariant(variants[0])
   }
+},[variants])
+
+useEffect(() => {
+  if(!selectedVariant.id && variantId && variants) {
+    const preSelectedVarinat = variants?.find(variant => variant.id === variantId)
+    if(preSelectedVarinat) setSelectedVariant(preSelectedVarinat)
+  }
+},[variantId, variants])
   
-},[activeColor, activeSize, activeType])
+useEffect(() => {
+  if(options?.length === activeOptions?.length) {
+    const variant = getVariantForOptions(variants, activeOptions)
+    if(variant) {
+      setSelectedVariant(variant)
+    }else {
+      setSelectedVariant({})
+    }
+  }
+},[activeOptions])
+
+console.log('THE VARIANTS: ', variants)
+
+useEffect(() => {
+  if(selectedVariant.id && activeOptions.length === 0) {
+    const preSelectedOptions = []
+    selectedVariant.selectedOptions.map(op => {
+      if(op.name === 'Color') {
+        preSelectedOptions.push({
+          id: '',
+          name: op.name,
+          value: op.value,
+          image: {
+              id: selectedVariant?.image?.id,
+              url: selectedVariant?.image?.url,
+          },
+        })
+      }else {
+        preSelectedOptions.push({
+          id: '',
+          name: op.name,
+          value: op.value,
+        })
+      }
+    })
+    setActiveOptions(preSelectedOptions)
+  }
+},[selectedVariant])
 
   return (
     <VariantSelectionContext.Provider
@@ -178,16 +173,10 @@ useEffect(() => {
         options: sortedOptions,
         variants,
         images,
-        activeColor,
-        setActiveColor,
-        activeSize,
-        setActiveSize,
-        activeType,
-        setActiveType,
-        isCurrentlyInStock,
         handleAddCartBtn,
-        currentlyNotInStock,
-        isButtonActive,
+        setActiveOptions,
+        activeOptions,
+        selectedVariant
       }}
     >{children}</VariantSelectionContext.Provider>
   );

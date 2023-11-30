@@ -76,9 +76,7 @@ function PreVariantSelectionProvider({children, productId, handleClose}) {
     });
   
     const isCurrentlyInStock = () => {
-      console.log('color', activeColor)
-      console.log('size', activeSize)
-      console.log('type', activeType)
+
       isVariantAviable = true
       const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
       const variant = getVariantForOptions(variants, option)

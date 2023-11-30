@@ -10,21 +10,21 @@ const ITEM_HEIGHT = ITEM_WIDTH / 0.7;
 
 
 export default function ImageCarousel ({ width=ITEM_WIDTH, height = ITEM_HEIGHT, style, onPress, bounces=true }) {
-  const {images, activeColor} = useContext(VariantSelectionContext)
+  const {images, activeOptions} = useContext(VariantSelectionContext)
   const flatListRef = useRef();
-  const selectedVariantImages = getVariantImages(images, activeColor?.value)
+  const selectedVariantImages = getVariantImages(images, activeOptions.find(i => i.name === 'Color')?.value)
     
-    useEffect(() => {
-      if(activeColor?.value && images && selectedVariantImages?.length === 0){
-        const imageIndex = images?.findIndex(image => image.id === activeColor?.id)
-        if(imageIndex > -1) {
-          flatListRef.current.scrollToIndex({
-            index: imageIndex,
-            animated: false
-          })
-        }
-      }
-    },[activeColor])
+    // useEffect(() => {
+    //   if(activeOptions.find(i => i.name === 'Color')?.value && images && selectedVariantImages?.length === 0){
+    //     const imageIndex = images?.findIndex(image => image.id === activeOptions.find(i => i.name === 'Color')?.image?.id)
+    //     if(imageIndex > -1) {
+    //       flatListRef.current.scrollToIndex({
+    //         index: imageIndex,
+    //         animated: false
+    //       })
+    //     }
+    //   }
+    // },[activeOptions])
   
   
     if(!images) return <Skeleton width={ITEM_WIDTH} height={ITEM_HEIGHT} />

@@ -4,37 +4,39 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 
 export default function VariantOptionSize({ option, availableSizeForColor, context }) {
-  const {activeSize, setActiveSize} = useContext(context)
+  const {setActiveOptions, activeOptions} = useContext(context)
   const avilableOption = availableSizeForColor?.length > 0 ? availableSizeForColor :  option.values
   const isButtonActive = ''
 
-  console.log("AVAILABLE OPTIONS: ",avilableOption)
 
-  const handlePress = (item) => {
-    setActiveSize(item)
+  const handlePress = (optionValue) => {
+
+    setActiveOptions(prevState => {
+      const prevOptions = [...prevState]
+      const findIndex = prevOptions.findIndex(optionItem => optionItem.name === option.name)
+      if(findIndex > -1) {
+        prevOptions.splice(findIndex , 1)
+        prevOptions.push({id: option.id, name: option.name, value: optionValue})
+      }else {
+        prevOptions.push({id: option.id, name: option.name, value: optionValue})
+      }
+      return prevOptions
+    })
   }
 
   return (
     <ScrollView className="px-5" horizontal showsHorizontalScrollIndicator={false}>
       <View className="flex-row items-center gap-x-3 relative">
-        {option.values.map((option, index) => (
+        {option.values.map((value, index) => (
           <TouchableOpacity
             key={index.toString()}
-            onPress={() => handlePress(option)}
-            className={`border-[.5px] rounded-[5px] py-3 px-3 ${
-              !option.availableForSale
-                ? "bg-gray-100 border-gray-300"
-                : ""
-            } ${activeSize === option ? "bg-black" : ""}`}
+            onPress={() => handlePress(value)}
+            className={`border-[.5px] rounded-[5px] py-3 px-3 ${activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === value ? "bg-black" : ""}`}
           >
             <Text
-              className={` text-[14px] font-light uppercase ${
-                !option.availableForSale
-                  ? "text-gray-500"
-                  : "text-black"
-              } ${activeSize === option ? "text-white" : ""}`}
+              className={` text-[14px] font-light uppercase text-black ${activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === value ? "text-white" : ""}`}
             >
-              {option}
+              {value}
             </Text>
           </TouchableOpacity>
         ))}

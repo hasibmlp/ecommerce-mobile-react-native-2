@@ -1,36 +1,25 @@
 import { useContext, useEffect, useState } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import VariantHeader from "./VariantHeader";
 import VariantOption from "./VariantOption";
 import Button from "../buttons/Button";
 import ModalSkeleton from "./ModalSkeleton";
 
 export default function VariantSelectionModalContent({handleClose, context}) {
-  const {options, handleAddCartBtn, activeColor, activeSize, activeType, currentlyNotInStock, isButtonActive} = useContext(context)
+  const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
   const [loading, setLoading] = useState(true)
-  const [buttonActive, setButtonActive] = useState(false)
 
-  const run = () => {
-    if(currentlyNotInStock) {
-
-    }
+  let label 
+  if(selectedVariant.id) {
+    if(selectedVariant.availableForSale) label = 'add to cart'
+    else label = 'notify me when available'
+  }else {
+    label = activeOptions.length === options?.length ? 'unavilable' : 'add to cart' 
   }
 
   useEffect(() => {
     options && setLoading(false)
   },[options])
-
-  useEffect(() => {
-    const optionArray = []
-    activeColor && !optionArray.includes(option => option?.name === 'Color') &&  optionArray.push(activeColor)
-    activeSize && !optionArray.includes(option => option === activeSize) && optionArray.push(activeSize)
-    activeType && !optionArray.includes(option => option === activeType) && optionArray.push(activeType)
-
-  if(optionArray.length === options?.length && (activeColor || activeSize || activeType)) {
-      setButtonActive(true)
-  }
-  },[activeColor, activeSize, activeType])
-
     
     return (
       <View className="items-center justify-center bg-white">
@@ -45,8 +34,23 @@ export default function VariantSelectionModalContent({handleClose, context}) {
               />
               ))}
           </View>
-          <Button label={`${currentlyNotInStock ? 'Notify me': 'Add to cart' } `} size="md" onPress={currentlyNotInStock ? () => {} : handleAddCartBtn} active={isButtonActive} style={{marginVertical: 12, marginHorizontal: 20}}/>
+          <Button 
+            label={label} 
+            size="md" active={selectedVariant.id ? true : false} 
+            onPress={currentlyNotInStock ? () => {} : () => handleAddCartBtn(onClose=handleClose)} 
+            style={{marginVertical: 12, marginHorizontal: 20}}/>
         </View>
       </View>
       )
-  }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    {/* <Button label={`${currentlyNotInStock ? 'Notify me': 'Add to cart' } `} size="md" onPress={currentlyNotInStock ? () => {} : handleAddCartBtn}  style={{marginVertical: 12, marginHorizontal: 20}}/> */}
