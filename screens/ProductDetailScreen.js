@@ -7,40 +7,31 @@ import {
   View,
   Dimensions,
   Pressable,
-  TouchableOpacity,
   Image,
-  Share,
 } from "react-native";
 import {
-  TruckIcon,
-  ChevronLeftIcon,
   ChevronDownIcon,
   QuestionMarkCircleIcon,
   InformationCircleIcon,
   ChevronRightIcon,
   PhoneIcon,
   XMarkIcon,
-  ArrowUpOnSquareIcon,
-  ArrowUpTrayIcon,
 } from "react-native-heroicons/outline";
 
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
 import HeartButton from "../components/HeartButton";
-import Skeleton from "../components/Skeleton";
 import { VariantSelectionContext, VariantSelectionProvider } from "../contexts/VariantSelectionContext";
 import Button from "../components/buttons/Button";
 import CollectionContentSkeleton from "../components/skeletons/CollectionContentSkeleton";
 import ImageCarousel from "../components/Images/ImageCarousel";
 import BottomModal from "../components/Modal/BottomModal";
-import { useQuery } from "@apollo/client";
-import {GET_COLOR_SWATCH_IMAGES } from "../graphql/queries";
 import VariantSelection from "../components/Modal/VariantSelection";
 import { LinearGradient } from "expo-linear-gradient";
 import WhatsappIcon from "../components/icons/WhatsappIcon";
 import EmailIcon from "../components/icons/EmailIcon";
 import MyModal from "../components/Modal/MyModal";
-import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, { useAnimatedScrollHandler,useSharedValue } from "react-native-reanimated";
 import SmileIcon from "../components/icons/SmileIcon";
 import BackIconButton from "../components/buttons/BackIconButton";
 import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
@@ -48,14 +39,13 @@ import ShareButton from "../components/buttons/ShareButton";
 import Panel from "../components/actions/Panel";
 import ColorSwatchImage from "../components/buttons/ColorSwatchImage";
 
-
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
 
 const themeColor = 'bg-[#4baaca]'
 const textColor = 'text-[#4baaca]'
 
-export default function ProductDetailScreen({ route, variantId }) {
+export default function ProductDetailScreen({ route }) {
   const navigation = useNavigation();
   const { productId, colorValue } = route.params;
   const scrollRef = useSharedValue(0)
@@ -66,7 +56,6 @@ export default function ProductDetailScreen({ route, variantId }) {
     },
   });
 
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -76,7 +65,7 @@ export default function ProductDetailScreen({ route, variantId }) {
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-white" />
-        <VariantSelectionProvider productId={productId} variantId={variantId} colorValue={colorValue} >
+        <VariantSelectionProvider productId={productId} colorValue={colorValue} >
           <View>
             <HeaderActions scrollRef={scrollRef}/>
             <Animated.ScrollView bounces={false} onScroll={scrollHandler}  scrollEventThrottle={1}>

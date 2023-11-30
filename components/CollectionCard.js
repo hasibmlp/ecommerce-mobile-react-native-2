@@ -62,8 +62,8 @@ function ColorSwatchesContainer({product}) {
   const [isModalVisisble, setModalVisible] = useState(false)
   const navigation = useNavigation()
 
-  const handleColorOptionPress = (colorOption) => {
-    navigation.navigate("ProductDetailScreen", { productId: product.id, colorValue: colorOption })
+  const handleColorOptionPress = (item) => {
+    navigation.navigate("ProductDetailScreen", { productId: product.id, colorValue: item })
     setModalVisible(false)
   }
 
@@ -118,7 +118,7 @@ function PreSelectionColor({options, variants, handlePress}) {
             <View className="px-5 flex-row">
               {colorOption && colorOption.map((item, index) => (
                 <TouchableOpacity
-                  onPress={() => handlePress(item.value)}
+                  onPress={() => handlePress(item)}
                   key={index.toString()}
                   className="mr-3 w-[100px] self-start items-center"
                 >

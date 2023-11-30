@@ -1,6 +1,6 @@
-import { Dimensions, FlatList, Image, Pressable, View } from "react-native";
+import { Dimensions, FlatList, Image, Pressable, Text, View } from "react-native";
 import Skeleton from "../Skeleton";
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 import { getVariantImages } from "../utils/UtilsFunctions";
 
@@ -13,18 +13,29 @@ export default function ImageCarousel ({ width=ITEM_WIDTH, height = ITEM_HEIGHT,
   const {images, activeOptions} = useContext(VariantSelectionContext)
   const flatListRef = useRef();
   const selectedVariantImages = getVariantImages(images, activeOptions.find(i => i.name === 'Color')?.value)
-    
-    // useEffect(() => {
-    //   if(activeOptions.find(i => i.name === 'Color')?.value && images && selectedVariantImages?.length === 0){
-    //     const imageIndex = images?.findIndex(image => image.id === activeOptions.find(i => i.name === 'Color')?.image?.id)
-    //     if(imageIndex > -1) {
-    //       flatListRef.current.scrollToIndex({
-    //         index: imageIndex,
-    //         animated: false
-    //       })
-    //     }
-    //   }
-    // },[activeOptions])
+  const imageIndex = images?.findIndex(image => image.id === activeOptions.find(i => i.name === 'Color')?.image?.id)
+
+  useEffect(() => {
+    if(flatListRef.current && selectedVariantImages?.length === 0) {
+      if(imageIndex > -1) {
+        flatListRef.current.scrollToIndex({
+        index: imageIndex,
+        animated: false
+      })
+      }
+    }
+  },[activeOptions])
+
+    const handleOnLayout = () => {
+      if(flatListRef.current && selectedVariantImages?.length === 0 ) {
+        if(imageIndex > -1) {
+          flatListRef.current.scrollToIndex({
+          index: imageIndex,
+          animated: false
+        })
+        }
+      }
+    }
   
   
     if(!images) return <Skeleton width={ITEM_WIDTH} height={ITEM_HEIGHT} />
@@ -56,6 +67,7 @@ export default function ImageCarousel ({ width=ITEM_WIDTH, height = ITEM_HEIGHT,
                 index,
               };
             }}
+            onLayout={handleOnLayout}
           />
       </View>
     )

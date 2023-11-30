@@ -72,8 +72,6 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
     }
   });
 
-  console.log("ACTIVE OPTIONS",activeOptions)
-
 const handleAddCartBtn = (onClose) => {
   if (cartId) {
     addCartItem({
@@ -126,6 +124,12 @@ useEffect(() => {
     if(preSelectedVarinat) setSelectedVariant(preSelectedVarinat)
   }
 },[variantId, variants])
+
+useEffect(() => {
+  if(!productId.id && activeOptions.length === 0 && colorValue?.value) {
+    setActiveOptions([colorValue])
+  }
+},[colorValue])
   
 useEffect(() => {
   if(options?.length === activeOptions?.length) {
@@ -137,8 +141,6 @@ useEffect(() => {
     }
   }
 },[activeOptions])
-
-console.log('THE VARIANTS: ', variants)
 
 useEffect(() => {
   if(selectedVariant.id && activeOptions.length === 0) {
