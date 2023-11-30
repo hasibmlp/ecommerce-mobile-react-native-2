@@ -380,11 +380,7 @@ function InformationIconTile({label, icon, onClick}) {
 }
 
 function VariantSelectionButton ({onPress}) {
-  const {options, activeOptions} = useContext(VariantSelectionContext)
-
-  const {data, loading, error} = useQuery(GET_COLOR_SWATCH_IMAGES)
-  const COLOR_SWATCH_IMAGES = data && JSON.parse(data?.collection?.metafield?.value)
-  const activeColorSwatchImageUrl = COLOR_SWATCH_IMAGES?.find(item => item?.value === activeOptions.find(i => i.name === 'Color')?.value.toLowerCase().replace(/\s+/g, '_'))?.url
+  const {options} = useContext(VariantSelectionContext)
 
   return (
     <Pressable
@@ -393,7 +389,7 @@ function VariantSelectionButton ({onPress}) {
     >
       <View className="w-full flex-row justify-between items-center px-5">
         {options && options.map((option, index) => (
-          <SelectionButton style={index !== options.length-1 ? {marginRight: 40} : {}} key={index.toString()} option={option} activeColorSwatchImageUrl={activeColorSwatchImageUrl} />
+          <SelectionButton style={index !== options.length-1 ? {marginRight: 40} : {}} key={index.toString()} option={option} />
         ))}
       </View>
         {options.length === 2 && (<View className="vertical-divider absolute left-[50%]  h-7 w-[1px] bg-gray-300"></View>)}
@@ -401,7 +397,7 @@ function VariantSelectionButton ({onPress}) {
   )
 }
 
-function SelectionButton ({option, activeColorSwatchImageUrl, style}) {
+function SelectionButton ({option, style}) {
   const {activeOptions} = useContext(VariantSelectionContext)
   const label = option.name
   const optionValue = activeOptions.find(i => i.name === option.name)?.value
@@ -412,7 +408,7 @@ function SelectionButton ({option, activeColorSwatchImageUrl, style}) {
           {label}
         </Text>
         <View className="flex-row items-center justify-center mt-3">
-          {option.name === 'Color' && activeColorSwatchImageUrl && (<ColorSwatchImage activeColorUrl={activeColorSwatchImageUrl}/>)}
+          {option.name === 'Color' && (<ColorSwatchImage value={activeOptions.find(i => i.name === 'Color')?.value}/>)}
           <Text className="text-[14px] text-black font-light uppercase mr-[2px]">
             {optionValue ? optionValue.length > 10 ? optionValue.slice(0, 10) + '...' : optionValue : 'Select'}
           </Text>

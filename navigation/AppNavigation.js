@@ -23,7 +23,6 @@ import CheckoutScreen from "../screens/CheckoutScreen";
 import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
 import CheckoutReview from "../components/CheckoutReview";
 import Collection from "../components/Collection";
-import CallBottomModal from "../components/CallBottomModal";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -154,10 +153,6 @@ export default function AppNavigation() {
           name="NotificationScreen"
           component={NotificationScreen}
         />
-        <Stack.Screen name="BottomModal" component={CallBottomModal} options={{
-          presentation: 'transparentModal',
-          headerShown: false,
-        }} />
       </Stack.Navigator>
 
     </NavigationContainer>

@@ -1,25 +1,20 @@
 import { useNavigation } from "@react-navigation/native";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   View,
   Pressable,
   Image,
+  ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { PlusIcon } from "react-native-heroicons/outline";
-import ImageCarousel from "./Images/ImageCarousel";
-// import VariantSelectionModal from "./Modal/VariantSelectionModal";
-import CardSkeleton from "./skeletons/CardSkeleton";
-import { FilterSelectionContext } from "../contexts/FilterSelectionContext";
-
-const colors = ["red", "blue", "green", "white", "navy"];
+import BottomModal from "./Modal/BottomModal";
+import { getVariantForSingleOption } from "./utils/UtilsFunctions";
+import ColorSwatchImage from "./buttons/ColorSwatchImage";
 
 export function CollectionCard({ product }) {
-  const [imageWidth, setImageWidth] = useState(203)
   const navigation = useNavigation();
-  const [isModalVisisble, setModalVisible] = useState(false)
-  const [image2, setImages2] = useState(null)
-
   const images = [product.featuredImage];
 
   handlePress= () => {
@@ -31,9 +26,7 @@ export function CollectionCard({ product }) {
       key={product.id}
       className=" w-full justify-center mr-[10px]"
     >
-      <View onLayout={(event) => {
-        setImageWidth(event.nativeEvent.layout.width)
-      }} className="w-full h-[300px] overflow-hidden rounded-[2px]">
+      <View className="w-full h-[300px] overflow-hidden rounded-[2px]">
         {images && (
           <Pressable onPress={handlePress}>
             <Image className="w-full h-full" src={product?.featuredImage?.url} />
@@ -57,25 +50,7 @@ export function CollectionCard({ product }) {
         )}
 
         {product.options[0].values[0] !== "Default Title" && (
-          <>
-            <Pressable
-              onPress={() => setModalVisible(true)}
-              className="flex-row  justify-center items-center mb-2 p-1 rounded-full bg-gray-100"
-            >
-              {colors.slice(0, 4).map((item, index) => (
-                <View
-                  key={index.toString()}
-                  style={{ backgroundColor: item }}
-                  className="w-[12px] h-[12px] rounded-full mr-[2px] border border-gray-400"
-                ></View>
-              ))}
-              {colors.length > 4 && (
-                <View className="w-[12px] h-[12px] rounded-full mr-1 bg-white border border-gray-400 items-center justify-center">
-                  <PlusIcon size={11} color="black" />
-                </View>
-              )}
-            </Pressable>
-          </>
+          <ColorSwatchesContainer product={product} />
         )}
 
       </Pressable>
@@ -83,3 +58,84 @@ export function CollectionCard({ product }) {
   );
 }
 
+function ColorSwatchesContainer({product}) {
+  const [isModalVisisble, setModalVisible] = useState(false)
+  const navigation = useNavigation()
+
+  const handleColorOptionPress = (colorOption) => {
+    navigation.navigate("ProductDetailScreen", { productId: product.id, colorValue: colorOption })
+    setModalVisible(false)
+  }
+
+  const variants = product?.variants.edges.map((edge) => {
+    return edge.node;
+  });
+  return (
+    <View>
+        <Pressable
+          onPress={() => setModalVisible(true)}
+          className="flex-row  justify-center items-center mb-2 p-1 rounded-full bg-gray-100"
+        >
+          {product?.options.find(op => op.name === 'Color')?.values.slice(0, 4).map((item, index) => (
+            <ColorSwatchImage size="sm" value={item} style={{marginRight: 2}} disableWhenUnavailable={true} />
+          ))}
+          {product?.options.find(op => op.name === 'Color').values.length > 4 && (
+            <View className="w-[12px] h-[12px] rounded-full mr-1 bg-white border border-gray-400 items-center justify-center">
+              <PlusIcon size={11} color="black" />
+            </View>
+          )}
+        </Pressable>
+
+        <BottomModal title="Select Color" visible={isModalVisisble} onClose={() => setModalVisible(false)}>
+            <PreSelectionColor product={product} options={product.options} variants={variants} handlePress={handleColorOptionPress}/>
+        </BottomModal>
+    </View>
+  )
+}
+
+
+function PreSelectionColor({options, variants, handlePress}) {
+
+  const option = options.find(op => op.name === 'Color')
+  const colorOption = option.values.map((value) => {
+    const variant = getVariantForSingleOption(variants, 'Color', value)
+    return {
+      id: option.id,
+      name: option.name,
+      value: value,
+      image: {
+        id: variant.image.id,
+        url: variant.image.url,
+      },
+    };
+  });
+  return (
+    <View className="pb-12">
+            <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            <View className="px-5 flex-row">
+              {colorOption && colorOption.map((item, index) => (
+                <TouchableOpacity
+                  onPress={() => handlePress(item.value)}
+                  key={index.toString()}
+                  className="mr-3 w-[100px] self-start items-center"
+                >
+                  <Image
+                    className="w-[100px] h-[150px] rounded-[5px] border border-gray-300"
+                    src={item.image.url}
+                  />
+
+                  <View className="py-1 items-center">
+                    <Text className="text-[14px] text-balck font-normal pb-2">{item.value}</Text>
+                    <ColorSwatchImage value={item.value} size="sm"/>
+                  </View>
+                  
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+    </View>
+  )
+}

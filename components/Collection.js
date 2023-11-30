@@ -34,10 +34,8 @@ import Animated, {
 import { GET_ALL_PRODUCTS_ID_IN_COLLECTION, GET_COLLECTION_BY_ID } from "../graphql/queries";
 import { CollectionCard } from "./CollectionCard";
 import { LinearGradient } from "expo-linear-gradient";
-import { SideBarContext } from "../App";
 import Button from "./buttons/Button";
 import TextBody from "./texts/TextBody";
-import CollectionSkeleton from "./skeletons/CollectionSkeleton";
 import CardSkeleton from "./skeletons/CardSkeleton";
 import HeaderActions from "./actions/HeaderActions";
 import SmallButton from "./Sidebar/Buttons/SmallButton";
