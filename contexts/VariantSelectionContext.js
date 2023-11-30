@@ -178,7 +178,7 @@ useEffect(() => {
         handleAddCartBtn,
         setActiveOptions,
         activeOptions,
-        selectedVariant
+        selectedVariant,
       }}
     >{children}</VariantSelectionContext.Provider>
   );
