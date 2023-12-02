@@ -77,7 +77,7 @@ function ColorSwatchesContainer({product}) {
           className="flex-row  justify-center items-center mb-2 p-1 rounded-full bg-gray-100"
         >
           {product?.options.find(op => op.name === 'Color')?.values.slice(0, 4).map((item, index) => (
-            <ColorSwatchImage size="sm" value={item} style={{marginRight: 2}} disableWhenUnavailable={true} />
+            <ColorSwatchImage key={item} size="sm" value={item} style={{marginRight: 2}} disableWhenUnavailable={true} />
           ))}
           {product?.options.find(op => op.name === 'Color')?.values.length > 4 && (
             <View className="w-[12px] h-[12px] rounded-full mr-1 bg-white border border-gray-400 items-center justify-center">
@@ -122,10 +122,12 @@ function PreSelectionColor({options, variants, handlePress}) {
                   key={index.toString()}
                   className="mr-3 w-[100px] self-start items-center"
                 >
-                  <Image
-                    className="w-[100px] h-[150px] rounded-[5px] border border-gray-300"
-                    src={item.image.url}
-                  />
+                  <View className="w-[100px] h-[150px] rounded-[5px] border border-gray-300">
+                    <Image
+                      className="w-full h-full"
+                      src={item.image.url}
+                    />
+                  </View>
 
                   <View className="py-1 items-center">
                     <Text className="text-[14px] text-balck font-normal pb-2">{item.value}</Text>

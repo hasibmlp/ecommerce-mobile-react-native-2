@@ -95,32 +95,3 @@ export default function VariantOptionColor({ option, context }) {
     />
   );
 }
-
-function Xws() {
-  return (
-    <FlatList
-      data={colorOption}
-      keyExtractor={(_, index) => {index.toString()}}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      renderItem={({item}) => (
-        <TouchableOpacity
-          key={index.toString()}
-          onPress={() => handlePress(item.id, item.name, item.value,  item.image)}
-          className=""
-        >
-          <View
-            className={`w-[100px] h-[150px] border ${
-              activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === item.value ? " border-black" : "border-gray-300"
-            } rounded-[5px] overflow-hidden mr-3`}
-          >
-            <Image
-              className="w-[100px] h-[150px] rounded-[5px]"
-              src={item.image.url}
-            />
-          </View>
-        </TouchableOpacity>
-      )}
-    />
-  )
-}

@@ -1,13 +1,9 @@
 import { Pressable, Text, View } from "react-native";
-import VariantOptionSize from "./VariantOptionSize";
 import VariantOptionColor from "./VariantOptionColor";
 import VariantOptionType from "./VariantOptionType";
 import { useContext, useState } from "react";
-import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
-import Skeleton from "../Skeleton";
 import MyModal from "./MyModal";
 import { XMarkIcon } from "react-native-heroicons/outline";
-import { getVariantForOptions, getVariantForSingleOption } from "../utils/UtilsFunctions";
 
 const textColor = 'text-[#4baaca]'
 
@@ -44,11 +40,6 @@ export default function VariantOption({ option, context }) {
 
       {option.name === "Color" ? (
         <VariantOptionColor
-          option={option}
-          context={context}
-        />
-      ) : option.name === "Size" ? (
-        <VariantOptionSize
           option={option}
           context={context}
         />

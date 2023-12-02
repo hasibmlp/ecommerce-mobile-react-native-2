@@ -398,7 +398,7 @@ function SelectionButton ({option, style}) {
         </Text>
         <View className="flex-row items-center justify-center mt-3">
           {option.name === 'Color' && (<ColorSwatchImage value={activeOptions.find(i => i.name === 'Color')?.value}/>)}
-          <Text className="text-[14px] text-black font-light uppercase mr-[2px]">
+          <Text className="text-[14px] text-black font-light uppercase mr-[2px] ml-2">
             {optionValue ? optionValue.length > 10 ? optionValue.slice(0, 10) + '...' : optionValue : 'Select'}
           </Text>
           <ChevronDownIcon size={11} color="black" />
