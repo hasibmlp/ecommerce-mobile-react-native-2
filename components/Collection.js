@@ -22,6 +22,7 @@ import {
   AdjustmentsHorizontalIcon,
   ArrowUpIcon,
   ArrowsUpDownIcon,
+  XMarkIcon,
 } from "react-native-heroicons/outline";
 import { useNavigation } from "@react-navigation/native";
 import Animated, {
@@ -43,6 +44,8 @@ import { ScreenHeader } from "./actions/ScreenHeader";
 import MyModal from "./Modal/MyModal";
 import FilterBody from "./Modal/FilterBody";
 import { FilterSelectionContext, FilterSelectionProvider } from "../contexts/FilterSelectionContext";
+import Skeleton from "./Skeleton";
+import BottomModal from "./Modal/BottomModal";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -70,13 +73,19 @@ export default function Collection({ route }) {
 function CollectionData ({route, openSideBar}) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
   const [productTotalCount, setProductTotalCount] = useState(0)
+  const [sortKeys, setSortKeys] = useState({
+    handle: 'default',
+    sort_key: 'COLLECTION_DEFAULT',
+    label: 'Sort By',
+    reverse: 'false'
+  })
 
   const {setFilters, activeFilterInput} = useContext(FilterSelectionContext)
 
   const navigation = useNavigation();
   const { collectionId } = route.params;
   const flatListRef = useRef();
-  const filterActionsLayout = useSharedValue(0);
+  const filterActionsLayout = useSharedValue(100);
   const scrollY = useSharedValue(0);
   const filterInputs = activeFilterInput.map(filterValue => filterValue.input)
 
@@ -89,8 +98,9 @@ function CollectionData ({route, openSideBar}) {
     variables: {
       collectionId,
       filterInput: filterInputs,
+      sortKey: sortKeys.sort_key,
+      reverse: sortKeys.reverse
     },
-    fetchPolicy: "network-only",
   });
 
   const [getAllProductId, {
@@ -162,7 +172,13 @@ function CollectionData ({route, openSideBar}) {
 
   return (
         <>
-          <CollectionHeader scrollY={scrollY} filterActionsLayout={filterActionsLayout} />
+          <CollectionHeader 
+            scrollY={scrollY} 
+            filterActionsLayout={filterActionsLayout} 
+            data={colloctionData}
+            sortKeys={sortKeys}
+            setSortKeys={setSortKeys}
+          />
           {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)}
           {(<CollectionBody
             colloctionData={colloctionData}
@@ -173,15 +189,22 @@ function CollectionData ({route, openSideBar}) {
             setShowPageIndicator={setShowPageIndicator}
             fetchMore={fetchMore}
             openSideBar={openSideBar}
+            sortKeys={sortKeys}
+            setSortKeys={setSortKeys}
           />)}
+          {colloctionData?.collection?.products < 0 && (<View className="flex-1 items-center justify-center">
+              <Image className="w-32 h-32" source={require("../assets/empty-box.png")}/>
+              <Text className="text-[18px] text-gray-500 font-normal capitalize mt-4 mb-6">No Products found !!!</Text>
+              <Button onPress={() => navigation.navigate("Home")} label="go home" size="sm" flex={false}/>
+          </View>)}
 
-          {showPageIndicator && (<PageIndicatorPopup flatListRef={flatListRef} total={productTotalCount} />)}
+          {showPageIndicator && (<PageIndicatorPopup current={colloctionData.collection?.products?.edges?.length} flatListRef={flatListRef} total={productTotalCount} />)}
         </>
   )
 }
 
 
-function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore, openSideBar}) {
+function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore, openSideBar, setSortKeys, sortKeys}) {
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -216,23 +239,24 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   }
 
   const ListHeaderComponent = useMemo(() => (
-    <View className="w-full">
-      <ImageWrapper />
-      <CollectionInfo/>
+    <View style={{width: SCREEN_WIDTH}} className="w-full">
+      <ImageWrapper data={colloctionData} />
+      <CollectionInfo data={colloctionData}/>
       <View
         onLayout={(e) => {
           filterActionsLayout.value = e.nativeEvent.layout;
         }}
         className="w-full"
       >
-        <ActionSlider onPress={openSideBar}/>
+
+        <ActionSlider onPress={openSideBar} setSortKeys={setSortKeys} sortKeys={sortKeys}/>
 
       </View>
     </View>
   ));
   
   return (
-    <View className="pb-14 px-1">
+    <View className="pb-14">
           <Animated.FlatList
             data={colloctionData?.collection?.products?.edges} 
             ref={flatListRef}
@@ -242,9 +266,10 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
             onScrollBeginDrag={handleOnScrollBeginDrag}
             onMomentumScrollEnd={handleOnMomentumScrollEnd}
             numColumns={2}
+            columnWrapperStyle={{padding: 4}}
             onEndReached={handlePagingation}
             onEndReachedThreshold={1}
-            ListHeaderComponent={ListHeaderComponent}
+            ListHeaderComponent={colloctionData && ListHeaderComponent}
             renderItem={({ item, index }) => (
               <View className="w-[50%] pb-1 px-1">
                 <CollectionCard
@@ -269,8 +294,60 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   )
 }
 
-function ActionSlider ({onPress}) {
+function ActionSlider ({onPress, setSortKeys, sortKeys}) {
+  console.log("SORT KEY HANDLE",sortKeys?.handle)
+  const [isModalVisible, setModalVisible] = useState(false)
   const {activeFilterInput} = useContext(FilterSelectionContext)
+
+  const sort_keys = [
+    {
+      handle: 'title',
+      sort_key: 'TITLE',
+      label: 'Sort By Title',
+      reverse: 'false'
+    },
+    {
+      handle: 'price-low',
+      sort_key: 'PRICE',
+      label: 'Lowest Price',
+      reverse: 'true'
+    },
+    {
+      handle: 'price-hight',
+      sort_key: 'PRICE',
+      label: 'Highest Price',
+      reverse: 'false'
+    },
+    {
+      handle: 'best-selling',
+      sort_key: 'BEST_SELLING',
+      label: 'Best Selling',
+      reverse: 'false'
+    },
+    {
+      handle: 'created',
+      sort_key: 'CREATED',
+      label: 'Newest',
+      reverse: 'false'
+    },
+    {
+      handle: 'manual',
+      sort_key: 'MANUAL',
+      label: 'Sort By Manual',
+      reverse: 'false'
+    },
+    {
+      handle: 'default',
+      sort_key: 'COLLECTION_DEFAULT',
+      label: 'Sort By',
+      reverse: 'false'
+    }
+  ]
+
+  const handlePress= (item) => {
+    setSortKeys(item)
+    setModalVisible(false)
+  }
   return (
     <ScrollView
           horizontal={true}
@@ -278,21 +355,45 @@ function ActionSlider ({onPress}) {
           showsHorizontalScrollIndicator={false}
         >
         <FilterButton onPress={onPress}/>
-        <SortButton/>
+        <SortButton active={sortKeys.handle !== 'default' ? true : false} label={sortKeys?.label} onPress={() => setModalVisible(true)}/>
         {activeFilterInput && activeFilterInput.map((activeFilter, index) => {
                 return <SmallButton key={index.toString()} id={activeFilter.id} title={activeFilter.label} />
             })}
+
+        <BottomModal
+          visible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          title="Sort by"
+        >
+          <View className="pb-10">
+            {sort_keys.map((item, index) => (
+              item.handle !== 'default' && <SortCard key={index.toString()} active={sortKeys?.handle === item.handle} label={item.label} onPress={() => handlePress(item)} style={{borderBottomWidth: 1, borderBottomColor: '#ddd'}}/>
+            ))}
+          </View>
+        </BottomModal>
       </ScrollView>
   )
 }
 
-function SortButton () {
+function SortCard({style, active, label, onPress}) {
+
+  return (
+    <Pressable style={style} onPress={onPress} className="flex-row justify-between px-5 py-4">
+        <Text className={`text-[14px] text-black ${active ? 'font-medium' : 'font-light'}`}>{label}</Text>
+        <View className="w-4 h-4 rounded-full border border-black items-center justify-center">
+          {active && (<View className="w-[10px] h-[10px] rounded-full bg-black"></View>)}
+        </View>
+    </Pressable>
+  )
+}
+
+function SortButton ({onPress, label, active}) {
   [isSortactive, setSortActive] = useState(false)
 return (
-    <Pressable onPress={() => setSortActive(!isSortactive)} className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${isSortactive ? ' bg-black' : 'bg-white'} mr-2 flex-row items-center`}>
-      <ArrowsUpDownIcon size={20} color={`${isSortactive ? 'white' : 'black'}`} />
-      <Text className={`text-[14px] ${isSortactive ? 'text-white' : 'text-black'} font-normal uppercase ml-1`}>
-        most wislisted
+    <Pressable onPress={onPress} className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${active ? ' bg-black' : 'bg-white'} mr-2 flex-row items-center`}>
+      <ArrowsUpDownIcon size={20} color={`${active ? 'white' : 'black'}`} />
+      <Text className={`text-[14px] ${active ? 'text-white' : 'text-black'} font-normal uppercase ml-1`}>
+        {label? label: 'Sort by'}
       </Text>
     </Pressable>
 )
@@ -310,19 +411,33 @@ return (
 )
 }
 
-function CollectionInfo () {
+function CollectionInfo ({data}) {
+const [isModalVisible, setModalVisible] = useState(false)
   return(
-    <View className="items-center px-5 bg-white">
-        <Text className="text-[26px] text-black font-light mt-2">Coach</Text>
-        <TextBody body={desc} length={100} style={{marginBottom: 12}}/>
-        <Button type="action" label="read more" />
+    <View className="w-full items-center px-5 bg-white">
+        <Text className="text-[26px] text-black font-light text-center capitalize mt-2">{data?.collection?.title}</Text>
+        {data?.collection?.metafield?.value && (<TextBody body={data?.collection?.metafield?.value} length={100} style={{marginBottom: 12}}/>)}
+        {data?.collection?.metafield?.value.length > 100 && (<Button type="action" label="read more" onPress={() => setModalVisible(true)} />)}
+        <MyModal
+          visible={isModalVisible}
+          slide="toUp"
+        >
+          <View className="h-10 flex-row items-center justify-end px-3">
+              <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+                  <XMarkIcon size={24} color="black"/>
+              </Pressable>
+          </View>
+          <View className="p-5">
+            <Text className="text-[16px] text-black font-light leading-6">{data?.collection?.metafield?.value}</Text>
+          </View>
+        </MyModal>
     </View>
   )
 }
 
-function ImageWrapper () {
+function ImageWrapper ({data}) {
   return (
-    <View className="w-full h-[200px]">
+    <View className="w-full h-[150px]">
           <View className="w-full z-10 flex-row justify-between items-center px-2">
             <LinearGradient
               style={{ width: SCREEN_WIDTH }}
@@ -332,15 +447,19 @@ function ImageWrapper () {
               end={{ x: 0.5, y: 1 }}
             />
           </View>
-          <Image
+          {!data?.collection?.image?.url && (<Image
             className="w-full h-full absolute top-0 left-0"
-            source={require("../assets/banner.jpg")}
-          />
+            source={require("../assets/snc-logo.avif")}
+          />)}
+          {data?.collection?.image?.url && (<Image
+            className="w-full h-full absolute top-0 left-0"
+            src={data?.collection?.image?.url}
+          />)}
       </View>
   )
 }
 
-function CollectionHeader ({scrollY, filterActionsLayout}) {
+function CollectionHeader ({scrollY, filterActionsLayout, data, sortKeys, setSortKeys}) {
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -380,13 +499,13 @@ function CollectionHeader ({scrollY, filterActionsLayout}) {
     <View className="w-full z-20">
 
         <HeaderActions/>
-        <ScreenHeader headerAnimatedStyle={headerAnimatedStyle} headerRight={true}/>
+        {(<ScreenHeader headerAnimatedStyle={headerAnimatedStyle} headerRight={true} title={data?.collection?.title}/>)}
 
         <Animated.View
           style={[{backgroundColor:'#fff', shadowColor:'#000', shadowOffset:{width:0, height:4}, shadowOpacity:0.05, elevation:3}, filterSliderAnimatedStyle]}
           className="absolute top-[50px] z-20 bg-white w-full "
         >
-          <ActionSlider/>
+          <ActionSlider sortKeys={sortKeys} setSortKeys={setSortKeys}/>
         </Animated.View>
       </View>
   )

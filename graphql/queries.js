@@ -77,6 +77,17 @@ export const GET_HOME_DATA = gql`
   }
 `;
 
+export const GET_CATEGORIES_OF_COLLECTIONS = gql`
+  query homeData {
+    collection(id: "gid://shopify/Collection/460284723479") {
+      id
+      metafield(key: "categories_of_collection", namespace: "mobile") {
+        value
+      }
+    }
+  }
+`;
+
 export const GET_COLOR_SWATCH_IMAGES = gql`
   query colorSwatchImages {
     collection(id: "gid://shopify/Collection/460284723479") {
@@ -127,21 +138,21 @@ query getProductVairants($productId: ID!) {
     description
     onlineStoreUrl
     priceRange{
-    maxVariantPrice{
-      amount
-      currencyCode
+      maxVariantPrice{
+        amount
+        currencyCode
+      }
+      minVariantPrice{
+        amount
+        currencyCode
+     }
     }
-    minVariantPrice{
-      amount
-      currencyCode
+    compareAtPriceRange{
+      minVariantPrice{
+        amount
+        currencyCode
+      }
     }
-  }
-  compareAtPriceRange{
-    minVariantPrice{
-      amount
-      currencyCode
-    }
-  }
     images(first: 100) {
       edges {
         node {
@@ -479,12 +490,20 @@ export const GET_BUYER_DETAILS = gql`
   }
 `;
 
+
+
+const myTitle = "price"
+
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!]) {
+  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!], $sortKey: ProductCollectionSortKeys ) {
     collection(id: $collectionId) {
       id
       title
-      products(first: 18, after: $cursor, filters: $filterInput) {
+      image{
+        url
+      }
+      
+      products(first: 18, after: $cursor, filters: $filterInput, sortKey: $sortKey, reverse: false) {
         filters {
           id
           label
@@ -502,6 +521,22 @@ export const GET_COLLECTION_BY_ID = gql`
             id
             title
             vendor
+            priceRange{
+              maxVariantPrice{
+                amount
+                currencyCode
+              }
+              minVariantPrice{
+                amount
+                currencyCode
+            }
+            }
+            compareAtPriceRange{
+              minVariantPrice{
+                amount
+                currencyCode
+              }
+            }
             featuredImage{
               altText
               id
@@ -535,6 +570,9 @@ export const GET_COLLECTION_BY_ID = gql`
           endCursor
           hasNextPage
         }
+      }
+      metafield(key: "description", namespace: "custom") {
+        value
       }
     }
   }

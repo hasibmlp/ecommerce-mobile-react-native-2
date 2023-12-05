@@ -1,9 +1,13 @@
 import { useContext, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import VariantHeader from "./VariantHeader";
 import VariantOption from "./VariantOption";
 import Button from "../buttons/Button";
 import ModalSkeleton from "./ModalSkeleton";
+import { PlusCircleIcon } from "react-native-heroicons/solid";
+import MyModal from "./MyModal";
+import { XMarkIcon } from "react-native-heroicons/outline";
+import ImageSelectorButton from "../buttons/ImageSelectorButton";
 
 export default function VariantSelectionModalContent({handleClose, context}) {
   const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
@@ -34,11 +38,14 @@ export default function VariantSelectionModalContent({handleClose, context}) {
               />
               ))}
           </View>
+
+          <CustomizationContainer/>
+
           <Button 
             label={label} 
             size="md" active={selectedVariant.id ? true : false} 
             onPress={currentlyNotInStock ? () => {} : () => handleAddCartBtn(onClose=handleClose)} 
-            style={{marginVertical: 12, marginHorizontal: 20}}/>
+            style={{marginVertical: 12, marginHorizontal: 12}}/>
         </View>
       </View>
       )
@@ -46,7 +53,48 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     
     
-    
+    function CustomizationContainer() {
+      const [isModalVisible, setModalVisible] = useState(false)
+      return(
+        <View>
+          <TouchableOpacity 
+            onPress={() => setModalVisible(true)}
+            className="flex-row items-center justify-center self-start mx-3 pb-4 pt-2"
+          >
+            <PlusCircleIcon size={18} color='#89c157' />
+            <Text className="text-[13px] text-[#89c157] font-normal uppercase ml-1">Add Customization</Text>
+          </TouchableOpacity>
+
+          <MyModal visible={isModalVisible} slide="toUp">
+            <View className="h-10 flex-row items-center justify-end px-3">
+                <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
+                  <XMarkIcon size={24} color="black"/>
+                </Pressable>
+            </View>
+              <Text className="text-[18px] text-black font-light px-5 mb-5">Please Choose a position:</Text>
+            <View className="w-[85%] mx-auto flex-row justify-between">
+              <ImageSelectorButton
+
+                style={{ width: 130, height: 170}}
+                imageUrl={"https://cdn.shopify.com/s/files/1/2610/4676/products/littmann-classic-iii-monitoring-stethoscope-5831.jpg?v=1687174127"}
+                textContainer={(
+                  <Text className="text-[14px] text-black font-light text-center">Doctor Side-Stright Tube</Text>
+                )}
+              />
+              <ImageSelectorButton
+
+                style={{ width: 130, height: 170}}
+                imageUrl={"https://cdn.shopify.com/s/files/1/2610/4676/products/littmann-classic-iii-monitoring-stethoscope-5831.jpg?v=1687174127"}
+                textContainer={(
+                  <Text className="text-[14px] text-black font-light text-center">Doctor Side-Curve Tube</Text>
+                )}
+              />
+            </View>
+          </MyModal>
+
+        </View>
+      )
+    }
     
     
     

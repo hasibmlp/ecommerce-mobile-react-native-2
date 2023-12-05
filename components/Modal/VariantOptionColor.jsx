@@ -3,6 +3,7 @@ import { Dimensions, FlatList, Image, ScrollView, TouchableOpacity, View } from 
 import { getVariantForSingleOption } from "../utils/UtilsFunctions";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 import Skeleton from "../Skeleton";
+import ImageSelectorButton from "../buttons/ImageSelectorButton";
 
 const IMAGE_WIDTH = 100
 const SPACING = 12
@@ -73,25 +74,16 @@ export default function VariantOptionColor({ option, context }) {
       contentContainerStyle={{paddingHorizontal: 12}}
       onLayout={handleOnScroll}
       renderItem={({item, index}) => (
-        <TouchableOpacity
-          key={index.toString()}
+        <>
+        <ImageSelectorButton
           onPress={() => handlePress(item.id, item.name, item.value,  item.image)}
-          className=""
-        >
-          <View
-            style={{marginRight: SPACING}}
-            className={`h-[150px] border ${
-              activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === item.value ? " border-black" : "border-gray-300"
-            } rounded-[5px] overflow-hidden`}
-          >
-            <Image
-              style={{width: IMAGE_WIDTH}}
-              className="h-[150px] rounded-[5px]"
-              src={item.image.url}
-            />
-          </View>
-        </TouchableOpacity>
+          style={{marginRight: SPACING, width: IMAGE_WIDTH}}
+          active={activeOptions.find(optionValue => optionValue?.name === option?.name)?.value === item.value}
+          imageUrl={item.image.url}
+        />
+        </>
       )}
     />
   );
 }
+

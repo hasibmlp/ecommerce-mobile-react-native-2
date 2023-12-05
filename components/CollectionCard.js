@@ -12,6 +12,7 @@ import { PlusIcon } from "react-native-heroicons/outline";
 import BottomModal from "./Modal/BottomModal";
 import { getVariantForSingleOption } from "./utils/UtilsFunctions";
 import ColorSwatchImage from "./buttons/ColorSwatchImage";
+import PriceContainer from "./PriceContainer";
 
 export function CollectionCard({ product }) {
   const navigation = useNavigation();
@@ -21,6 +22,13 @@ export function CollectionCard({ product }) {
     navigation.navigate("ProductDetailScreen", { productId: product.id })
   }
 
+  
+  const amount = {
+    price: product?.priceRange.minVariantPrice.amount,
+    comparePrice: product?.compareAtPriceRange?.minVariantPrice.amount,
+    currencyCode: product?.priceRange.minVariantPrice.currencyCode
+  }
+  
   return (
     <View
       key={product.id}
@@ -35,18 +43,17 @@ export function CollectionCard({ product }) {
       </View>
       
       <Pressable onPress={handlePress} className="bg-white items-center justify-center py-3">
+        <Text className="text-[12px] text-black font-medium uppercase mb-2">{product.vendor}</Text>
         {product.title && (
           <Text
             numberOfLines={1}
-            className="text-[14px] font-normal text-black w-[70%] mb-2 text-center"
+            className="text-[13px] font-normal text-black w-[90%] mb-2 text-center"
           >
             {product.title}
           </Text>
         )}
         {product.priceRange && (
-          <Text className="text-[13px] font-normal text-red-700 mb-2 text-center">
-            {product.priceRange.minVariantPrice.amount}
-          </Text>
+          <PriceContainer containerStyle={{marginBottom: 8}} amount={amount}/>
         )}
 
         {product.options[0].values[0] !== "Default Title" && product.options.some(op => op.name === 'Color') && product.options.find(op => op.name === 'Color')?.values.length > 1 && (

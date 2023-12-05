@@ -38,6 +38,7 @@ import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
 import ShareButton from "../components/buttons/ShareButton";
 import Panel from "../components/actions/Panel";
 import ColorSwatchImage from "../components/buttons/ColorSwatchImage";
+import PriceContainer from "../components/PriceContainer";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -404,33 +405,5 @@ function SelectionButton ({option, style}) {
           <ChevronDownIcon size={11} color="black" />
         </View>
       </View>
-  )
-}
-
-function PriceContainer({amount}) {
-  const {price, comparePrice, currencyCode} = amount
-  const discountPercentage = Math.round(((comparePrice - price) / comparePrice) * 100)
-  const isDiscountApplyed = price < comparePrice
-  return(
-    <View className="items-center">
-      <View className="flex-row items-center">
-        <Text className={`text-[18px] font-normal ${textColor}`}>
-            {price} {currencyCode}
-        </Text>
-        {isDiscountApplyed && (
-          <>
-            <Text className="text-[14px] font-normal text-black ml-2">
-              {comparePrice} {currencyCode}
-            </Text>
-          < Text className="text-[14px] font-normal text-black ml-1">
-              {discountPercentage}% offer
-            </Text>
-          </>
-        )}
-      </View>
-      <Text className="text-[14px] text-gray-500 font-normal mt-1">
-        excluding VAT
-      </Text>
-    </View>
   )
 }

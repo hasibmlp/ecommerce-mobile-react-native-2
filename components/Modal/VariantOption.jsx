@@ -4,6 +4,7 @@ import VariantOptionType from "./VariantOptionType";
 import { useContext, useState } from "react";
 import MyModal from "./MyModal";
 import { XMarkIcon } from "react-native-heroicons/outline";
+import Button from "../buttons/Button";
 
 const textColor = 'text-[#4baaca]'
 
@@ -19,11 +20,14 @@ export default function VariantOption({ option, context }) {
         </Text>
         {option.name === "Size" && (
           <>
-          <Pressable onPress={() => setModalVisible(true)}>
-            <Text className={`text-[12px] font-medium ${textColor} uppercase underline`}>
-              size guide
-            </Text>
-          </Pressable>
+          <Button 
+            label="size guide" 
+            type="action"
+            onPress={() => setModalVisible(true)}
+            size="sm" 
+            flex={false} 
+            textStyle={{fontSize: 12, color: '#89c157'}}
+          />
 
           <MyModal visible={isModalVisible} slide="toUp">
           <View>

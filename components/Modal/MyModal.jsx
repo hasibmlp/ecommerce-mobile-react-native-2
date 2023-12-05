@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, Modal, SafeAreaView, View } from "react-native";
+import { Animated, Dimensions, Easing, Modal, Pressable, SafeAreaView, View } from "react-native";
+import { XMarkIcon } from "react-native-heroicons/outline";
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const SCREEN_HEIGHT = Dimensions.get('window').height
@@ -29,13 +30,15 @@ export default function MyModal({visible, children, slide='toRight'}) {
     useEffect(() => {
         isContentAnimated && Animated.timing(transRef, {
         toValue: fromValue,
-        duration: 130,
+        duration: 180,
+        easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
         useNativeDriver: true,
         }).start();
 
         !isContentAnimated && Animated.timing(transRef, {
         toValue: toValue,
-        duration: 130,
+        duration: 180,
+        easing: Easing.out(Easing.bezier(0.11, 0, 0.5, 0)),
         useNativeDriver: true,
         }).start(() => setModalVisible(false));
 
@@ -63,6 +66,7 @@ export default function MyModal({visible, children, slide='toRight'}) {
                             className="absolute top-0 left-0 right-0 bottom-0 z-50 bg-white"
                         >
                             <SafeAreaView className="bg-white"/>
+                            
                             {children}
     
                         </Animated.View>

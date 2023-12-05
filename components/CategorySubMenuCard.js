@@ -1,19 +1,24 @@
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { Text, View, Pressable } from "react-native";
 import { ChevronDownIcon } from "react-native-heroicons/outline";
-import Animated, { Layout } from "react-native-reanimated";
+import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
 
-export default function CategorySubMenuCard({ title, id, subLists }) {
+export default function CategorySubMenuCard({ subContent, subLists }) {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
+  const navigation = useNavigation()
 
   const [activeIndex, setActiveIndex] = useState(0);
 
+  console.log(subContent.collectionId)
+
   const handleSubmenuPress = () => {
-    setActiveIndex(id === activeIndex ? null : id);
+    setActiveIndex(subContent.id === activeIndex ? null : subContent.id);
+    navigation.navigate("Collection", { collectionId: subContent.collectionId })
   };
 
   return (
-    <Animated.View layout={Layout} className="submenu relative overflow-hidden">
+    <Animated.View entering={FadeIn} layout={Layout.delay(50)} exiting={FadeOut} className="submenu relative overflow-hidden">
       <Pressable
         onPress={() => handleSubmenuPress()}
         className="flex-row items-center justify-between px-5 py-5"
@@ -23,12 +28,12 @@ export default function CategorySubMenuCard({ title, id, subLists }) {
             isSubMenuOpen && "font-medium"
           }`}
         >
-          {title}
+          {subContent.title}
         </Text>
 
-        <ChevronDownIcon size={12} color="black" />
+        {/* <ChevronDownIcon size={12} color="black" /> */}
       </Pressable>
-      <View className="related">
+      {/* <View className="related">
         {id === activeIndex && (
           <>
             {subLists.map((list, index) => (
@@ -40,7 +45,7 @@ export default function CategorySubMenuCard({ title, id, subLists }) {
             ))}
           </>
         )}
-      </View>
+      </View> */}
     </Animated.View>
   );
 }
