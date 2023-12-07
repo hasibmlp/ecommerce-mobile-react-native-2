@@ -6,8 +6,10 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useTransition,
+  Suspense,
 } from "react";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery, useSuspenseQuery } from "@apollo/client";
 import {
   Dimensions,
   Image,
@@ -49,24 +51,20 @@ import BottomModal from "./Modal/BottomModal";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
-const desc =
-  "American House of leather. Couch, values authenticiy and innovation. Founded on 1991, as a family running bussiness";
-
 export default function Collection({ route }) {
   const [isSideBarVisible, setSideBarVisible] = useState(false)
   const handleSideBarClose = () => setSideBarVisible(false)
   return (
 
-
-    <View className="flex-1 items-center bg-white">
-      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
-      <FilterSelectionProvider>
-        <CollectionData route={route} openSideBar={() => setSideBarVisible(true)}/>
-        <MyModal visible={isSideBarVisible} >
-          <FilterBody onClose={handleSideBarClose}/>
-        </MyModal>
-      </FilterSelectionProvider>
-    </View>
+      <View className="flex-1 items-center bg-white">
+        <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
+        <FilterSelectionProvider>
+          <CollectionData route={route} openSideBar={() => setSideBarVisible(true)}/>
+          <MyModal visible={isSideBarVisible} >
+            <FilterBody onClose={handleSideBarClose}/>
+          </MyModal>
+        </FilterSelectionProvider>
+      </View>
   );
 }
 
@@ -77,7 +75,7 @@ function CollectionData ({route, openSideBar}) {
     handle: 'default',
     sort_key: 'COLLECTION_DEFAULT',
     label: 'Sort By',
-    reverse: 'false'
+    reverse: false
   })
 
   const {setFilters, activeFilterInput} = useContext(FilterSelectionContext)
@@ -89,12 +87,15 @@ function CollectionData ({route, openSideBar}) {
   const scrollY = useSharedValue(0);
   const filterInputs = activeFilterInput.map(filterValue => filterValue.input)
 
+  const [isPending, startTransition] = useTransition()
+
   const {
     loading: colloctionLoading,
     error: colloctionError,
     data: colloctionData,
+    networkStatus,
     fetchMore,
-  } = useQuery(GET_COLLECTION_BY_ID, {
+  } = useSuspenseQuery(GET_COLLECTION_BY_ID, {
     variables: {
       collectionId,
       filterInput: filterInputs,
@@ -102,6 +103,8 @@ function CollectionData ({route, openSideBar}) {
       reverse: sortKeys.reverse
     },
   });
+
+  console.log("NETWORK STATUS IS: ", isPending)
 
   const [getAllProductId, {
     loading: allProductsLoading,
@@ -116,6 +119,12 @@ function CollectionData ({route, openSideBar}) {
     fetchPolicy: 'network-only',
     // notifyOnNetworkStatusChange: true,
   })
+
+  const handleSortPress = (item) => {
+      startTransition(() => {
+        setSortKeys(item)
+      })
+  }
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -172,39 +181,48 @@ function CollectionData ({route, openSideBar}) {
 
   return (
         <>
-          <CollectionHeader 
-            scrollY={scrollY} 
-            filterActionsLayout={filterActionsLayout} 
-            data={colloctionData}
-            sortKeys={sortKeys}
-            setSortKeys={setSortKeys}
-          />
-          {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)}
-          {(<CollectionBody
-            colloctionData={colloctionData}
-            colloctionLoading={colloctionLoading}
-            flatListRef={flatListRef}
-            filterActionsLayout={filterActionsLayout}
-            scrollY={scrollY}
-            setShowPageIndicator={setShowPageIndicator}
-            fetchMore={fetchMore}
-            openSideBar={openSideBar}
-            sortKeys={sortKeys}
-            setSortKeys={setSortKeys}
-          />)}
-          {colloctionData?.collection?.products < 0 && (<View className="flex-1 items-center justify-center">
-              <Image className="w-32 h-32" source={require("../assets/empty-box.png")}/>
-              <Text className="text-[18px] text-gray-500 font-normal capitalize mt-4 mb-6">No Products found !!!</Text>
-              <Button onPress={() => navigation.navigate("Home")} label="go home" size="sm" flex={false}/>
-          </View>)}
+        {isPending && (<View className="flex-1 bg-red-200 absolute top-0 left-0 right-0 bottom-0 z-50"></View>)}
+        <Suspense fallback={<View className="flex-1 absolute top-0 left-0 bottom-0 right-0 z-40 overlay-[0.3] items-center justify-center"><Text>Loading..</Text></View>}>
+            <CollectionHeader 
+              scrollY={scrollY} 
+              filterActionsLayout={filterActionsLayout} 
+              data={colloctionData}
+              sortKeys={sortKeys}
+              setSortKeys={setSortKeys}
+              startTransition={startTransition}
+              isPending={isPending}
+              handleSortPress={handleSortPress}
+            />
+            {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)}
+            {(<CollectionBody
+              colloctionData={colloctionData}
+              colloctionLoading={colloctionLoading}
+              flatListRef={flatListRef}
+              filterActionsLayout={filterActionsLayout}
+              scrollY={scrollY}
+              setShowPageIndicator={setShowPageIndicator}
+              fetchMore={fetchMore}
+              openSideBar={openSideBar}
+              sortKeys={sortKeys}
+              setSortKeys={setSortKeys}
+              startTransition={startTransition}
+              isPending={isPending}
+              handleSortPress={handleSortPress}
+            />)}
+            {colloctionData?.collection?.products < 0 && (<View className="flex-1 items-center justify-center">
+                <Image className="w-32 h-32" source={require("../assets/empty-box.png")}/>
+                <Text className="text-[18px] text-gray-500 font-normal capitalize mt-4 mb-6">No Products found !!!</Text>
+                <Button onPress={() => navigation.navigate("Home")} label="go home" size="sm" flex={false}/>
+            </View>)}
 
-          {showPageIndicator && (<PageIndicatorPopup current={colloctionData.collection?.products?.edges?.length} flatListRef={flatListRef} total={productTotalCount} />)}
+            {showPageIndicator && (<PageIndicatorPopup current={colloctionData.collection?.products?.edges?.length} flatListRef={flatListRef} total={productTotalCount} />)}
+        </Suspense>
         </>
   )
 }
 
 
-function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore, openSideBar, setSortKeys, sortKeys}) {
+function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scrollY, setShowPageIndicator, fetchMore, openSideBar, setSortKeys, sortKeys, startTransition, isPending, handleSortPress}) {
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -249,7 +267,7 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
         className="w-full"
       >
 
-        <ActionSlider onPress={openSideBar} setSortKeys={setSortKeys} sortKeys={sortKeys}/>
+        <ActionSlider onPress={openSideBar} setSortKeys={setSortKeys} sortKeys={sortKeys} startTransition={startTransition} isPending={isPending} handleSortPress={handleSortPress}/>
 
       </View>
     </View>
@@ -294,8 +312,7 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
   )
 }
 
-function ActionSlider ({onPress, setSortKeys, sortKeys}) {
-  console.log("SORT KEY HANDLE",sortKeys?.handle)
+function ActionSlider ({onPress, setSortKeys, sortKeys, startTransition, handleSortPress}) {
   const [isModalVisible, setModalVisible] = useState(false)
   const {activeFilterInput} = useContext(FilterSelectionContext)
 
@@ -304,50 +321,47 @@ function ActionSlider ({onPress, setSortKeys, sortKeys}) {
       handle: 'title',
       sort_key: 'TITLE',
       label: 'Sort By Title',
-      reverse: 'false'
+      reverse: false
     },
     {
       handle: 'price-low',
       sort_key: 'PRICE',
       label: 'Lowest Price',
-      reverse: 'true'
+      reverse: false
     },
     {
       handle: 'price-hight',
       sort_key: 'PRICE',
       label: 'Highest Price',
-      reverse: 'false'
+      reverse: true
     },
     {
       handle: 'best-selling',
       sort_key: 'BEST_SELLING',
       label: 'Best Selling',
-      reverse: 'false'
+      reverse: false
     },
     {
       handle: 'created',
       sort_key: 'CREATED',
       label: 'Newest',
-      reverse: 'false'
+      reverse: false
     },
     {
       handle: 'manual',
       sort_key: 'MANUAL',
       label: 'Sort By Manual',
-      reverse: 'false'
+      reverse: false
     },
     {
       handle: 'default',
       sort_key: 'COLLECTION_DEFAULT',
       label: 'Sort By',
-      reverse: 'false'
+      reverse: false
     }
   ]
 
-  const handlePress= (item) => {
-    setSortKeys(item)
-    setModalVisible(false)
-  }
+
   return (
     <ScrollView
           horizontal={true}
@@ -367,7 +381,7 @@ function ActionSlider ({onPress, setSortKeys, sortKeys}) {
         >
           <View className="pb-10">
             {sort_keys.map((item, index) => (
-              item.handle !== 'default' && <SortCard key={index.toString()} active={sortKeys?.handle === item.handle} label={item.label} onPress={() => handlePress(item)} style={{borderBottomWidth: 1, borderBottomColor: '#ddd'}}/>
+              item.handle !== 'default' && <SortCard key={index.toString()} active={sortKeys?.handle === item.handle} label={item.label} onPress={() => handleSortPress(item)} style={{borderBottomWidth: 1, borderBottomColor: '#ddd'}}/>
             ))}
           </View>
         </BottomModal>
@@ -459,7 +473,7 @@ function ImageWrapper ({data}) {
   )
 }
 
-function CollectionHeader ({scrollY, filterActionsLayout, data, sortKeys, setSortKeys}) {
+function CollectionHeader ({scrollY, filterActionsLayout, data, sortKeys, setSortKeys, startTransition ,isPending, handleSortPress}) {
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -505,7 +519,7 @@ function CollectionHeader ({scrollY, filterActionsLayout, data, sortKeys, setSor
           style={[{backgroundColor:'#fff', shadowColor:'#000', shadowOffset:{width:0, height:4}, shadowOpacity:0.05, elevation:3}, filterSliderAnimatedStyle]}
           className="absolute top-[50px] z-20 bg-white w-full "
         >
-          <ActionSlider sortKeys={sortKeys} setSortKeys={setSortKeys}/>
+          <ActionSlider sortKeys={sortKeys} setSortKeys={setSortKeys} startTransition={startTransition} isPending={isPending} handleSortPress={handleSortPress}/>
         </Animated.View>
       </View>
   )

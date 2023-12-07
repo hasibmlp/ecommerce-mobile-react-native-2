@@ -495,7 +495,7 @@ export const GET_BUYER_DETAILS = gql`
 const myTitle = "price"
 
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!], $sortKey: ProductCollectionSortKeys ) {
+  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!], $sortKey: ProductCollectionSortKeys, $reverse: Boolean ) {
     collection(id: $collectionId) {
       id
       title
@@ -503,7 +503,7 @@ export const GET_COLLECTION_BY_ID = gql`
         url
       }
       
-      products(first: 18, after: $cursor, filters: $filterInput, sortKey: $sortKey, reverse: false) {
+      products(first: 18, after: $cursor, filters: $filterInput, sortKey: $sortKey, reverse: $reverse) {
         filters {
           id
           label
