@@ -95,7 +95,7 @@ function CollectionData ({route, openSideBar}) {
     data: colloctionData,
     networkStatus,
     fetchMore,
-  } = useSuspenseQuery(GET_COLLECTION_BY_ID, {
+  } = useQuery(GET_COLLECTION_BY_ID, {
     variables: {
       collectionId,
       filterInput: filterInputs,
@@ -182,7 +182,7 @@ function CollectionData ({route, openSideBar}) {
   return (
         <>
         {isPending && (<View className="flex-1 bg-red-200 absolute top-0 left-0 right-0 bottom-0 z-50"></View>)}
-        <Suspense fallback={<View className="flex-1 absolute top-0 left-0 bottom-0 right-0 z-40 overlay-[0.3] items-center justify-center"><Text>Loading..</Text></View>}>
+        {/* <Suspense fallback={<View className="flex-1 absolute top-0 left-0 bottom-0 right-0 z-40 overlay-[0.3] items-center justify-center"><Text>Loading..</Text></View>}> */}
             <CollectionHeader 
               scrollY={scrollY} 
               filterActionsLayout={filterActionsLayout} 
@@ -193,7 +193,7 @@ function CollectionData ({route, openSideBar}) {
               isPending={isPending}
               handleSortPress={handleSortPress}
             />
-            {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)}
+            {/* {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)} */}
             {(<CollectionBody
               colloctionData={colloctionData}
               colloctionLoading={colloctionLoading}
@@ -216,7 +216,7 @@ function CollectionData ({route, openSideBar}) {
             </View>)}
 
             {showPageIndicator && (<PageIndicatorPopup current={colloctionData.collection?.products?.edges?.length} flatListRef={flatListRef} total={productTotalCount} />)}
-        </Suspense>
+        {/* </Suspense> */}
         </>
   )
 }

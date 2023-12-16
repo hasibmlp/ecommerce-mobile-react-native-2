@@ -1,0 +1,603 @@
+[
+    {
+        "id": "001",
+        "name": "women",
+        "category": [
+            {
+                "id": "0011",
+                "name": "Scrubs",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/72583118965", 
+                        "title": "All scrubs"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/139270258797", 
+                        "title": "Scrubsets"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/139270094957", 
+                        "title": "Solid Scrub tops"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/139269996653", 
+                        "title": "printed Scrub tops"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/72583544949", 
+                        "title": "Scrub pants"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/72583282805", 
+                        "title": "Scrub Jackets"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/72583315573", 
+                        "title": "T-shirts & Underscrubs"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/72583643253", 
+                        "title": "Scrub Skirts"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451898278167", 
+                        "title": "Scrub hijabs"
+                    }
+                ]
+            },
+            {
+                "id": "0012",
+                "name": "Labcoats",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/72583053429", 
+                        "title": "All labcoats"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/193829863533", 
+                        "title": "Long labcoats"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/193830158445", 
+                        "title": "Short labcoats"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/452839440663", 
+                        "title": "Colored labcoats"
+                    }
+                ]
+            },
+            {
+                "id": "0013",
+                "name": "Jackets",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/72583282805", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0014",
+                "name": "Stethoscopes",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/451945496855", 
+                        "title": "all Stethoscopes"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/139429937261", 
+                        "title": "Littmann"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/139430002797", 
+                        "title": "MDF"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451873243415", 
+                        "title": "ADC"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/444381987095", 
+                        "title": "Lupdub"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451873440023", 
+                        "title": "Pediatric Stethoscopes"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/441728368919", 
+                        "title": "cardiology Stethoscopes"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451945824535", 
+                        "title": "Stethoscope accessories"
+                    }
+                ]
+            },
+            {
+                "id": "0015",
+                "name": "Medical devices",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/451896639767", 
+                        "title": "all medical devices"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451946021143", 
+                        "title": "diagnostic sets"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451896672535", 
+                        "title": "oximeter"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451896705303", 
+                        "title": "ADC Combo"
+                    }
+                ]
+            },
+            {
+                "id": "0016",
+                "name": "Medical Tools",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/451896803607", 
+                        "title": "all medical tools"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451896901911", 
+                        "title": "Scissors"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451896967447", 
+                        "title": "hammers"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451897098519", 
+                        "title": "Pen lights"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Product/8392495399191", 
+                        "title": "X-ray markers"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451897229591", 
+                        "title": "Tunning fork"
+                    }
+                ]
+            },
+            {
+                "id": "0017",
+                "name": "Shoes & Clogs",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/72584790133", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0018",
+                "name": "Surgical hat",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/72487501941", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0019",
+                "name": "Scrub Hijab",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/451898278167", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "00110",
+                "name": "Discover more",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/Screenshot2023-11-30120409.jpg?v=1701327214",
+                "values": [
+                    {
+                        "collectionId": "gid://shopify/Collection/451898343703", 
+                        "title": "socks"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451898442007", 
+                        "title": "face masks"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451906273559", 
+                        "title": "skin care"
+                    },
+                    {
+                        "collectionId": "gid://shopify/Collection/451898605847", 
+                        "title": "medical jewelry"
+                    }
+                ]
+            }
+        ] 
+    },
+    {
+        "id": "002",
+        "name": "men",
+        "category": [
+            {
+              "id": "0021",
+              "name": "Scrubs",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/72583151733",
+                  "title": "All scrubs"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/139421614189",
+                  "title": "Scrubsets"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/139281465453",
+                  "title": "Solid Scrub tops"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/139281498221",
+                  "title": "printed Scrub tops"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/72583577717",
+                  "title": "Scrub pants"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/72583381109",
+                  "title": "Scrub Jackets"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/72583413877",
+                  "title": "T-shirts & Underscrubs"
+                }
+              ]
+            },
+            {
+              "id": "0022",
+              "name": "Labcoats",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/72583020661",
+                  "title": "All labcoats"
+                },
+                {
+                  "collectionId": "132",
+                  "title": "Long labcoats"
+                },
+                {
+                  "collectionId": "133",
+                  "title": "Short labcoats"
+                },
+                {
+                  "collectionId": "134",
+                  "title": "Colored labcoats"
+                }
+              ]
+            },
+            {
+              "id": "0023",
+              "name": "Jackets",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/72583381109",
+                  "title": "all jackets"
+                }
+              ]
+            },
+            {
+              "id": "0024",
+              "name": "Stethoscopes",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/451945496855",
+                  "title": "all Stethoscopes"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/139429937261",
+                  "title": "Littmann"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/139430002797",
+                  "title": "MDF"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451873243415",
+                  "title": "ADC"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/444381987095",
+                  "title": "Lupdub"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451873440023",
+                  "title": "Pediatric Stethoscopes"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/441728368919",
+                  "title": "cardiology Stethoscopes"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451945824535",
+                  "title": "Stethoscope accessories"
+                }
+              ]
+            },
+            {
+              "id": "0025",
+              "name": "Medical devices",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/451896639767",
+                  "title": "all medical devices"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451946021143",
+                  "title": "diagnostic sets"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451896672535",
+                  "title": "oximeter"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451896705303",
+                  "title": "ADC Combo"
+                }
+              ]
+            },
+            {
+              "id": "0026",
+              "name": "Medical Tools",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/451896803607",
+                  "title": "all medical tools"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451896901911",
+                  "title": "Scissors"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451896967447",
+                  "title": "hammers"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451897098519",
+                  "title": "Pen lights"
+                },
+                {
+                  "collectionId": "gid://shopify/Product/8392495399191",
+                  "title": "X-ray markers"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451897229591",
+                  "title": "Tunning fork"
+                }
+              ]
+            },
+            {
+              "id": "0027",
+              "name": "Shoes & Clogs",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/72584822901",
+                  "title": "all scrubs"
+                }
+              ]
+            },
+            {
+              "id": "0028",
+              "name": "Surgical hat",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/72487501941",
+                  "title": "all scrubs"
+                }
+              ]
+            },
+            {
+              "id": "0029",
+              "name": "Discover more",
+              "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/WhatsAppImage2021-05-20at7.48.14PM_d84615c0-b180-43b3-8d50-10511cae6d42.jpg?v=1700941085",
+              "values": [
+                {
+                  "collectionId": "gid://shopify/Collection/451898343703",
+                  "title": "socks"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451898442007",
+                  "title": "face masks"
+                },
+                {
+                  "collectionId": "gid://shopify/Collection/451906273559",
+                  "title": "skin care"
+                }
+              ]
+            }
+          ]
+    },
+    {
+        "id": "003",
+        "name": "Accessories & gifts",
+        "category": [
+            {
+                "id": "0031",
+                "name": "Pins",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "121", 
+                        "title": "All scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0032",
+                "name": "ID badges",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "131", 
+                        "title": "All labcoats"
+                    }
+                ]
+            },
+            {
+                "id": "0033",
+                "name": "lanyards",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "141", 
+                        "title": "all scrubs"
+                    }
+
+                ]
+            },
+            {
+                "id": "0034",
+                "name": "name tags",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "141", 
+                        "title": "all scrubs"
+                    }
+
+                ]
+            },
+            {
+                "id": "0035",
+                "name": "Key rings",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "123", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0036",
+                "name": "Surgical Cap",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "123", 
+                        "title": "all scrubs"
+                    }
+                ]
+            },
+            {
+                "id": "0037",
+                "name": "Bags",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "123", 
+                        "title": "All bags"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Totebags"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Backpacks"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Stethoscope cases"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "pencil cases"
+                    }
+                ]
+            },
+            {
+                "id": "0038",
+                "name": "Stationary",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "123", 
+                        "title": "All stationary"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Notebooks"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Pens"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Stickers"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Books"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Pen holders"
+                    },
+                    {
+                        "collectionId": "124", 
+                        "title": "Measuring tape"
+                    }
+                ]
+            },
+            {
+                "id": "0039",
+                "name": "Aesthetics",
+                "imageUrl": "https://cdn.shopify.com/s/files/1/2610/4676/files/blank-wooden-picture-frame-shelf-with-cactus.jpg?v=1700940961",
+                "values": [
+                    {
+                        "collectionId": "123", 
+                        "title": "All decorations & art"
+                    }
+                ]
+            }
+            
+        ] 
+    },
+    {
+        "id": "004",
+        "name": "Speciality",
+        "category": [
+            {
+                "id": "0041",
+                "name": "Aesthetics",
+                "imageUrl": ""
+            }
+        ]
+    }
+
+]

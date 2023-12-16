@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, SafeAreaView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import VariantHeader from "./VariantHeader";
 import VariantOption from "./VariantOption";
 import Button from "../buttons/Button";
@@ -8,6 +8,8 @@ import { PlusCircleIcon } from "react-native-heroicons/solid";
 import MyModal from "./MyModal";
 import { XMarkIcon } from "react-native-heroicons/outline";
 import ImageSelectorButton from "../buttons/ImageSelectorButton";
+import ColorSwatchImage from "../buttons/ColorSwatchImage";
+import ShowAndHide from "../ShowAndHide";
 
 export default function VariantSelectionModalContent({handleClose, context}) {
   const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
@@ -55,11 +57,15 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     function CustomizationContainer() {
       const [isModalVisible, setModalVisible] = useState(false)
+      const [activeTab, setActiveTab] = useState('tab-a')
       return(
-        <View>
+        <View className="pb-4 pt-2">
+          <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">
+            Customization:
+          </Text>
           <TouchableOpacity 
             onPress={() => setModalVisible(true)}
-            className="flex-row items-center justify-center self-start mx-3 pb-4 pt-2"
+            className="flex-row items-center justify-center self-start mx-3"
           >
             <PlusCircleIcon size={18} color='#89c157' />
             <Text className="text-[13px] text-[#89c157] font-normal uppercase ml-1">Add Customization</Text>
@@ -71,25 +77,74 @@ export default function VariantSelectionModalContent({handleClose, context}) {
                   <XMarkIcon size={24} color="black"/>
                 </Pressable>
             </View>
-              <Text className="text-[18px] text-black font-light px-5 mb-5">Please Choose a position:</Text>
-            <View className="w-[85%] mx-auto flex-row justify-between">
-              <ImageSelectorButton
 
-                style={{ width: 130, height: 170}}
-                imageUrl={"https://cdn.shopify.com/s/files/1/2610/4676/products/littmann-classic-iii-monitoring-stethoscope-5831.jpg?v=1687174127"}
-                textContainer={(
-                  <Text className="text-[14px] text-black font-light text-center">Doctor Side-Stright Tube</Text>
-                )}
-              />
-              <ImageSelectorButton
+            <View className="flex-1">
+              <Text className="text-[20px] text-green-500 font-medium uppercase mx-auto mb-5 tracking-[2px]">Embroidery</Text>
 
-                style={{ width: 130, height: 170}}
-                imageUrl={"https://cdn.shopify.com/s/files/1/2610/4676/products/littmann-classic-iii-monitoring-stethoscope-5831.jpg?v=1687174127"}
-                textContainer={(
-                  <Text className="text-[14px] text-black font-light text-center">Doctor Side-Curve Tube</Text>
-                )}
-              />
+              <View className="bg-gray-100 flex-row justify-between px-3">
+                <Pressable className="flex-1 py-3 items-center" onPress={() => setActiveTab('tab-a')}>
+                  <Text className="text-[16px] text-black font-normal">Tab A</Text>
+                </Pressable>
+                <Pressable className="flex-1 py-3 items-center" onPress={() => setActiveTab('tab-b')}>
+                  <Text className="text-[16px] text-black font-normal">Tab B</Text>
+                </Pressable>
+              </View>
+
+              {activeTab === 'tab-a' && (
+              <View className="pt-8 px-4">
+                <View className="mb-6">
+                  <Text className='text-[14px] text-black font-normal mb-1'>Language</Text>
+                  <TextInput className="bg-gray-100 p-2 rounded-[5px]"/>
+                </View>
+                <View className="mb-6">
+                  <Text className='text-[14px] text-black font-normal mb-1'>Font</Text>
+                  <TextInput className="bg-gray-100 p-2 rounded-[5px]"/>
+                </View>
+                <View className="mb-6 ">
+                  <Text className="pb-4">Color: Purple</Text>
+                  <View className="flex-row flex-wrap gap-4">
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                    <ColorSwatchImage size="lg"/>
+                  </View>
+                </View>
+                <View className="mb-6">
+                  <Text className='text-[14px] text-black font-normal mb-1'>First line</Text>
+                  <TextInput className="bg-gray-100 p-2 rounded-[5px]"/>
+                </View>
+                <View className="mb-6">
+                  <Text className='text-[14px] text-black font-normal mb-1'>Second Line</Text>
+                  <TextInput className="bg-gray-100 p-2 rounded-[5px]"/>
+                </View>
+              </View>)}
+              {activeTab === 'tab-b' && (
+              <View className="py-5">
+                <View >
+                  <Text className="mb-4 px-4">You can upload your own graphic or logo or you can choose from our university, hospital logo & icon we have</Text>
+                  <ShowAndHide title="upload your file"/>
+                  <ShowAndHide title="select logo"/>
+                </View>
+              </View>)}
             </View>
+
+
+            <View className="px-4 py-5 w-full justify-center">
+                {/* <Text>Text Selected</Text> */}
+                <Button label="done" onPress={() => setModalVisible(false)}/>
+            </View>
+            <SafeAreaView/>
           </MyModal>
 
         </View>
