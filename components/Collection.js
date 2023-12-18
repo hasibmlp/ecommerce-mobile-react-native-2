@@ -94,6 +94,7 @@ function CollectionData ({route, openSideBar}) {
     error: colloctionError,
     data: colloctionData,
     networkStatus,
+    refetch,
     fetchMore,
   } = useQuery(GET_COLLECTION_BY_ID, {
     variables: {
@@ -104,7 +105,8 @@ function CollectionData ({route, openSideBar}) {
     },
   });
 
-  console.log("NETWORK STATUS IS: ", isPending)
+  console.log(colloctionLoading)
+  console.log("NETWORK STATUS: ", networkStatus)
 
   const [getAllProductId, {
     loading: allProductsLoading,
@@ -273,10 +275,11 @@ function CollectionBody ({colloctionData, flatListRef, filterActionsLayout, scro
     </View>
   ));
   
+  
   return (
     <View className="pb-14">
           <Animated.FlatList
-            data={colloctionData?.collection?.products?.edges} 
+            data={colloctionData?.collection?.products?.edges}
             ref={flatListRef}
             keyExtractor={(item) => item.node.id}
             horizontal={false}

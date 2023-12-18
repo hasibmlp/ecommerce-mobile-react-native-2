@@ -122,6 +122,11 @@ export const GET_COLLECTION = gql`
                 }
               }
             }
+            options {
+              id
+              name
+              values
+            }
           }
         }
       }

@@ -9,7 +9,9 @@ export default function ColorSwatchImage({value, size='md', disableWhenUnavailab
 
   let containerStyle 
   if(size === 'sm') containerStyle = `w-3 h-3`
+  else if (size === 'xs') containerStyle = `w-[10] h-[10]`
   else if (size === 'lg') containerStyle = `w-5 h-5`
+  else if (size === 'xg') containerStyle = `w-7 h-7`
   else  containerStyle = `w-4 h-4`
 
   if(disableWhenUnavailable && !activeColorSwatchImageUrl) return null

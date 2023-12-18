@@ -46,7 +46,7 @@ export default function BottomModal({visible, children, onClose, title}) {
 
                 <Animated.View
                     style={{transform: [{ translateY: transRef }],}}
-                    className="w-full absolute bottom-0 z-50 bg-white rounded-[15px] overflow-hidden"
+                    className="w-full absolute bottom-0 z-[999] bg-white rounded-[15px] overflow-hidden"
                 >
                     <View>
                         <BottomModalHeader title={title} handleClose={onClose} />

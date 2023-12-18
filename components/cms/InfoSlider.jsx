@@ -1,6 +1,7 @@
 
 import { useLayoutEffect, useState, useRef, useEffect } from "react";
 import { SafeAreaView, Text, View, Dimensions, FlatList } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import {
     BellIcon,
@@ -8,7 +9,7 @@ import {
     TruckIcon
   } from "react-native-heroicons/outline";
 
-import CardSlider from "../components/CardSlider";
+import CardSlider from "../CardSlider";
 
 const informations = [
     {
@@ -28,7 +29,7 @@ const informations = [
 const SCREEN_WIDTH = Dimensions.get('screen').width
 const ITEM_WIDTH = SCREEN_WIDTH - 30
 
-export default function InfoSlider() {
+export default function InfoSlider({content}) {
 
     const [ activeIndex, setActiveIndex ] = useState(0)
     const flatListRef = useRef()
@@ -60,9 +61,9 @@ export default function InfoSlider() {
     
     function renderItem ({item, index}) {
         return(
-            <View style={{width: ITEM_WIDTH}} className='items-center justify-center bg-black h-[42px] mx-[15px] rounded-[10px] '>
-                <TruckIcon style={{position: 'absolute', left: 15,}} size={20} color='white' strokeWidth={1.5} />
-                <Text className='text-[14px] font-normal text-white uppercase'>{item.text}</Text>
+            <View style={{width: ITEM_WIDTH, height: content.data.height}} className='flex-row items-center justify-center bg-black mx-[15px] mb-4 rounded-[10px] '>
+                <View className="absolute left-5"><MaterialCommunityIcons name={item.iconName || 'square-rounded-outline'} size={24} color="white"/></View>
+                <Text className='text-[14px] font-normal text-white uppercase'>{item.title}</Text>
             </View>
         )
     }
@@ -80,13 +81,13 @@ export default function InfoSlider() {
 
   return (
     <FlatList
-    style={{flexGrow: 0, paddingTop: 5}}
+    ref={flatListRef}
+    data={content.data.banner}
+    style={{flexGrow: 0}}
     horizontal
     pagingEnabled
     showsHorizontalScrollIndicator={false}
-    data={informations}
-    ref={flatListRef}
-    keyExtractor={item => item.id}
+    keyExtractor={(_ , index) => index.toString()}
     getItemLayout={getItemLayout}
     renderItem={renderItem}
     onScroll={handleScroll}

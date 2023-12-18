@@ -7,7 +7,7 @@ import {
   MagnifyingGlassIcon
 } from "react-native-heroicons/outline";
 
-import InfoSlider from "./InfoSlider";
+import InfoSlider from "./cms/InfoSlider";
 import { useSelector } from "react-redux";
 import SearchInput from "./SearchInput";
 
@@ -21,7 +21,7 @@ export default function HomeHeader({handleToggleMenu, value}) {
     <Pressable className="mb-3" onPress={() => handleToggleMenu(!value)}>
       
 
-      <View className="flex-row gap-[10px] px-[15px] py-[10px] pt-[70px]">
+      <View className="flex-row gap-[10px] px-[15px] pt-[70px]">
         
         <View className="h-[50px] flex flex-row bg-white items-center rounded-[10px] flex-1 pl-2">
           <MagnifyingGlassIcon size={22} color='black' strokeWidth={1} />
@@ -34,8 +34,7 @@ export default function HomeHeader({handleToggleMenu, value}) {
           <BellIcon size={24} color="black" />
         </View>
       </View>
-
-      <InfoSlider />
+      
     </Pressable>
   );
 }

@@ -12,6 +12,7 @@ import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
 import { Card } from "./Card";
 import { GET_COLLECTION } from "../graphql/queries";
+import ProductCard from "./cms/ProductCard";
 
 export default function CardSlider({ id, products, mt }) {
   const navigation = useNavigation();
@@ -54,7 +55,7 @@ export default function CardSlider({ id, products, mt }) {
               });
             }}
           >
-            <Card product={product.node} />
+            <ProductCard product={product.node} width={150} height={230} />
           </TouchableOpacity>
         ))}
       </ScrollView>

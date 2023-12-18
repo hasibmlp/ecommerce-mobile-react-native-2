@@ -1,6 +1,6 @@
 import { Image, Text, View } from "react-native";
 
-export default function BrandCard({brand, collectionTitle, collectionDesc , collectionCta, first}) {
+export default function BrandCard({brand, collectionTitle, collectionDesc , collectionCta, first, height=300}) {
 
   return (
     <View className="flex-row bg-gray-50 mr-[10px] rounded-[5px]">
@@ -19,7 +19,7 @@ export default function BrandCard({brand, collectionTitle, collectionDesc , coll
         </Text>
       </View>)}
 
-      <View className="w-[160px] h-[300px] overflow-hidden rounded-[2px]">
+      <View style={{height}} className="w-[160px] overflow-hidden rounded-[2px]">
         <View className="flex-1">
         {brand.image && (
           <Image className="h-full w-full" src={brand.image} />

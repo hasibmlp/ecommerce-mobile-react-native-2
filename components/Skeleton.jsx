@@ -3,7 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useRef } from "react";
 import { useLayoutEffect } from "react";
 
-export default function Skeleton({ width, height, style }) {
+export default function Skeleton({ width, height, style, rounded }) {
   const translateX = useRef(new Animated.Value(-width)).current;
 
 
@@ -18,7 +18,7 @@ export default function Skeleton({ width, height, style }) {
   }, [width]);
 
   return (
-    <View style={[{ width: width, height: height}, style]} className=" bg-gray-200 overflow-hidden">
+    <View style={[{ width: width, height: height}, style]} className={`bg-gray-200 overflow-hidden ${rounded && 'rounded-full'}`}>
       <Animated.View
         className="w-full h-full overflow-hidden"
         style={{ transform: [{ translateX: translateX }] }}
