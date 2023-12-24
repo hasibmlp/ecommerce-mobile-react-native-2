@@ -16,6 +16,8 @@ import ColorSwatchImage from "../buttons/ColorSwatchImage";
 import ShowAndHide from "../ShowAndHide";
 import BottomModal from "./BottomModal";
 import LoadingFullScreen from "../Sidebar/LoadingFullScreen";
+import { Formik } from "formik";
+import RadioButton from "../RadioButton";
 
 const logoCollection = [
   {
@@ -134,6 +136,24 @@ const logoCollection = [
   }, 
 ]
 
+const colorValues = [
+  {
+    name: 'navy',
+    value: 'Navy',
+    colorCode: '#000080'
+  },
+  {
+    name: 'black',
+    value: 'Black',
+    colorCode: '#000'
+  },
+  {
+    name: 'orange',
+    value: 'Orange',
+    colorCode: '#FFA500',
+  },
+]
+
 export default function VariantSelectionModalContent({handleClose, context}) {
   const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
   const [loading, setLoading] = useState(true)
@@ -180,6 +200,8 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     function CustomizationContainer() {
       const [isModalVisible, setModalVisible] = useState(false)
+      const [totalCustom, setTotalCustom] = useState({position: '', selections: []})
+      console.log("TOTAL CUSTOM ARRAY: ", totalCustom)
       return(
         <View className="pb-4 pt-2">
           <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">
@@ -189,13 +211,19 @@ export default function VariantSelectionModalContent({handleClose, context}) {
             onPress={() => setModalVisible(true)}
             className="flex-row items-center justify-center self-start mx-3"
           >
-            <PlusCircleIcon size={18} color='#89c157' />
-            <Text className="text-[13px] text-[#89c157] font-normal uppercase ml-1">Add Customization</Text>
+            {totalCustom.length > 0 && (<CheckCircleIcon size={18} color='#000'/>)}
+            {!totalCustom.length > 0 && (<PlusCircleIcon size={18} color='#89c157' />)}
+            <Text className={`text-[13px] ${totalCustom.length > 0 ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
+              totalCustom.length > 0 ? 'Customization Added' : 'Add Customization'
+            }</Text>
           </TouchableOpacity>
+
 
           <MyModal visible={isModalVisible} slide="toUp">
             <EmbroiderySelection 
               onClose={() => setModalVisible(false)}
+              totalCustom={totalCustom}
+              setTotalCustom={setTotalCustom}
             />
           </MyModal>
 
@@ -204,31 +232,61 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     }
     
 
-const EmbroiderySelection = ({onClose}) => {
+const EmbroiderySelection = ({onClose, totalCustom, setTotalCustom}) => {
   const [activeTab, setActiveTab] = useState('tab-a')
-  const [activeSelections, setActiveSelections] = useState([])
+  const [activeSelections, setActiveSelections] = useState({postion: '', selections: []})
+  const [isTabActivated, setTabActivated] = useState(false)
+  const [price, setPrice] = useState(0)
+
+  useEffect(() => {
+    let newPrice = 0
+    totalCustom.selections.map(item => {
+      console.log("ITEM ITEM ITEM ITEM ITEM: ", item)
+      if(item.type === 'text-upload') newPrice += 50
+      else if(item.type === 'image-upload') newPrice += 100
+    })
+
+    setPrice(newPrice)
+    
+  },[totalCustom])
+
+  console.log("TOTAL CUSTOM: ===", totalCustom.selections)
+  console.log("PRICE IS =====", price)
 
   const [fontsLoaded] = useFonts({
     'Robo-Mono': require('../../assets/fonts/RobotoMono-SemiBold.ttf'),
     'Kalnia': require('../../assets/fonts/Kalnia-SemiBold.ttf'),
     'Ubuntu': require('../../assets/fonts/Ubuntu-Bold.ttf'),
   });
-  const activeColorCode = activeSelections.find(i => i.type === 'color-selection')?.colorCode
-  const activeFont = activeSelections.find(i => i.type === 'font-selection')?.fontFamily
+  const activeColorCode = activeSelections.selections.find(i => i.type === 'color-selection')?.colorCode
+  const activeFont = activeSelections.selections.find(i => i.type === 'font-selection')?.fontFamily
 
   useEffect(() => {},[fontsLoaded])
 
+  const initialCustomTextData = totalCustom?.selections.find(item => item.type === 'text-upload')?.data
 
   const handleSelections = (item) => {
+    
     setActiveSelections(prevState => {
-      const prevSelection = [...prevState]
-      const itemIndex = prevSelection.findIndex(i => i.type === item.type)
-      if(itemIndex > -1) {
-        prevSelection.splice(itemIndex, 1)
+      if(item.type === 'position') {
+        const prevSelections = prevState.selections
+        return {postion: item.postion, selections: prevSelections}
+      }else {
+        const prevSelection = [...prevState.selections]
+        const itemIndex = prevSelection.findIndex(i => i.type === item.type)
+        if(itemIndex > -1) {
+          prevSelection.splice(itemIndex, 1)
+        }
+        prevSelection.push(item)
+        return {postion: prevState.postion , selections: prevSelection}
       }
-      prevSelection.push(item)
-      return prevSelection
     })
+
+    if(item.type === 'position') {
+      setTotalCustom(prevState => {
+        return {postion: item.postion, selections: prevState.selections}
+      })
+    }
 
   }
 
@@ -246,163 +304,171 @@ const EmbroiderySelection = ({onClose}) => {
                 <View>
                   <Text className="text-[20px] text-[#89c157] font-medium uppercase mx-auto mb-5 tracking-[2px]">Embroidery</Text>
                   <View className="border-y border-gray-200 flex-row justify-between px-3">
-                    <Pressable className="flex-1 py-3 items-center border-r border-gray-200 flex-row justify-center" onPress={() => setActiveTab('tab-a')}>
-                      <Text className="text-[16px] text-black font-normal">Text</Text>
-                      <View className="absolute right-5">
-                        <CheckCircleIcon size={24} color={'#89c157'} />
-                      </View>
-                    </Pressable>
-                    <Pressable className="flex-1 py-3 items-center" onPress={() => setActiveTab('tab-b')}>
-                      <Text className="text-[16px] text-black font-light">Logo & Graphics</Text>
-                    </Pressable>
+                    <TabHeader 
+                      title="Text" 
+                      onPress={() => setActiveTab('tab-a')}
+                      selected={totalCustom.selections.find(item => (item.type === 'text-upload')?.data?.firstLine?.length > 0 || totalCustom.selections.find(item => item.type === 'text-upload')?.data?.secondLine?.length > 0)}
+                      active={activeTab === 'tab-a'}
+                    />
+
+                    <TabHeader 
+                      title="Logo & Graphics" 
+                      onPress={() => setActiveTab('tab-b')}
+                      selected={totalCustom.selections.find(item => (item.type === 'text-upload')?.data?.firstLine?.length > 0 || totalCustom.selections.find(item => item.type === 'text-upload')?.data?.secondLine?.length > 0)}
+                      active={activeTab === 'tab-b'}
+                    />
+
                   </View>
                 </View>
 
                 {activeTab === 'tab-a' && (
                 <ScrollView className="pt-8 px-4">
-                  <View className="mb-6">
-                    <Selection
-                      name="language-selection"
-                      onChange={(item) => handleSelections(item)}
-                      label={"Language"}
-                      style={{marginBottom: 12}}
-                      options={[{name: 'en', value: 'English'}, {name: 'ar', value: 'العربي'}]}
-                    />
+                  <View className="pb-40">
+                    <Formik
+                      initialValues={{
+                        language: initialCustomTextData ? initialCustomTextData.language : '',
+                        fontStyle: initialCustomTextData ? initialCustomTextData.fontStyle : '',
+                        color: initialCustomTextData ? initialCustomTextData.color : '',
+                        firstLine: initialCustomTextData ? initialCustomTextData.firstLine : '',
+                        secondLine: initialCustomTextData ? initialCustomTextData.secondLine : '',
+                      }}
+                      onSubmit={(values) => {
+                        if(values.firstLine.length > 0 || values.secondLine.length > 0){
+                          setTotalCustom(prevState => {
+                            const prevTotalCustom = [...prevState.selections]
+                            const indexFound = prevTotalCustom.findIndex(item => item.type === 'text-upload')
+                            if(indexFound > -1) prevTotalCustom.splice(indexFound, 1)
+                            prevTotalCustom.push({type: 'text-upload', data: values})
+                            return {position: prevState.position, selections: prevTotalCustom}
+                          })
+                        }else {
+                          setTotalCustom(prevState => {
+                            const prevTotalCustom = [...prevState.selections]
+                            const filterdArray = prevTotalCustom.filter(item => item.type !== 'text-upload')
+                            return {position: prevState.position, selections: filterdArray}
+                          })
+                        }
+                      }}
+                    >
+                      {({handleBlur, handleChange, handleSubmit, errors, touched, values}) => (
+                        <>
+                          <View className="mb-6">
+                            <Selection
+                              name="language-selection"
+                              field="language"
+                              onChange={(item) => handleSelections(item)}
+                              label={"Language"}
+                              style={{marginBottom: 12}}
+                              options={[{name: 'en', value: 'English'}, {name: 'ar', value: 'العربي'}]}
+                              handleChange={handleChange('language')}
+                              errors={errors}
+                              touched={touched}
+                              value={values.language}
+                            />
 
-                    <Selection
-                      name="font-selection"
-                      label={"Font"}
-                      onChange={(item) => handleSelections(item)}
-                      options={[
-                        {name: 'op1', value: 'Roboto Mono', fontFamily: 'Robo-Mono'},
-                        {name: 'op2', value: 'Kalnia', fontFamily: 'Kalnia'},
-                        {name: 'op3', value: 'Ubuntu', fontFamily: 'Ubuntu'},
-                      ]}
-                    />
-                    {/* <Text className='text-[14px] text-black font-normal mb-1'>Language</Text> */}
+                            <Selection
+                              name="font-selection"
+                              field="fontStyle"
+                              label={"Font"}
+                              onChange={(item) => handleSelections(item)}
+                              options={[
+                                {name: 'op1', value: 'Roboto Mono', fontFamily: 'Robo-Mono'},
+                                {name: 'op2', value: 'Kalnia', fontFamily: 'Kalnia'},
+                                {name: 'op3', value: 'Ubuntu', fontFamily: 'Ubuntu'},
+                              ]}
+                              handleChange={handleChange('fontStyle')}
+                              errors={errors}
+                              touched={touched}
+                              value={values.fontStyle}
+                            />
+                          </View>
 
+                          <ColorSelection
+                            onChange={(item) => handleSelections(item)}
+                            handleChange={handleChange('color')}
+                            handleBlur={handleBlur('color')}
+                            errors={errors}
+                            touched={touched}
+                            value={values.color}
+                          />
+                              
+                          <View className="mb-6">
+                            <Text className='text-[14px] text-black font-normal mb-1'>First Line</Text>
+                            <TextInput 
+                              style={{color: activeColorCode, fontFamily: activeFont}}maxLength={16} 
+                              className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px]`} 
+                              onChangeText={handleChange('firstLine')}
+                              handleBlur={handleBlur('firstLine')}
+                              onEndEditing={handleSubmit}
+                              value={values.firstLine}
+                            />
+                          </View>
+
+                          <View className="mb-6">
+                            <Text className='text-[14px] text-black font-normal mb-1'>Second Line</Text>
+                            <TextInput 
+                              style={{color: activeColorCode, fontFamily: activeFont}} maxLength={16} 
+                              className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px]`} 
+                              onChangeText={handleChange('secondLine')}
+                              handleBlur={handleBlur('secondLine')}
+                              onEndEditing={handleSubmit}
+                              value={values.secondLine}
+                              />
+                          </View>
+
+                          <ImageSelection title="Select Position" style={{marginTop: 24}} onChange={(item) => handleSelections(item)} defaultValue={activeSelections.postion}/>
+
+
+                        </>
+                      )}
+                      
+                    </Formik>
                   </View>
-
-                  <ColorSelection onChange={(item) => handleSelections(item)}/>
-                  
-                  
-                  <View className="mb-6">
-                    <Text className='text-[14px] text-black font-normal mb-1'>First Line</Text>
-                    <TextInput style={{color: activeColorCode, fontFamily: activeFont}} maxLength={16} className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px]`}/>
-                  </View>
-
-                  <View className="mb-6">
-                    <Text className='text-[14px] text-black font-normal mb-1'>Second Line</Text>
-                    <TextInput style={{color: activeColorCode, fontFamily: activeFont}} maxLength={16} className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px]`}/>
-                  </View>
-
-
                 </ScrollView>)}
 
 
-
-                {activeTab === 'tab-b' && (
-                <View className="items-center py-5">
+              {activeTab === 'tab-b' && (
+                <ScrollView className=" py-5">
+                  <View className="items-center pb-40">
                     <Text className="mb-4 px-4">You can upload your own graphic or logo or you can choose from our university, hospital logo & icon we have</Text>
 
-                      <GraphicSelectin/>
+                      <GraphicSelectin totalCustom={totalCustom} setTotalCustom={setTotalCustom} />
 
-                </View>)}
+                  </View>
+                </ScrollView>)}
               </View>
 
 
-              <View className="px-4 py-5 w-full justify-center ">
+              <View className="px-4 py-3 w-full justify-center ">
                 <View className="flex-row justify-between py-4 mb-2 ">
                   <Text className="text-[16px] text-black font-normal">Total Customization Price</Text>
-                  <Text className="text-[17px] text-[#89c157] font-medium">123 AED</Text>
+                  <Text className="text-[17px] text-[#89c157] font-medium">{price}</Text>
                 </View>
                   <Button label="done" onPress={onClose}/>
               </View>
-
 
               <SafeAreaView/>
             </View>
   )
 }
 
-const GraphicSelectin = () => {
+const TabHeader = ({title, active, onPress, selected}) => {
+  return (
+    <Pressable className="flex-1 py-3 items-center border-r border-gray-200 flex-row justify-center" onPress={onPress}>
+      <Text className={`text-[16px] ${active ? 'text-[#89c157] font-bold' : 'text-black font-normal'}  font-normal`}>{title}</Text>
+      {selected && (<View className="absolute right-5"> 
+        <CheckCircleIcon size={24} color={'#89c157'} />
+      </View>)}
+    </Pressable>
+  )
+}
+
+const GraphicSelectin = ({totalCustom, setTotalCustom}) => {
+  const initialValue = totalCustom.selections.find(item => item.type === 'image-upload')?.data
   const [activeTab, setActiveTab] = useState(logoCollection[0])
-  const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(initialValue)
   const [isModalVisible, setModalVisible] = useState(false)
   const [loading, setLoading] = useState(false)
-
-
-
-  const images = [
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-    {
-      name: '',
-      url: '123.jpg',
-    },
-  ]
 
 
   const handleUploadFile = async (preSelectedImage) => {
@@ -410,10 +476,8 @@ const GraphicSelectin = () => {
       let result = preSelectedImage
       if (preSelectedImage?.assets) {
         result = preSelectedImage;
-        console.log("yyyyyesssssss")
       } else {
         result = await DocumentPicker.getDocumentAsync();
-        console.log("nnnnooooooo")
       }
 
       const url = "https://api.cloudinary.com/v1_1/dujrllgbs/image/upload"
@@ -439,6 +503,13 @@ const GraphicSelectin = () => {
   
         const cloudData = await res.json()
         setSelectedImage(cloudData)
+        setTotalCustom(prevState => {
+          const prevTotalCustom = [...prevState.selections]
+          const indexFound = prevTotalCustom.findIndex(item => item.type === 'image-upload')
+          indexFound > -1 && prevTotalCustom.splice(indexFound, 1)
+          prevTotalCustom.push({type: 'image-upload', data: cloudData})
+          return {postion: prevState.position,  selections: prevTotalCustom}
+        })
       }
 
 
@@ -457,9 +528,17 @@ const GraphicSelectin = () => {
     setModalVisible(false)
   }
 
+  const handleImageClose = () => {
+    setSelectedImage(null)
+    setTotalCustom((prevState) => {
+      const prevSelections = [...prevState.selections]
+      const filterArray = prevSelections.filter(item => item.type !== 'image-upload')
+      return {position: prevState.position ,selections: filterArray}
+    })
+  }
 
   return (
-    <View className="w-[85%] items-center">
+    <View className="w-[85%]">
 
       {loading && (<LoadingFullScreen/>)}
 
@@ -514,7 +593,7 @@ const GraphicSelectin = () => {
               {/* <Image className="w-full h-full" source={selectedImage.url}/> */}
               <Image className="w-full h-full" src={selectedImage.url}/>
             </View>
-            <Pressable onPress={() => setSelectedImage(null)} className="absolute right-[-30]">
+            <Pressable onPress={handleImageClose} className="absolute right-[-30]">
               <XMarkIcon size={24} color="black" />
             </Pressable>
 
@@ -522,6 +601,8 @@ const GraphicSelectin = () => {
       </View>)}
 
       <Text className="text-[13px] text-black font-light text-center mt-2 ">We will set to the width we view as most suitable. However, in case you would prefer a specific width kindley mention it in uploaded graphic file</Text>
+
+      {/* <ImageSelection title="Select Position" style={{marginTop: 24}} onChange={() => {}}/> */}
 
 
     </View>
@@ -566,31 +647,54 @@ const UploadFile = ({selectedImage, type="preset", onPress, setSelectedImage, ha
   )
 }
 
-const ColorSelection = ({onChange}) => {
-  const [activeColor, setActiveColor] = useState(null)
+const ImageSelection = ({style, title, onChange, defaultValue}) => {
+  const initialColorValue = defaultValue
+  const [active, setActive] = useState(initialColorValue)
 
-  const colorValues = [
-    {
-      name: 'navy',
-      value: 'Navy',
-      colorCode: '#000080'
-    },
-    {
-      name: 'black',
-      value: 'Black',
-      colorCode: '#000'
-    },
-    {
-      name: 'orange',
-      value: 'Orange',
-      colorCode: '#FFA500',
-    },
-  ]
+  useEffect(() => {
+    onChange && onChange({type: 'position', postion: active})
+  },[active])
+
+  
+  return (
+    <View style={style} className="w-full">
+      <Text className="text-[16px] text-black font-normal mb-3">{title}</Text>
+      <View className="flex-row justify-center">
+        <ImageSelectionCard onPress={() => setActive('left')} active={active === 'left'} label="left" />
+        <ImageSelectionCard onPress={() => setActive('right')} active={active === 'right'} label="right" style={{marginLeft: 12}} />
+      </View>
+    </View>
+  )
+}
+
+const ImageSelectionCard = ({style, label, active, onPress}) => {
+
+  return (
+    <Pressable style={style} className="items-center" onPress={onPress}>
+        <View className="w-40 h-40 bg-gray-200">
+          <Image className="w-full h-full" src="" />
+        </View>
+        <View className="flex-row mt-2 items-center ">
+          <Text className="text-[14px] text-black font-normal uppercase mr-2">{label}</Text>
+          <RadioButton checked={active} />
+        </View>
+    </Pressable>
+  )
+}
+
+const ColorSelection = ({onChange, handleChange, value}) => {
+  const initialColorValue = colorValues.find(item => item.name === value)
+  const [activeColor, setActiveColor] = useState(initialColorValue)
+
 
   const handlePress = (item) => {
     setActiveColor(item)
-    onChange && onChange({type: 'color-selection', ...item})
+    handleChange(item.name)
   }
+
+  useEffect(() => {
+    onChange && onChange({type: 'color-selection', ...activeColor})
+  },[activeColor])
 
 
   return (
@@ -607,10 +711,10 @@ const ColorSelection = ({onChange}) => {
   )
 }
 
-
-const Selection = ({options, style, label, onChange, name}) => {
+const Selection = ({options, style, label, onChange, name, handleChange, error, touched, value}) => {
+  const initialValue = options.find(item => item.value === value)
   const [isActive, setActive] = useState(false)
-  const [activeSelection, setActiveSelection] = useState(null)
+  const [activeSelection, setActiveSelection] = useState(initialValue)
 
 
 
@@ -621,12 +725,18 @@ const Selection = ({options, style, label, onChange, name}) => {
   });
 
   const handleSelection = (value) => {
+
     setActiveSelection(value)
     setActive(false)
     onChange && onChange({type: name, ...value})
+    handleChange(value.value)
   }
 
   useEffect(() => {},[fontsLoaded])
+
+  useEffect(() => {
+    onChange && onChange({type: name, ...activeSelection})
+  },[activeSelection])
 
   if(!fontsLoaded) return null
   
@@ -642,7 +752,11 @@ const Selection = ({options, style, label, onChange, name}) => {
       <BottomModal visible={isActive} onClose={() => setActive(false)}>
         <View className=" pb-20 w-full bg-white">
           {options.map((lang, index) => (
-            <Pressable key={index.toString()} onPress={() => handleSelection(lang)} className="py-4 px-3 border-b border-gray-200 bg-white self-stretch items-center">
+            <Pressable 
+              key={index.toString()} 
+              onPress={() => handleSelection(lang)}
+              className="py-4 px-3 border-b border-gray-200 bg-white self-stretch items-center"
+            >
               <Text style={{ fontFamily: lang.fontFamily && lang.fontFamily}} className="text-[16px] text-black font-medium">{lang.value}</Text>
             </Pressable>
           ))}
