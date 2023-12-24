@@ -233,7 +233,7 @@ function SupportContainer () {
             </View>
             <View className="flex-row justify-between items-center w-[90%] mx-auto">
               <InformationIconTile  label="Phone" icon={<PhoneIcon size={24} color="black" strokeWidth={1} />} onClick={() => Linking.openURL('tel:+97124913000')}/>
-              <InformationIconTile label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} />
+              {/* <InformationIconTile label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} /> */}
               <InformationIconTile  label="Mail" icon={<EmailIcon/>} onClick={() => Linking.openURL("mailto:helloscrubsandclogs.com")}/>
             </View>
           </View>
