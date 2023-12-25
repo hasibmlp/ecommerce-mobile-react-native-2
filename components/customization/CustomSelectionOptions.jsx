@@ -6,7 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 const CustomSelectionOptions = ({
     type,
     activeSelections,
-    handleSelections,
     initialCustomTextData,
     setTotalCustom,
     totalCustom,
@@ -25,7 +24,6 @@ const CustomSelectionOptions = ({
             {type === 'text-only' && (<CustomSelection
                   context="text-only"
                   activeSelections={activeSelections}
-                  handleSelections={handleSelections}
                   initialCustomTextData={initialCustomTextData}
                   setTotalCustom={setTotalCustom}
                   totalCustom={totalCustom}
@@ -40,7 +38,6 @@ const CustomSelectionOptions = ({
                 {type === 'graphics-only' && (<CustomSelection
                   context="graphics-only"
                   activeSelections={activeSelections}
-                  handleSelections={handleSelections}
                   initialCustomTextData={initialCustomTextData}
                   setTotalCustom={setTotalCustom}
                   totalCustom={totalCustom}
@@ -55,7 +52,6 @@ const CustomSelectionOptions = ({
 
                 {(type !== 'text-only' && type !== 'graphics-only') &&(<CustomSelection
                   activeSelections={activeSelections}
-                  handleSelections={handleSelections}
                   initialCustomTextData={initialCustomTextData}
                   setTotalCustom={setTotalCustom}
                   totalCustom={totalCustom}

@@ -3,7 +3,7 @@ import Button from "../buttons/Button"
 import { PlusIcon, XMarkIcon } from "react-native-heroicons/outline"
 import { useState } from "react"
 
-const UploadFile = ({selectedImage, type="preset", onPress, setSelectedImage, handleUploadFile}) => {
+const UploadFile = ({selectedImage, type="preset", onPress, handleUploadFile}) => {
     const [isUploaded, setUploaded] = useState(false)
     const [isModalVisible, setModalVisible] = useState(true)
   

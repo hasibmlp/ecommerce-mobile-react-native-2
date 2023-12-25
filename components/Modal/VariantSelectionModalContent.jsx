@@ -62,7 +62,7 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     function CustomizationContainer() {
       const [isModalVisible, setModalVisible] = useState(false)
-      const [totalCustom, setTotalCustom] = useState({type: '', position: '', selections: []})
+      const [totalCustom, setTotalCustom] = useState({type: '', active: false, selections: []})
       console.log("TOTAL CUSTOM ARRAY: ", totalCustom)
       return(
         <View className="pb-4 pt-2">

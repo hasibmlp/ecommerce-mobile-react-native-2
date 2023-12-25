@@ -7,10 +7,9 @@ import LoadingFullScreen from "../Sidebar/LoadingFullScreen"
 import UploadFile from "./UploadFile"
 import MyModal from "../Modal/MyModal"
 
-const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
-    const initialValue = totalCustom.selections.find(item => item.type === 'image-upload')?.data
+const GraphicSelection = ({logoCollection, handleChange, value}) => {
+    const initialValue = value
     const [activeTab, setActiveTab] = useState(logoCollection[0])
-    const [selectedImage, setSelectedImage] = useState(initialValue)
     const [isModalVisible, setModalVisible] = useState(false)
     const [loading, setLoading] = useState(false)
   
@@ -46,14 +45,14 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
           })
     
           const cloudData = await res.json()
-          setSelectedImage(cloudData)
-          setTotalCustom(prevState => {
-            const prevTotalCustom = [...prevState.selections]
-            const indexFound = prevTotalCustom.findIndex(item => item.type === 'image-upload')
-            indexFound > -1 && prevTotalCustom.splice(indexFound, 1)
-            prevTotalCustom.push({type: 'image-upload', data: cloudData})
-            return {type: prevState.type, postion: prevState.position,  selections: prevTotalCustom}
-          })
+
+          if(cloudData) {
+
+            handleChange(cloudData.url)
+          }else {
+            handleChange('')
+          }
+
         }
   
   
@@ -73,12 +72,7 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
     }
   
     const handleImageClose = () => {
-      setSelectedImage(null)
-      setTotalCustom((prevState) => {
-        const prevSelections = [...prevState.selections]
-        const filterArray = prevSelections.filter(item => item.type !== 'image-upload')
-        return {type: prevState.type, position: prevState.position ,selections: filterArray}
-      })
+      handleChange('')
     }
   
     return (
@@ -86,11 +80,11 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
   
         {loading && (<LoadingFullScreen/>)}
   
-        {!selectedImage && (<UploadFile selectedImage={selectedImage} type="manual" handleUploadFile={handleUploadFile} setSelectedImage={setSelectedImage}/> )}
+        {!initialValue && (<UploadFile selectedImage={initialValue} type="manual" handleUploadFile={handleUploadFile}/> )}
   
         <Text className="mb-4">OR</Text>
   
-        {!selectedImage && (<UploadFile selectedImage={selectedImage} onPress={() => setModalVisible(true)} handleUploadFile={handleUploadFile} setSelectedImage={setSelectedImage}/>)}
+        {!initialValue && (<UploadFile selectedImage={initialValue} onPress={() => setModalVisible(true)} handleUploadFile={handleUploadFile}/>)}
   
   
         <MyModal visible={isModalVisible} slide="toUp" >
@@ -131,11 +125,11 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
           </View>
         </MyModal>
   
-        {selectedImage && (<View className="w-full border border-dashed items-center py-10 mt-10 mb-6">
+        {initialValue && (<View className="w-full border border-dashed items-center py-10 mt-10 mb-6">
           <View className="flex-row">
               <View className="w-40 h-40 bg-gray-100">
                 {/* <Image className="w-full h-full" source={selectedImage.url}/> */}
-                <Image className="w-full h-full" src={selectedImage.url}/>
+                <Image className="w-full h-full" src={initialValue}/>
               </View>
               <Pressable onPress={handleImageClose} className="absolute right-[-30]">
                 <XMarkIcon size={24} color="black" />

@@ -2,9 +2,14 @@ import { Image, Pressable, Text, View } from "react-native"
 import RadioButton from "../RadioButton"
 import { useEffect, useState } from "react"
 
-const ImageSelection = ({style, title, onChange, defaultValue}) => {
+const ImageSelection = ({style, title, onChange, defaultValue, handleChange}) => {
     const initialColorValue = defaultValue
     const [active, setActive] = useState(initialColorValue)
+
+    const handlePress = (item) => {
+      setActive(item)
+      handleChange(item)
+    }
   
     useEffect(() => {
       onChange && onChange({type: 'position', postion: active})
@@ -15,8 +20,8 @@ const ImageSelection = ({style, title, onChange, defaultValue}) => {
       <View style={style} className="w-full">
         <Text className="text-[16px] text-black font-normal mb-3">{title}</Text>
         <View className="flex-row justify-center">
-          <ImageSelectionCard onPress={() => setActive('left')} active={active === 'left'} label="left" />
-          <ImageSelectionCard onPress={() => setActive('right')} active={active === 'right'} label="right" style={{marginLeft: 12}} />
+          <ImageSelectionCard onPress={() => handlePress('left')} active={active === 'left'} label="left" />
+          <ImageSelectionCard onPress={() => handlePress('right')} active={active === 'right'} label="right" style={{marginLeft: 12}} />
         </View>
       </View>
     )
