@@ -15,6 +15,7 @@ import CustomSelection from "../customization/CustomSelection";
 import CustomSelectionInterface from "../customization/CustomSelectionInterface";
 
 
+
 export default function VariantSelectionModalContent({handleClose, context}) {
   const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
   const [loading, setLoading] = useState(true)
@@ -61,7 +62,7 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     function CustomizationContainer() {
       const [isModalVisible, setModalVisible] = useState(false)
-      const [totalCustom, setTotalCustom] = useState({position: '', selections: []})
+      const [totalCustom, setTotalCustom] = useState({type: '', position: '', selections: []})
       console.log("TOTAL CUSTOM ARRAY: ", totalCustom)
       return(
         <View className="pb-4 pt-2">
@@ -72,10 +73,10 @@ export default function VariantSelectionModalContent({handleClose, context}) {
             onPress={() => setModalVisible(true)}
             className="flex-row items-center justify-center self-start mx-3"
           >
-            {totalCustom.length > 0 && (<CheckCircleIcon size={18} color='#000'/>)}
-            {!totalCustom.length > 0 && (<PlusCircleIcon size={18} color='#89c157' />)}
-            <Text className={`text-[13px] ${totalCustom.length > 0 ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
-              totalCustom.length > 0 ? 'Customization Added' : 'Add Customization'
+            {totalCustom.selections.length > 0 && (<CheckCircleIcon size={18} color='#000'/>)}
+            {!totalCustom.selections.length > 0 && (<PlusCircleIcon size={18} color='#89c157' />)}
+            <Text className={`text-[13px] ${totalCustom.selections.length > 0 ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
+              totalCustom.selections.length > 0 ? 'Customization Added' : 'Add Customization'
             }</Text>
           </TouchableOpacity>
 
@@ -94,7 +95,6 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
 
 const EmbroiderySelection = ({onClose, totalCustom, setTotalCustom}) => {
-
   return (
     <View className="flex-1">
               <View className="h-10 flex-row items-center justify-end px-3">

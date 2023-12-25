@@ -23,6 +23,10 @@ const CustomSelection = ({
     fontsLoaded
     }) => {
 
+    const handleClose = () => {
+        onClose()
+    }
+
     if(context === 'text-only') 
     return (
         <ScrollView className="pt-8 px-4">
@@ -45,13 +49,13 @@ const CustomSelection = ({
                         const indexFound = prevTotalCustom.findIndex(item => item.type === 'text-upload')
                         if(indexFound > -1) prevTotalCustom.splice(indexFound, 1)
                         prevTotalCustom.push({type: 'text-upload', data: values})
-                        return {position: prevState.position, selections: prevTotalCustom}
+                        return {type: prevState.type, position: prevState.position, selections: prevTotalCustom}
                         })
                     }else {
                         setTotalCustom(prevState => {
                         const prevTotalCustom = [...prevState.selections]
                         const filterdArray = prevTotalCustom.filter(item => item.type !== 'text-upload')
-                        return {position: prevState.position, selections: filterdArray}
+                        return {type: prevState.type, position: prevState.position, selections: filterdArray}
                         })
                     }
                     }}
@@ -137,7 +141,7 @@ const CustomSelection = ({
                 <Text className="text-[16px] text-black font-normal">Total Customization Price</Text>
                 <Text className="text-[17px] text-[#89c157] font-medium">{price}</Text>
             </View>
-                <Button label="done" onPress={onClose}/>
+                <Button label="done" onPress={handleClose}/>
             </View>
             
         </ScrollView>
@@ -159,7 +163,12 @@ const CustomSelection = ({
                 <Text className="text-[16px] text-black font-normal">Total Customization Price</Text>
                 <Text className="text-[17px] text-[#89c157] font-medium">{price}</Text>
             </View>
-                <Button label="done" onPress={onClose}/>
+                <Button
+                label="done" 
+                onPress={handleClose}
+                colors = {['#5DF706', '#EAFAF1']}
+                textColors = {['#000000', '#5DF706']}
+                />
             </View>
             
         </ScrollView>
@@ -185,13 +194,13 @@ const CustomSelection = ({
                         const indexFound = prevTotalCustom.findIndex(item => item.type === 'text-upload')
                         if(indexFound > -1) prevTotalCustom.splice(indexFound, 1)
                         prevTotalCustom.push({type: 'text-upload', data: values})
-                        return {position: prevState.position, selections: prevTotalCustom}
+                        return {type: prevState.type, position: prevState.position, selections: prevTotalCustom}
                         })
                     }else {
                         setTotalCustom(prevState => {
                         const prevTotalCustom = [...prevState.selections]
                         const filterdArray = prevTotalCustom.filter(item => item.type !== 'text-upload')
-                        return {position: prevState.position, selections: filterdArray}
+                        return {type: prevState.type, position: prevState.position, selections: filterdArray}
                         })
                     }
                     }}
@@ -282,7 +291,7 @@ const CustomSelection = ({
                     <Text className="text-[16px] text-black font-normal">Total Customization Price</Text>
                     <Text className="text-[17px] text-[#89c157] font-medium">{price}</Text>
                 </View>
-                <Button label="done" onPress={onClose}/>
+                <Button label="done" onPress={handleClose}/>
             </View>
             
         </ScrollView>

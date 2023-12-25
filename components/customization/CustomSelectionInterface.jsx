@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react"
-import { Pressable, SafeAreaView, Text, View } from "react-native"
+import { Image, Pressable, SafeAreaView, Text, View } from "react-native"
 import { XMarkIcon } from "react-native-heroicons/outline"
 import { useFonts } from 'expo-font';
 import CustomSelection from "./CustomSelection";
+import Button from "../buttons/Button";
+import { useNavigation } from "@react-navigation/native";
+import CustomSelectionOptions from "./CustomSelectionOptions";
 
 
 const logoCollection = [
@@ -142,8 +145,10 @@ const logoCollection = [
 
 
 const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
+    const [activeScreen, setActiveScreen] = useState(false)
     const [activeSelections, setActiveSelections] = useState({postion: '', selections: []})
     const [price, setPrice] = useState(0)
+    const navigation = useNavigation()
     const [fontsLoaded] = useFonts({
         'Robo-Mono': require('../../assets/fonts/RobotoMono-SemiBold.ttf'),
         'Kalnia': require('../../assets/fonts/Kalnia-SemiBold.ttf'),
@@ -170,9 +175,18 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
 
         if(item.type === 'position') {
         setTotalCustom(prevState => {
-            return {postion: item.postion, selections: prevState.selections}
+            return {type: prevState.type, position: item.position, selections: prevState.selections}
         })
         }
+    }
+    const handleSelection = (type) => {
+            setTotalCustom(prevState => {
+                return {type: type, position: prevState.position, selections: prevState.selections}
+            })
+            setActiveScreen(true)
+    }
+    const handleReset = () => {
+        setTotalCustom({type: '', position: '', selections: []})
     }
 
     useEffect(() => {
@@ -223,7 +237,8 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
                   colorValues={colorValues}
                 /> */}
 
-                <CustomSelection
+                {activeScreen && (<CustomSelection
+                  context={totalCustom.type}
                   activeSelections={activeSelections}
                   handleSelections={handleSelections}
                   initialCustomTextData={initialCustomTextData}
@@ -236,7 +251,32 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
                   activeFont={activeFont}
                   logoCollection={logoCollection}
                   colorValues={colorValues}
-                />
+                />)}
+
+                {!activeScreen && (<View>
+                    <View className="w-full h-[200] bg-gray-200">
+                        <Image className="w-full h-full" src="https://img.freepik.com/premium-vector/cute-pattern-small-colorful-flowers-dark-blue-background-seamless-floral-pattern_264287-269.jpg"/>
+                    </View>
+
+                    <View className="py-5">
+                        <Text className="text-[16px] text-black font-medium px-5 uppercase pb-5">Embriodery</Text>
+                        <Text className="text-[16px] text-black font-medium text-center pb-10">Choose an embroidery option</Text>
+                        <View className="w-[90%] mx-auto h-full items-center">
+                            <View className="ml-auto mb-3">
+                                <Button onPress={handleReset} label="reset" type="action"/>
+                            </View>
+                            <View className="w-full">
+                                <Button onPress={() => handleSelection('text-only')} label="test" type="secondary" active={totalCustom.type !== '' ? totalCustom.type === 'text-only' : true} colors={['green', 'lightgray']}/>
+                                <Button onPress={() => handleSelection('graphics-only')} label="test" type="secondary" style={{marginTop: 24}} active={totalCustom.type !== '' ? totalCustom.type === 'graphics-only' : true} colors={['green', 'lightgray']}/>
+                                <Button onPress={() => handleSelection('text-with-grahpics')} label="test" type="secondary" style={{marginTop: 24}} active={totalCustom.type !== '' ? totalCustom.type === 'text-with-grahpics' : true} colors={['green', 'lightgray']}/>
+                            </View>
+
+                            
+
+                        </View>
+                    </View>
+
+                </View>)}
                 
         </View>
     )

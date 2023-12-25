@@ -52,7 +52,7 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
             const indexFound = prevTotalCustom.findIndex(item => item.type === 'image-upload')
             indexFound > -1 && prevTotalCustom.splice(indexFound, 1)
             prevTotalCustom.push({type: 'image-upload', data: cloudData})
-            return {postion: prevState.position,  selections: prevTotalCustom}
+            return {type: prevState.type, postion: prevState.position,  selections: prevTotalCustom}
           })
         }
   
@@ -77,7 +77,7 @@ const GraphicSelection = ({logoCollection, totalCustom, setTotalCustom}) => {
       setTotalCustom((prevState) => {
         const prevSelections = [...prevState.selections]
         const filterArray = prevSelections.filter(item => item.type !== 'image-upload')
-        return {position: prevState.position ,selections: filterArray}
+        return {type: prevState.type, position: prevState.position ,selections: filterArray}
       })
     }
   

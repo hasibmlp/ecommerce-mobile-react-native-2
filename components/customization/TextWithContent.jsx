@@ -41,13 +41,13 @@ const TextWithContent = ({activeSelections,
                     const indexFound = prevTotalCustom.findIndex(item => item.type === 'text-upload')
                     if(indexFound > -1) prevTotalCustom.splice(indexFound, 1)
                     prevTotalCustom.push({type: 'text-upload', data: values})
-                    return {position: prevState.position, selections: prevTotalCustom}
+                    return {type: prevState.type, position: prevState.position, selections: prevTotalCustom}
                     })
                 }else {
                     setTotalCustom(prevState => {
                     const prevTotalCustom = [...prevState.selections]
                     const filterdArray = prevTotalCustom.filter(item => item.type !== 'text-upload')
-                    return {position: prevState.position, selections: filterdArray}
+                    return {type: prevState.type, position: prevState.position, selections: filterdArray}
                     })
                 }
                 }}
