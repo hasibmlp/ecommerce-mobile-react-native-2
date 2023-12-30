@@ -17,7 +17,7 @@ import CustomSelectionInterface from "../customization/CustomSelectionInterface"
 
 
 export default function VariantSelectionModalContent({handleClose, context}) {
-  const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions} = useContext(context)
+  const {options, handleAddCartBtn, currentlyNotInStock, selectedVariant, activeOptions, customProductId, setCustomProductId} = useContext(context)
   const [loading, setLoading] = useState(true)
 
   let label 
@@ -46,7 +46,10 @@ export default function VariantSelectionModalContent({handleClose, context}) {
               ))}
           </View>
 
-          <CustomizationContainer/>
+          <CustomizationContainer
+            customProductId={customProductId}
+            setCustomProductId={setCustomProductId}
+          />
 
           <Button 
             label={label} 
@@ -60,10 +63,10 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     
     
     
-    function CustomizationContainer() {
+    function CustomizationContainer({customProductId, setCustomProductId}) {
       const [isModalVisible, setModalVisible] = useState(false)
       const [totalCustom, setTotalCustom] = useState({type: '', active: false, selections: []})
-      console.log("TOTAL CUSTOM ARRAY: ", totalCustom)
+      console.log("TOTAL CUSTOM ARRAY: ", customProductId)
       return(
         <View className="pb-4 pt-2">
           <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">
@@ -73,10 +76,10 @@ export default function VariantSelectionModalContent({handleClose, context}) {
             onPress={() => setModalVisible(true)}
             className="flex-row items-center justify-center self-start mx-3"
           >
-            {totalCustom.selections.length > 0 && (<CheckCircleIcon size={18} color='#000'/>)}
-            {!totalCustom.selections.length > 0 && (<PlusCircleIcon size={18} color='#89c157' />)}
-            <Text className={`text-[13px] ${totalCustom.selections.length > 0 ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
-              totalCustom.selections.length > 0 ? 'Customization Added' : 'Add Customization'
+            {customProductId && (<CheckCircleIcon size={18} color='#000'/>)}
+            {!customProductId && (<PlusCircleIcon size={18} color='#89c157' />)}
+            <Text className={`text-[13px] ${customProductId ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
+              customProductId ? 'Customization Added' : 'Add Customization'
             }</Text>
           </TouchableOpacity>
 
@@ -86,6 +89,8 @@ export default function VariantSelectionModalContent({handleClose, context}) {
               onClose={() => setModalVisible(false)}
               totalCustom={totalCustom}
               setTotalCustom={setTotalCustom}
+              customProductId={customProductId}
+              setCustomProductId={setCustomProductId}
             />
           </MyModal>
 
@@ -94,7 +99,7 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     }
     
 
-const EmbroiderySelection = ({onClose, totalCustom, setTotalCustom}) => {
+const EmbroiderySelection = ({onClose, totalCustom, setTotalCustom, customProductId, setCustomProductId}) => {
   return (
     <View className="flex-1">
               <View className="h-10 flex-row items-center justify-end px-3">
@@ -109,6 +114,8 @@ const EmbroiderySelection = ({onClose, totalCustom, setTotalCustom}) => {
                 totalCustom={totalCustom}
                 setTotalCustom={setTotalCustom}
                 onClose={onClose}
+                customProductId={customProductId}
+                setCustomProductId={setCustomProductId}
                 />
 
                 {/* <View>

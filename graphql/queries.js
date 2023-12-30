@@ -358,8 +358,45 @@ export const GET_CART_DETAILS = gql`
           edges {
             node {
               id
+              quantity
+              unitPrice{
+                amount
+              }
+							discountAllocations{
+                discountApplication{
+                  value{
+                    __typename
+                  }
+                  allocationMethod
+                  targetSelection
+                  targetType
+                }
+                allocatedAmount{
+                  amount
+                  currencyCode
+                }
+              }
               variant {
                 id
+                image{
+                  url
+                  altText
+                }
+                selectedOptions{
+                  name
+                  value
+                }
+                product{
+                  productType
+                  vendor
+                  title
+                }
+                unitPrice{
+                  amount
+                }
+                price{
+                  amount
+                }
               }
             }
           }
@@ -372,6 +409,25 @@ export const GET_CART_DETAILS = gql`
           city
           country
           phone
+        }
+        discountApplications(first:10){
+          edges{
+            node{
+              ... on DiscountCodeApplication{
+                allocationMethod
+                applicable
+                code
+                targetSelection
+                targetType
+                value{
+                  ... on MoneyV2{
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+            }
+          }
         }
         totalTax {
           amount
@@ -393,6 +449,116 @@ export const GET_CART_DETAILS = gql`
     }
   }
 `;
+export const GET_CART_DETAILS_V2 = gql`
+  query getCartDetails($cartId:ID!) {
+    cart(id:$cartId){
+      discountCodes{
+        code
+        applicable
+      }
+      discountAllocations{
+        ... on CartAutomaticDiscountAllocation{
+          discountedAmount{
+            amount
+          }
+          title
+        }
+        ... on CartCodeDiscountAllocation{
+          code
+          discountedAmount{
+            amount
+            currencyCode
+          }
+        }
+        ... on CartCustomDiscountAllocation{
+          title
+          discountedAmount{
+            amount
+            currencyCode
+          }
+        }
+      }
+      lines(first:10){
+        edges{
+          node{
+            id
+            quantity
+            discountAllocations{
+              ... on CartAutomaticDiscountAllocation{
+                title
+                discountedAmount{
+                  amount
+                  currencyCode
+                }
+              }
+              ... on CartCodeDiscountAllocation{
+                code
+                discountedAmount{
+                  amount
+                  currencyCode
+                }
+              }
+              ... on CartCustomDiscountAllocation{
+                title
+                discountedAmount{
+                  amount
+                  currencyCode
+                }
+              }
+            }
+            cost{
+              subtotalAmount{
+                amount
+                currencyCode
+              }
+              totalAmount{
+                amount
+                currencyCode
+              }
+            }
+            merchandise{
+              ... on ProductVariant{
+                id
+                image{
+                  url
+                  altText
+                }
+                selectedOptions{
+                  name
+                  value
+                }
+                product{
+                  productType
+                  vendor
+                  title
+                }
+              }
+            }
+            discountAllocations{
+                ... on CartCodeDiscountAllocation{
+                  code
+                }
+              }
+            }
+          }
+        }
+      cost{
+        subtotalAmount{
+          amount
+          currencyCode
+        }
+        totalTaxAmount{
+          amount
+          currencyCode
+        }
+        totalAmount{
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+`;
 
 export const GET_CHECKOUT_DETAILS = gql`
   query GetCheckoutDetails($checkoutId: ID!) {
@@ -404,8 +570,34 @@ export const GET_CHECKOUT_DETAILS = gql`
           edges {
             node {
               id
+              quantity
+              unitPrice{
+                amount
+              }
+							discountAllocations{
+                allocatedAmount{
+                  amount
+                }
+              }
               variant {
                 id
+                image{
+                  url
+                  altText
+                }
+                selectedOptions{
+                  name
+                  value
+                }
+                product{
+                  title
+                }
+                unitPrice{
+                  amount
+                }
+                price{
+                  amount
+                }
               }
             }
           }

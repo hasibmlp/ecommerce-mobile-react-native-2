@@ -144,7 +144,7 @@ const logoCollection = [
   ]
 
 
-const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
+const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose, customProductId, setCustomProductId}) => {
     const [activeScreen, setActiveScreen] = useState(false)
     const [activeSelectionsForTextDisplay, setActiveSelectionsForTextDisplay] = useState({postion: '', selections: []})
     const [price, setPrice] = useState(0)
@@ -155,6 +155,7 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
         'Kalnia': require('../../assets/fonts/Kalnia-SemiBold.ttf'),
         'Ubuntu': require('../../assets/fonts/Ubuntu-Bold.ttf'),
       });
+    const cusotmSelections = customProductId || null;
     const activeColorCode = activeSelectionsForTextDisplay.selections.find(i => i.type === 'color-selection')?.colorCode
     const activeFont = activeSelectionsForTextDisplay.selections.find(i => i.type === 'font-selection')?.fontFamily
     const initialCustomTextData = totalCustom?.selections.find(item => item.type === 'text-upload')?.data
@@ -183,6 +184,7 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
     }
     const handleReset = () => {
         setTotalCustom({type: '', position: '', selections: []})
+        setCustomProductId('')
     }
 
     useEffect(() => {
@@ -251,6 +253,7 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
                   colorValues={colorValues}
                   image={image}
                   setImage={setImage}
+                  setCustomProductId={setCustomProductId}
                 />)}
 
                 {!activeScreen && (<View>
@@ -266,9 +269,9 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose}) => {
                                 <Button onPress={handleReset} label="reset" type="action"/>
                             </View>
                             <View className="w-full">
-                                <Button onPress={() => handleSelection('text-only')} label="Text Only" type="secondary" active={totalCustom.selections.length > 0 ? (totalCustom.type === 'text-only' && totalCustom.active === true) : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
-                                <Button onPress={() => handleSelection('graphics-only')} label="Graphics Only" type="secondary" style={{marginTop: 24}} active={totalCustom.selections.length > 0 ? (totalCustom.type === 'graphics-only' && totalCustom.active === true) : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
-                                <Button onPress={() => handleSelection('text-with-grahpics')} label="Text & Graphics" type="secondary" style={{marginTop: 24}} active={totalCustom.selections.length > 0 ? (totalCustom.type === 'text-with-graphics' && totalCustom.active === true) : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
+                                <Button onPress={() => handleSelection('text-only')} label="Text Only" type="secondary" active={cusotmSelections ? cusotmSelections.type === 'text-only' : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
+                                <Button onPress={() => handleSelection('graphics-only')} label="Graphics Only" type="secondary" style={{marginTop: 24}} active={cusotmSelections ? cusotmSelections.type === 'graphics-only' : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
+                                <Button onPress={() => handleSelection('text-with-grahpics')} label="Text & Graphics" type="secondary" style={{marginTop: 24}} active={cusotmSelections ? cusotmSelections.type === 'text-with-graphics' : true} colors={['green', 'lightgray']} textColors={['#32cd32', '#d3d3d3']}/>
                             </View>
 
                         </View>

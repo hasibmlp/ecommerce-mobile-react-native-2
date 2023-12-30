@@ -30,11 +30,15 @@ import * as WebBrowser from "expo-web-browser";
 
 import CartCard from "../components/CartCard";
 import { cartIdVar } from "../App";
-import { GET_CART_DETAILS } from "../graphql/queries";
+import { GET_CART_DETAILS, GET_CART_DETAILS_V2 } from "../graphql/queries";
 import {
   ADD_CHECKOUT_EMAIL,
   ADD_CHECKOUT_SHIPPING_ADDRESS,
+  CREATE_CART_V2,
   CREATE_EMPTY_CART,
+  REMOVE_CART_ITEM,
+  REMOVE_CART_ITEM_V2,
+  UPDATE_CART_ITEM,
 } from "../graphql/mutations";
 import LoadingScreen from "../components/LoadingScreen";
 import Animated, { Layout } from "react-native-reanimated";
@@ -45,7 +49,7 @@ export default function CartScreen() {
   const navigation = useNavigation();
 
   const cartId = useReactiveVar(cartIdVar);
-
+  console.log("", cartId)
 
   const [
     createEmptyCart,
@@ -53,13 +57,73 @@ export default function CartScreen() {
   ] = useMutation(CREATE_EMPTY_CART);
 
   const [
+    createCartV2,
+    { loading: emptyCartV2Loading, error: emptyCartV2Error, data: emptyCartV2Data },
+  ] = useMutation(CREATE_CART_V2);
+
+  const [
+    updateLineItem,
+    {
+      loading: updateLineItemLoading,
+      error: updateLineItemError,
+      data: updateLineItemData,
+    },
+  ] = useMutation(UPDATE_CART_ITEM);
+
+  const [
     getCartDetails,
     {
       loading: cartDetailsLoading,
       error: cartDetailsError,
       data: cartDetailsData,
+      networkStatus,
+      refetch,
     },
-  ] = useLazyQuery(GET_CART_DETAILS);
+  ] = useLazyQuery(GET_CART_DETAILS, {
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const [
+    getCartV2Details,
+    {
+      loading: cartDetailsV2Loading,
+      error: cartDetailsV2Error,
+      data: cartDetailsV2Data,
+      networkStatus: networkStatusV2,
+      refetch: refetchV2,
+    },
+  ] = useLazyQuery(GET_CART_DETAILS_V2, {
+    notifyOnNetworkStatusChange: true,
+  });
+
+
+  console.log('NEWLY CREATED CART UPDATED: ', cartDetailsV2Data)
+  console.log('NEWLY CREATED CART LOADING: ', cartDetailsV2Loading)
+  console.log('NEWLY CREATED CART ERROR: ', cartDetailsV2Error?.message)
+
+  const [
+    removeCartItem,
+    {
+      loading: removeItemLoading,
+      error: removeItemError,
+      data: removeItemData,
+    },
+  ] = useMutation(REMOVE_CART_ITEM, {
+    notifyOnNetworkStatusChange: true
+  });
+
+  const [
+    removeCartV2Item,
+    {
+      loading: removeItemV2Loading,
+      error: removeItemV2Error,
+      data: removeItemV2Data,
+    },
+  ] = useMutation(REMOVE_CART_ITEM_V2, {
+    notifyOnNetworkStatusChange: true
+  });
+
+  // console.log("CARD DETAILS",cartDetailsData.node.lineItems.edges)
 
   function handleFinalCheckout(buyerObj) {
     const isBuyerAddress =
@@ -70,6 +134,53 @@ export default function CartScreen() {
       navigation.navigate("ShippingAddressUpdateScreen");
     }
   }
+
+  function handleItemRemove(id) {
+
+    removeCartV2Item({
+      variables: {
+        cartId,
+        lineIds: [
+          id
+        ]
+      },
+      onCompleted: () => {
+        refetchV2()
+      }
+    })
+
+    // removeCartItem({
+    //   variables: {
+    //     checkoutId: cartId,
+    //     lineItemIds: [id],
+    //   },
+    //   onCompleted: () => {
+    //     refetchV2()
+    //   },
+    //   // refetchQueries: [
+    //   //   {
+    //   //     query: GET_CART_DETAILS,
+    //   //     variables: {
+    //   //       checkoutId: cartId,
+    //   //     },
+    //   //   },
+    //   // ],
+    // });
+  }
+
+  const handleLineItemUpdate = (line) => {
+    updateLineItem({
+      variables: {
+        cartId,
+        lines: line || []
+      },
+      onCompleted: () => {
+        refetchV2()
+      }
+    })
+  }
+
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
@@ -78,43 +189,64 @@ export default function CartScreen() {
 
   useEffect(() => {
     if (!cartId) {
-      createEmptyCart();
-    }
-  }, [cartId]);
-
-  useEffect(() => {
-    if (emptyCartData) {
-      cartIdVar(emptyCartData?.checkoutCreate?.checkout?.id);
-    }
-  }, [emptyCartData]);
-
-  useEffect(() => {
-    if (cartId) {
-      getCartDetails({
+      createCartV2({
         variables: {
-          checkoutId: cartId,
-        },
-        fetchPolicy: "network-only",
+          lines: []
+        }
       });
     }
   }, [cartId]);
 
-  if (emptyCartLoading) return <LoadingScreen />;
-  if (cartDetailsError)
+  useEffect(() => {
+    if (emptyCartV2Data) {
+      cartIdVar(emptyCartV2Data?.cartCreate?.cart?.id);
+    }
+  }, [emptyCartV2Data]);
+
+  useEffect(() => {
+    if (cartId) {
+
+      getCartV2Details({
+        variables: {
+          cartId,
+        },
+        fetchPolicy: "network-only"
+      })
+
+      // getCartDetails({
+      //   variables: {
+      //     checkoutId: cartId,
+      //   },
+      //   fetchPolicy: "network-only",
+      // });
+    }
+  }, [cartId]);
+
+  if (emptyCartV2Loading) return <LoadingScreen />;
+  if (cartDetailsV2Error)
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Error occured {cartDetailsError.message}</Text>
+        <Text>Error occured {cartDetailsV2Error.message}</Text>
       </View>
     );
 
-  const cartItems = cartDetailsData?.node?.lineItems?.edges || [];
-  const cartItemsId = [...cartItems].reverse();
+    console.log("CARD ID: ",cartId)
+
+  const cartProducts = cartDetailsV2Data?.cart?.lines?.edges || []
+
+  console.log("aaaaaaaaaaaaaaa", cartDetailsV2Data?.cart?.shippingDiscountAllocations)
+  // console.log("bbbbbbbbbbbbbbbb", cartProducts[0]?.node?.variant.product.vendor)
+  console.log("bbbbbbbbbbbbbbbb", cartProducts[0]?.node?.discountAllocations[0])
+
+  // const cartItemsId = [...cartItems].reverse();
 
 
 
   return (
     <View className="flex-1">
-      {cartDetailsLoading && <LoadingScreen />}
+      {cartDetailsV2Loading && <LoadingScreen />}
+      {removeItemLoading && <LoadingScreen />}
+      {updateLineItemLoading && <LoadingScreen />}
       <SafeAreaView className="bg-white">
         <View className="w-full relative flex-row justify-center items-center h-[35px]">
           <Text className="text-[16px] text-black font-normal">
@@ -126,7 +258,7 @@ export default function CartScreen() {
           </View>
         </View>
       </SafeAreaView>
-      {cartDetailsData?.node?.lineItems?.edges.length === 0 && (
+      {cartDetailsV2Data?.cart?.lines?.edges.length === 0 && (
         <View className="flex-1 items-center justify-center bg-white">
           <View className="w-[120px] h-[100px]">
             <Image
@@ -147,7 +279,7 @@ export default function CartScreen() {
           </TouchableOpacity>
         </View>
       )}
-      {cartDetailsData?.node?.lineItems?.edges.length > 0 && (
+      {cartDetailsV2Data?.cart?.lines?.edges.length > 0 && (
         <Animated.ScrollView>
           <View className="flex flex-row justify-between bg-white py-4 my-3">
             <View className="flex flex-row gap-2 items-center">
@@ -158,13 +290,14 @@ export default function CartScreen() {
             </View>
             <ChevronRightIcon size={24} color="black" />
           </View>
-          {cartItemsId.map((item) => (
-            <CartCard
-              key={item?.node?.variant?.id}
-              id={item?.node?.variant?.id}
-              lineId={item?.node?.id}
+          {cartProducts.map((item) => {
+            return <CartCard
+              key={item?.node?.id}
+              lineItem={item?.node}
+              handleLineItemUpdate={handleLineItemUpdate}
+              onRemove={() => handleItemRemove(item?.node?.id)}
             />
-          ))}
+          })}
 
           <GiftToggleContainer />
           <CoupenToggleContainer />
@@ -175,8 +308,17 @@ export default function CartScreen() {
                 Subtotal
               </Text>
               <Text className="text-[16px] text-red-800 font-normal">
-                {cartDetailsData?.node?.lineItemsSubtotalPrice?.amount}{" "}
-                {cartDetailsData?.node?.lineItemsSubtotalPrice?.currencyCode}
+                {cartDetailsV2Data?.cart?.cost?.subtotalAmount?.amount}{" "}
+                {cartDetailsV2Data?.cart?.cost?.subtotalAmount?.currencyCode}
+              </Text>
+            </View>
+            <View className="flex-row justify-between items-center py-2">
+              <Text className="text-[16px] text-black font-normal">
+                Tax
+              </Text>
+              <Text className="text-[16px] text-black font-normal">
+                {cartDetailsV2Data?.cart?.cost?.totalTaxAmount?.amount}{" "}
+                {cartDetailsV2Data?.cart?.cost?.totalTaxAmount?.currencyCode}
               </Text>
             </View>
             <View className="flex-row justify-between items-center py-2">
@@ -189,14 +331,14 @@ export default function CartScreen() {
                 </Text>
               </View>
               <Text className="text-[20px] text-black font-medium">
-                {cartDetailsData?.node?.totalPrice?.amount}{" "}
-                {cartDetailsData?.node?.totalPrice?.currencyCode}
+                {cartDetailsV2Data?.cart?.cost?.totalAmount?.amount}{" "}
+                {cartDetailsV2Data?.cart?.cost?.totalAmount?.currencyCode}
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() =>
-                handleFinalCheckout(cartDetailsData?.node?.shippingAddress)
-              }
+              // onPress={() =>
+              //   handleFinalCheckout(cartDetailsData?.node?.shippingAddress)
+              // }
               className="items-center justify-center bg-blue-400 py-4 rounded-[5px] mt-2"
             >
               <Text className="text-[15px] font-medium uppercase text-white">

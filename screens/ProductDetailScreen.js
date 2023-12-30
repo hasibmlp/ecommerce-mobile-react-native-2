@@ -1,4 +1,4 @@
-import { useContext, useLayoutEffect, useState } from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from 'expo-linking';
 import {
@@ -8,6 +8,9 @@ import {
   Dimensions,
   Pressable,
   Image,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
 } from "react-native";
 import {
   ChevronDownIcon,
@@ -16,7 +19,12 @@ import {
   ChevronRightIcon,
   PhoneIcon,
   XMarkIcon,
+  CheckCircleIcon,
+  PlusCircleIcon,
 } from "react-native-heroicons/outline";
+import * as Yup from 'yup'
+import { useFonts } from 'expo-font';
+
 
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
@@ -39,6 +47,10 @@ import ShareButton from "../components/buttons/ShareButton";
 import Panel from "../components/actions/Panel";
 import ColorSwatchImage from "../components/buttons/ColorSwatchImage";
 import PriceContainer from "../components/PriceContainer";
+import { Formik } from "formik";
+import ImageSelection from "../components/customization/ImageSelection";
+import Selection from "../components/customization/Selection";
+import ColorSelection from "../components/customization/ColorSelection";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -118,7 +130,7 @@ function ProductContent ({productId}) {
           {data && (<ProductInfo data={data}/>)}
         </View>
 
-      <PurchaseOption productId={productId}/>
+      <PurchaseOption productId={productId} data={data}/>
       <OfferAnnouncement text={data?.product.metafield?.value}/>
       <ToggleContainer/>
       <SmilePointsContainer/>
@@ -149,9 +161,10 @@ function ProductInfo({data}) {
   )
 }
 
-function PurchaseOption({productId}) {
+function PurchaseOption({ productId, data }) {
   const {options, selectedVariant, handleAddCartBtn, activeOptions} = useContext(VariantSelectionContext)
   const [isModalVisisble, setModalVisible] = useState(false)
+  const [ isFullModalVisible, setFullModalVisible ] = useState(false)
   let label
   if(selectedVariant.id) {
     if(selectedVariant.availableForSale) label = 'add to cart'
@@ -168,8 +181,46 @@ function PurchaseOption({productId}) {
     }
   }
 
+  console.log(isFullModalVisible)
+
   return (
     <View>
+
+        {data?.product?.vendor === 'LITTMANN' && (<View className="bg-white px-2">
+          <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">
+            Customization:
+          </Text>
+          <View className="flex flex-row justify-between ">
+            <TouchableOpacity
+              onPress={() => setFullModalVisible(true)}
+              className="flex-row items-center justify-center self-start mx-3"
+            >
+              {false && (<CheckCircleIcon size={18} color='#000'/>)}
+              {true && (<PlusCircleIcon size={18} color='#89c157' />)}
+              <Text className={`text-[15px] ${false ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
+                false ? 'Customization Added' : 'Tube printing'
+              }</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setFullModalVisible(true)}
+              className="flex-row items-center justify-center self-start mx-3"
+            >
+              {false && (<CheckCircleIcon size={18} color='#000'/>)}
+              {true && (<PlusCircleIcon size={18} color='#89c157' />)}
+              <Text className={`text-[15px] ${false ? 'text-black' : 'text-[#89c157]'} font-normal uppercase ml-1`}>{
+                false ? 'Customization Added' : 'laser customization'
+              }</Text>
+            </TouchableOpacity>
+          </View>
+
+          <MyModal visible={isFullModalVisible} slide="toUp">
+            <CustomizationSelection2 onClose={() => setFullModalVisible(false)} />
+          </MyModal>
+
+          
+
+        </View>)}
+
        {options && options[0].values[0] !== "Default Title" && (
           <>
             <VariantSelectionButton onPress={() => setModalVisible(!isModalVisisble)}/>
@@ -178,6 +229,7 @@ function PurchaseOption({productId}) {
             </BottomModal>
           </>
         )}
+
       <View className="bg-white">
         <Button 
           label={label}
@@ -338,10 +390,6 @@ function InstagramContainer() {
   )
 }
 
-
-
-
-
 function InstagramImageCard() {
   return (
     <View className={`w-24 h-28 bg-blue-300 rounded-[10px] m-1 overflow-hidden`}>
@@ -405,5 +453,201 @@ function SelectionButton ({option, style}) {
           <ChevronDownIcon size={11} color="black" />
         </View>
       </View>
+  )
+}
+
+const validationSchemaTextOnly = Yup.object({
+  position: Yup.string().required(),
+  language: Yup.string().required(),
+  fontStyle: Yup.string().required(),
+  color: Yup.string().required(),
+  firstLine: Yup.string().required().max(16, 'maximum character allowed 16'),
+  secondLine: Yup.string().max(16, 'maximum character allowed 16'),
+})
+
+const colorValues = [
+  {
+    name: 'navy',
+    value: 'Navy',
+    colorCode: '#000080'
+  },
+  {
+    name: 'black',
+    value: 'Black',
+    colorCode: '#000'
+  },
+  {
+    name: 'orange',
+    value: 'Orange',
+    colorCode: '#FFA500',
+  },
+]
+
+const CustomizationSelection2 = ({onClose}) => {
+  const [totalCustom, setTotalCustom] = useState({type: '', active: false, selections: []})
+
+  const [activeSelectionsForTextDisplay, setActiveSelectionsForTextDisplay] = useState({postion: '', selections: []})
+    const [price, setPrice] = useState(0)
+    const [fontsLoaded] = useFonts({
+        'Robo-Mono': require('../assets/fonts/RobotoMono-SemiBold.ttf'),
+        'Kalnia': require('../assets/fonts/Kalnia-SemiBold.ttf'),
+        'Ubuntu': require('../assets/fonts/Ubuntu-Bold.ttf'),
+      });
+    const activeColorCode = activeSelectionsForTextDisplay.selections.find(i => i.type === 'color-selection')?.colorCode
+    const activeFont = activeSelectionsForTextDisplay.selections.find(i => i.type === 'font-selection')?.fontFamily
+
+    const handleTextStyle = (item) => {
+        setActiveSelectionsForTextDisplay(prevState => {
+        if(item.type === 'position') {
+            const prevSelections = prevState.selections
+            return {postion: item.postion, selections: prevSelections}
+        }else {
+            const prevSelection = [...prevState.selections]
+            const itemIndex = prevSelection.findIndex(i => i.type === item.type)
+            if(itemIndex > -1) {
+            prevSelection.splice(itemIndex, 1)
+            }
+            prevSelection.push(item)
+            return {selections: prevSelection}
+        }
+        })
+    }
+
+    useEffect(() => {
+        let newPrice = 0
+        if(totalCustom.type === 'text-only')
+            newPrice = 50
+        else if(totalCustom.type === 'graphics-only')
+            newPrice = 100
+        else newPrice = 150
+
+        setPrice(newPrice)
+    },[totalCustom])
+
+    useEffect(() => {},[fontsLoaded])
+
+    if(!fontsLoaded) return null
+
+  return (
+    <View className="flex-1">
+              <View className="h-10 flex-row items-center justify-end px-3">
+                    <Pressable className="p-1" onPress={onClose}>
+                      <XMarkIcon size={24} color="black"/>
+                    </Pressable>
+                </View>
+
+                <ScrollView  className="pt-8 px-4">
+                  {/* <HeaderTitle title="Customization"/> */}
+                  <View className="text-form pt-3">
+                      <Formik
+                          initialValues={{
+                          position: totalCustom.selections.length > 0 ? totalCustom.selections[0].position : '',
+                          language: totalCustom.selections.length > 0  ? totalCustom.selections[0].language : '',
+                          fontStyle: totalCustom.selections.length > 0  ? totalCustom.selections[0].fontStyle : '',
+                          color: totalCustom.selections.length > 0  ? totalCustom.selections[0].color : '',
+                          firstLine: totalCustom.selections.length > 0  ? totalCustom.selections[0].firstLine : '',
+                          secondLine: totalCustom.selections.length > 0  ? totalCustom.selections[0].secondLine : '',
+                          }}
+                          validationSchema={validationSchemaTextOnly}
+                          onSubmit={(values) => {
+                              console.log("VALUES ARE SUBMITED: ", values)
+                          if(values){
+                              setTotalCustom(prevState => {
+                              return {type: 'text-only', active: true,  selections: [{...values}]}
+                              })
+                          }else {
+                              // setTotalCustom(prevState => {
+                              // const prevTotalCustom = [...prevState.selections]
+                              // return {type: 'text-only', selections: filterdArray}
+                              // })
+                          }
+                              onClose()
+                          }}
+                      >
+                          {({handleBlur, handleChange, handleSubmit, errors, touched, values}) => (
+                          <>
+                              <View className="mb-6">
+                                  {/* <FormErrorBlock errors={errors} touched={touched} scrollY={textOnlyRef} /> */}
+                                  <ImageSelection
+                                      title="Position: Curved Tube (Doctor Side)" 
+                                      images={[
+                                        {url: 'https://www.shopscrubsandclogs.com/cdn/shop/files/MAZ-12142.jpg?v=1687173547',},
+                                        {url: 'https://www.shopscrubsandclogs.com/cdn/shop/files/MAZ-12142.jpg?v=1687173547',}
+                                      ]}
+                                      style={{marginBottom: 12}}
+                                      defaultValue={values.position}
+                                      handleChange={handleChange('position')}
+                                  />
+                                  <Selection
+                                      name="language-selection"
+                                      field="language"
+                                      onChange={(item) => handleTextStyle(item)}
+                                      label={"Language"}
+                                      style={{marginBottom: 12}}
+                                      options={[{name: 'en', value: 'English'}, {name: 'ar', value: 'العربي'}]}
+                                      handleChange={handleChange('language')}
+                                      errors={errors}
+                                      touched={touched}
+                                      value={values.language}
+                                      fontsLoaded={fontsLoaded}
+                                  />
+
+                                  <Selection
+                                      name="font-selection"
+                                      field="fontStyle"
+                                      label={"Font"}
+                                      onChange={(item) => handleTextStyle(item)}
+                                      options={[
+                                      {name: 'op1', value: 'Roboto Mono', fontFamily: 'Robo-Mono'},
+                                      {name: 'op2', value: 'Kalnia', fontFamily: 'Kalnia'},
+                                      {name: 'op3', value: 'Ubuntu', fontFamily: 'Ubuntu'},
+                                      ]}
+                                      handleChange={handleChange('fontStyle')}
+                                      errors={errors}
+                                      touched={touched}
+                                      value={values.fontStyle}
+                                      fontsLoaded={fontsLoaded}
+                                  />
+                              </View>
+
+                              <ColorSelection
+                              onChange={(item) => handleTextStyle(item)}
+                              handleChange={handleChange('color')}
+                              handleBlur={handleBlur('color')}
+                              errors={errors}
+                              touched={touched}
+                              value={values.color}
+                              colorValues={colorValues}
+                              />
+                                  
+                              <Text className='text-[14px] text-black font-normal mb-1'>Enter Text here</Text>
+                              <TextInput
+                                  style={{color: activeColorCode, fontFamily: activeFont}}maxLength={16} 
+                                  className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px] mb-10`} 
+                                  onChangeText={handleChange('firstLine')}
+                                  handleBlur={handleBlur('firstLine')}
+                                  value={values.firstLine}
+                              />
+
+                              <View className="self-start mb-10">
+                                <Button label="Trems and condition" type="action" size="sm" textColors={['#000000']} />
+                              </View>
+
+                              <View className="footer w-full justify-center pb-20">
+                                  <View className="flex-row justify-between pb-4 mb-2 ">
+                                      <Text className="text-[16px] text-black font-normal">Total Customization Price</Text>
+                                      <Text className="text-[17px] text-[#89c157] font-medium">{price}</Text>
+                                  </View>
+                                  <Button label="Applay" onPress={handleSubmit} />
+                              </View>
+
+                          </>
+                          )}
+                          
+                      </Formik>
+                  </View>
+                </ScrollView>
+
+            </View>
   )
 }

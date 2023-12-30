@@ -46,7 +46,8 @@ const CustomSelection = ({
     colorValues,
     fontsLoaded,
     image,
-    setImage
+    setImage,
+    setCustomProductId
     }) => {
     
     const textOnlyRef = useRef()
@@ -85,6 +86,7 @@ const CustomSelection = ({
                         setTotalCustom(prevState => {
                         return {type: 'text-only', active: true,  selections: [{...values}]}
                         })
+                        setCustomProductId({id: 'gid://shopify/Product/8344541593879', type: 'text-only', title: 'Text', price: '50', selections: [{...values}]})
                     }else {
                         // setTotalCustom(prevState => {
                         // const prevTotalCustom = [...prevState.selections]
@@ -103,6 +105,14 @@ const CustomSelection = ({
                                 style={{marginBottom: 12}}
                                 defaultValue={values.position}
                                 handleChange={handleChange('position')}
+                                images={[
+                                    {
+                                        url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Left'
+                                    },
+                                    {
+                                        url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Right'
+                                    }
+                                ]}
                             />
                             <Selection
                                 name="language-selection"
@@ -189,7 +199,7 @@ const CustomSelection = ({
     return (
         <ScrollView ref={graphicOnlyRef} className="pt-8 px-4">
 
-            <headerTitle title="Customization"/>
+            <HeaderTitle title="Customization"/>
 
             <View className="text-form pt-3">
                 <Formik
@@ -204,6 +214,7 @@ const CustomSelection = ({
                         setTotalCustom(prevState => {
                         return {type: 'graphics-only', active: true,  selections: [{...values}]}
                         })
+                        setCustomProductId({id: 'gid://shopify/Product/8344541593879', type: 'graphics-only', title: 'Graphics', price: '100', selections: [{...values}]})
                     }else {
                         // setTotalCustom(prevState => {
                         // const prevTotalCustom = [...prevState.selections]
@@ -222,6 +233,14 @@ const CustomSelection = ({
                             style={{marginBottom: 12}}
                             defaultValue={values.position}
                             handleChange={handleChange('position')}
+                            images={[
+                                {
+                                    url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Left'
+                                },
+                                {
+                                    url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Right'
+                                }
+                            ]}
                         />
                             
                         <View className="graphics-form items-center">
@@ -249,7 +268,7 @@ const CustomSelection = ({
     return (
         <ScrollView ref={textGraphicRef} className="pt-8 px-4">
 
-            <headerTitle title="Customization"/>
+            <HeaderTitle title="Customization"/>
 
             <View className="text-form pt-3">
                 <Formik
@@ -270,6 +289,7 @@ const CustomSelection = ({
                         setTotalCustom(prevState => {
                         return {type: 'text-with-graphics', active: true, selections: [{...values}]}
                         })
+                        setCustomProductId({id: 'gid://shopify/Product/8344546115863', type: 'text-with-graphics', title: 'Text-Graphics', price: '150', selections: [{...values}]})
                     }else {
                         // setTotalCustom(prevState => {
                         // const prevTotalCustom = [...prevState.selections]
@@ -288,6 +308,14 @@ const CustomSelection = ({
                                 style={{marginBottom: 12}}
                                 defaultValue={values.position}
                                 handleChange={handleChange('position')}
+                                images={[
+                                    {
+                                        url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Left'
+                                    },
+                                    {
+                                        url: 'https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg', title: 'Right'
+                                    }
+                                ]}
                             />
                             <Selection
                                 name="language-selection"

@@ -2,11 +2,11 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
-import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
+import { ADD_CART_ITEM, ADD_CART_ITEM_V2, ADD_CART_ITEM_WITH_CUSTOM_ID, ADD_CUSTOM_VARIANT_ID, CREATE_CART, CREATE_CART_V2, CREATE_CART_WITH_CUSTOM_ID } from "../graphql/mutations";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { cartIdVar } from "../App";
 import { useNavigation } from "@react-navigation/native";
-import { GET_CART_DETAILS, GET_PRODUCT, GET_PRODUCT_V2 } from "../graphql/queries";
+import { GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_PRODUCT, GET_PRODUCT_V2 } from "../graphql/queries";
 import { getVariantForOptions, getVariantForSingleOption } from "../components/utils/UtilsFunctions";
 
 const VariantSelectionContext = createContext();
@@ -15,6 +15,9 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
 
   const [selectedVariant, setSelectedVariant] = useState({})
   const [activeOptions, setActiveOptions] = useState([])
+  const [ customProductId, setCustomProductId ] = useState('')
+
+  console.log("CUSTOM PRODUCT ID: ", customProductId)
 
   const navigation = useNavigation()
   const cartId = useReactiveVar(cartIdVar);
@@ -30,6 +33,11 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
   ] = useMutation(CREATE_CART);
 
   const [
+    createCartV2,
+    { loading: cartV2Loading, error: cartV2Error, data: cartV2Data },
+  ] = useMutation(CREATE_CART_V2);
+
+  const [
     addCartItem,
     {
       loading: addCartItemLoading,
@@ -37,6 +45,24 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
       data: addCartItemData,
     },
   ] = useMutation(ADD_CART_ITEM);
+  
+  const [
+    addCartV2Item,
+    {
+      loading: addCartV2ItemLoading,
+      error: addCartV2ItemError,
+      data: addCartV2ItemData,
+    },
+  ] = useMutation(ADD_CART_ITEM_V2);
+
+  const [
+    addCustomId,
+    {
+      loading: addCustomItemLoading,
+      error: addCustomItemError,
+      data: addCustomItemData,
+    },
+  ] = useMutation(ADD_CUSTOM_VARIANT_ID);
 
   const images = data?.product?.images?.edges.map((edge) => {
     return {
@@ -74,43 +100,136 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
 
 const handleAddCartBtn = (onClose) => {
   if (cartId) {
-    addCartItem({
+    addCartV2Item({
       variables: {
-        checkoutId: cartId,
-        variantId: selectedVariant.id,
+        cartId,
+        lines: [{
+          merchandiseId: selectedVariant.id,
+          quantity: 1
+        }]
       },
       refetchQueries: [
         {
-          query: GET_CART_DETAILS,
+          query: GET_CART_DETAILS_V2,
           variables: {
-            checkoutId: cartId,
+            cartId,
           },
         },
       ],
       onCompleted: () => {
         typeof(onClose) === 'function' && onClose()
-        navigation.navigate("CartScreen");
-      },
-    });
+      }
+    })
+
+      // addCartItem({
+      //   variables: {
+      //     checkoutId: cartId,
+      //     variantId: selectedVariant.id,
+      //     customAttributes: [
+      //       {
+      //         "key": "customId",
+      //         "value": JSON.stringify(customProductId)
+      //       }
+      //     ]
+      //   },
+      //   refetchQueries: [
+      //     {
+      //       query: GET_CART_DETAILS,
+      //       variables: {
+      //         checkoutId: cartId,
+      //       },
+      //     },
+      //   ],
+      //   onCompleted: () => {
+      //     if(customProductId){
+      //       console.log("YANI CUSTOM PRODUCT ID ULUR 3",customProductId.id)
+      //       addCartItem({
+      //         variables: {
+      //           checkoutId: cartId,
+      //           variantId: "gid://shopify/ProductVariant/12528927080565",
+      //           customAttributes: [
+      //             {
+      //               "key": "customId",
+      //               "value": JSON.stringify(customProductId)
+      //             }
+      //           ]
+      //         },
+      //         refetchQueries: [
+      //           {
+      //             query: GET_CART_DETAILS,
+      //             variables: {
+      //               checkoutId: cartId,
+      //             },
+      //           },
+      //         ]
+      //       });
+      //     }
+      //     typeof(onClose) === 'function' && onClose()
+      //   },
+      // });
+
   } else {
-    createCart({
+
+    createCartV2({
       variables: {
-        productQuantity: 1,
-        productId: selectedVariant.id,
+        lines: [{
+          merchandiseId: selectedVariant.id,
+          quantity: 1
+        }]
       },
       onCompleted: () => {
         typeof(onClose) === 'function' && onClose()
-        navigation.navigate("CartScreen"); 
-      },
-    });
+      }
+    })
+
+    // createCart({
+    //   variables: {
+    //     productQuantity: 1,
+    //     productId: selectedVariant.id,
+    //     customAttributes: [
+    //       {
+    //         "key": "customId",
+    //         "value": JSON.stringify(customProductId)
+    //       }
+    //     ],
+    //   },
+    //   onCompleted: () => {
+    //     if(customProductId){
+    //       console.log("YANI CUSTOM PRODUCT ID ULUR 3",customProductId.id)
+    //       addCartItem({
+    //         variables: {
+    //           checkoutId: cartId,
+    //           variantId: "gid://shopify/ProductVariant/12528927080565",
+    //           customAttributes: [
+    //             {
+    //               "key": "customId",
+    //               "value": JSON.stringify(customProductId)
+    //             }
+    //           ]
+    //         },
+    //         refetchQueries: [
+    //           {
+    //             query: GET_CART_DETAILS,
+    //             variables: {
+    //               checkoutId: cartId,
+    //             },
+    //           },
+    //         ]
+    //       });
+    //     }
+    //     typeof(onClose) === 'function' && onClose()
+    //   },
+    // });
+
   }
+
 }
 
 useEffect(() => {
-  if (cartData) {
-    cartIdVar(cartData?.checkoutCreate?.checkout?.id);
+  if (cartV2Data) {
+    cartIdVar(cartV2Data?.cartCreate?.cart?.id);
   }
-}, [cartData]);
+}, [cartV2Data]);
 
 useEffect(() => {
   if(variants && variants.length === 1) {
@@ -179,6 +298,8 @@ useEffect(() => {
         setActiveOptions,
         activeOptions,
         selectedVariant,
+        customProductId,
+        setCustomProductId
       }}
     >{children}</VariantSelectionContext.Provider>
   );

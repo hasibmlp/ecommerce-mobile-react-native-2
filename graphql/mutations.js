@@ -1,10 +1,42 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_CART = gql`
-  mutation checkoutCreate($productQuantity: Int!, $productId: ID!) {
+  mutation checkoutCreate($productQuantity: Int!, $productId: ID!, $customAttributes: [AttributeInput!]) {
     checkoutCreate(
       input: {
-        lineItems: [{ quantity: $productQuantity, variantId: $productId }]
+        lineItems: [{ quantity: $productQuantity, variantId: $productId, customAttributes: $customAttributes }]
+      }
+    ) {
+      checkout {
+        id
+      }
+      checkoutUserErrors {
+        message
+      }
+      queueToken
+    }
+  }
+`;
+
+export const CREATE_CART_V2 = gql`
+  mutation createCart($lines: [CartLineInput!]!){
+    cartCreate(input:{
+      lines:$lines,
+    }){
+      cart{
+        id
+      }
+    }
+  }
+`;
+
+export const CREATE_CART_WITH_CUSTOM_ID = gql`
+  mutation checkoutCreateWithCustomId($productQuantity: Int!, $productId: ID!) {
+    checkoutCreate(
+      input: {
+        lineItems: [
+          { quantity: $productQuantity, variantId: $productId }
+        ]
       }
     ) {
       checkout {
@@ -32,11 +64,70 @@ export const CREATE_EMPTY_CART = gql`
   }
 `;
 
+export const CREATE_CART_EMPTY_V2 = gql`
+  mutation createCart{
+    cartCreate(input:{
+      lines:[],
+    }){
+      cart{
+        id
+      }
+    }
+  }
+`;
+
 export const ADD_CART_ITEM = gql`
-  mutation checkoutLineItemAdd($checkoutId: ID!, $variantId: ID!) {
+  mutation checkoutLineItemAdd($checkoutId: ID!, $variantId: ID!, $customAttributes: [AttributeInput!]) {
     checkoutLineItemsAdd(
       checkoutId: $checkoutId
-      lineItems: [{ variantId: $variantId, quantity: 1 }]
+      lineItems: [{ variantId: $variantId, quantity: 1, customAttributes: $customAttributes }]
+    ) {
+      checkout {
+        id
+      }
+      checkoutUserErrors {
+        message
+      }
+    }
+  }
+`;
+
+export const ADD_CART_ITEM_V2 = gql`
+  mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+    cartLinesAdd(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  } 
+`;
+
+export const UPDATE_CART_ITEM = gql`
+  mutation cartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
+    cartLinesUpdate(cartId: $cartId, lines: $lines) {
+      cart {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+
+export const ADD_CUSTOM_VARIANT_ID = gql`
+  mutation checkoutLineItemAdd($checkoutId: ID!, $customId: ID!) {
+    checkoutLineItemsAdd(
+      checkoutId: $checkoutId
+      lineItems: [
+          { quantity: 1, variantId: $customId }
+        ]
     ) {
       checkout {
         id
@@ -58,6 +149,20 @@ export const REMOVE_CART_ITEM = gql`
         id
       }
       checkoutUserErrors {
+        message
+      }
+    }
+  }
+`;
+
+export const REMOVE_CART_ITEM_V2 = gql`
+    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+    cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
+      cart {
+        id
+      }
+      userErrors {
+        field
         message
       }
     }
