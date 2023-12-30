@@ -18,6 +18,46 @@ export const CREATE_CART = gql`
   }
 `;
 
+export const CREATE_CHECKOUT = gql`
+  mutation checkoutCreate($input: CheckoutCreateInput!) {
+    checkoutCreate(input: $input) {
+      checkout {
+        id
+        webUrl
+        shippingAddress{
+          id
+          firstName
+          lastName
+          address1
+          address2
+          city
+          country
+          countryCodeV2
+          phone
+          zip
+      }
+      }
+      checkoutUserErrors {
+        message
+      }
+      queueToken
+    }
+  }
+`;
+
+export const ADD_CHECKOUT_LINES = gql`
+  mutation checkoutLineItemsAdd($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+    checkoutLineItemsAdd(checkoutId: $checkoutId, lineItems: $lineItems) {
+      checkout {
+        id
+      }
+      checkoutUserErrors {
+        message
+      }
+    }
+  }
+`;
+
 export const CREATE_CART_V2 = gql`
   mutation createCart($lines: [CartLineInput!]!){
     cartCreate(input:{

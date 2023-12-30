@@ -19,7 +19,7 @@ import {
   ADD_CHECKOUT_EMAIL,
   ADD_CHECKOUT_SHIPPING_ADDRESS,
 } from "../graphql/mutations";
-import { cartIdVar } from "../App";
+import { cartIdVar, checkoutIdVar } from "../App";
 import {
   GET_AVAILABLE_SHIPPING_RATES,
   GET_BUYER_DETAILS,
@@ -53,8 +53,9 @@ const shippingAddressFromSchema = yup.object({
     .matches(phoneRegExp, "Enter valid phone number"),
 });
 
-export default function CheckoutShippingAddressUpdate() {
-  const checkoutId = useReactiveVar(cartIdVar);
+export default function CheckoutShippingAddressUpdate({ }) {
+  // const checkoutId = useReactiveVar(cartIdVar);
+  const checkoutId = useReactiveVar(checkoutIdVar)
 
   const navigation = useNavigation();
 

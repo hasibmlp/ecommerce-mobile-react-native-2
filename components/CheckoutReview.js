@@ -15,7 +15,7 @@ import {
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 
 import RadioButton from "./RadioButton";
-import { cartIdVar } from "../App";
+import { cartIdVar, checkoutIdVar } from "../App";
 import {
   GET_AVAILABLE_SHIPPING_RATES,
   GET_CHECKOUT_DETAILS,
@@ -25,8 +25,9 @@ import { useEffect, useState } from "react";
 import { SET_SHIPPING_METHOD } from "../graphql/mutations";
 import LoadingScreen from "./LoadingScreen";
 
-export default function CheckoutReview() {
-  const checkoutId = useReactiveVar(cartIdVar);
+export default function CheckoutReview({route}) {
+  // const checkoutId = useReactiveVar(cartIdVar);
+  const checkoutId = useReactiveVar(checkoutIdVar)
   const navigation = useNavigation();
 
   const [shippingReady, setShippingReady] = useState(false);

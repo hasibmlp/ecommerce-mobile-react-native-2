@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   SafeAreaView,
@@ -29,12 +30,14 @@ import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 
 import CartCard from "../components/CartCard";
-import { cartIdVar } from "../App";
-import { GET_CART_DETAILS, GET_CART_DETAILS_V2 } from "../graphql/queries";
+import { cartIdVar, checkoutIdVar } from "../App";
+import { GET_BUYER_DETAILS, GET_CART_DETAILS, GET_CART_DETAILS_V2 } from "../graphql/queries";
 import {
   ADD_CHECKOUT_EMAIL,
+  ADD_CHECKOUT_LINES,
   ADD_CHECKOUT_SHIPPING_ADDRESS,
   CREATE_CART_V2,
+  CREATE_CHECKOUT,
   CREATE_EMPTY_CART,
   REMOVE_CART_ITEM,
   REMOVE_CART_ITEM_V2,
@@ -49,7 +52,8 @@ export default function CartScreen() {
   const navigation = useNavigation();
 
   const cartId = useReactiveVar(cartIdVar);
-  console.log("", cartId)
+  const checkoutId = useReactiveVar(checkoutIdVar)
+  console.log("CHECKOUT ID", checkoutId)
 
   const [
     createEmptyCart,
@@ -84,6 +88,24 @@ export default function CartScreen() {
   });
 
   const [
+    createCheckout,
+    {
+      loading: checkoutLoading,
+      error: checkoutError,
+      data: checkoutData,
+    },
+  ] = useMutation(CREATE_CHECKOUT);
+
+  const [
+    addCheckoutLines,
+    {
+      loading: checkoutLinesLoading,
+      error: checkoutLinesError,
+      data: checkoutLinesData,
+    },
+  ] = useMutation(ADD_CHECKOUT_LINES);
+
+  const [
     getCartV2Details,
     {
       loading: cartDetailsV2Loading,
@@ -96,10 +118,26 @@ export default function CartScreen() {
     notifyOnNetworkStatusChange: true,
   });
 
+  const [
+    getShippingDetails,
+    {
+      loading: shippingDetailsLoading,
+      error: shippingDetailsError,
+      data: shippingDetailsData,
+    },
+  ] = useLazyQuery(GET_BUYER_DETAILS);
 
-  console.log('NEWLY CREATED CART UPDATED: ', cartDetailsV2Data)
-  console.log('NEWLY CREATED CART LOADING: ', cartDetailsV2Loading)
-  console.log('NEWLY CREATED CART ERROR: ', cartDetailsV2Error?.message)
+  const checkoutLineItems = cartDetailsV2Data?.cart?.lines?.edges.map(item => {
+    return {
+      variantId: item?.node?.merchandise?.id,
+      quantity: item?.node?.quantity
+    }
+  })
+
+  console.log('NEWLY CREATED CHCKOUT UPDATED: ', checkoutData)
+  console.log('NEWLY CREATED CHEKCOUT LOADING: ', checkoutLoading)
+  console.log('NEWLY CREATED CART ERROR: ', checkoutError?.message)
+  // console.log("LINE ITEMS TO ADD IN CHECKOUT: ", checkoutLineItems)
 
   const [
     removeCartItem,
@@ -180,12 +218,63 @@ export default function CartScreen() {
     })
   }
 
-  
+  const handleCheckout = () => {
+    if(checkoutId)
+      getShippingDetails({
+        variables: {
+          checkoutId: checkoutId
+        }
+      })
+
+    console.log("SHIPPING DETAISLS DATA 2",shippingDetailsData?.node?.shippingAddress)
+
+    if(checkoutLineItems.length > 0 && checkoutId){
+      addCheckoutLines({
+        variables: {
+          checkoutId,
+          lineItems: checkoutLineItems
+        },
+        onCompleted: () => {
+          const isShippingAddress = shippingDetailsData?.node?.shippingAddress !== null
+          console.log("THIS ADDRESS INSIDE CHECKOUT MUTAION: ", isShippingAddress)
+          
+          if(checkoutId){
+            if(isShippingAddress){
+              navigation.navigate("CheckoutReviewScreen");
+            }else {
+              navigation.navigate("ShippingAddressUpdateScreen")
+            }
+          }else{
+            Alert.alert("Please try again")
+          }
+        }
+      })
+
+    }
+
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
+
+  useEffect(() => {
+    if(!checkoutId){
+      createCheckout({
+        variables: {
+          input: {}
+        }
+      })
+    }
+  }, [checkoutId])
+
+  useEffect(() => {
+    if(checkoutData) {
+      checkoutIdVar(checkoutData?.checkoutCreate?.checkout?.id)
+    }
+  },[checkoutData])
 
   useEffect(() => {
     if (!cartId) {
@@ -336,9 +425,7 @@ export default function CartScreen() {
               </Text>
             </View>
             <TouchableOpacity
-              // onPress={() =>
-              //   handleFinalCheckout(cartDetailsData?.node?.shippingAddress)
-              // }
+              onPress={handleCheckout}
               className="items-center justify-center bg-blue-400 py-4 rounded-[5px] mt-2"
             >
               <Text className="text-[15px] font-medium uppercase text-white">

@@ -11,6 +11,7 @@ import { createContext, useState } from "react";
 import SideBar from "./components/Sidebar/SideBar";
 
 export const cartIdVar = makeVar("");
+export const checkoutIdVar = makeVar("");
 export const bottomModaVar = makeVar(false);
 export const selctedProductForBottomModalVar = makeVar(null);
 
