@@ -260,3 +260,16 @@ export const SET_SHIPPING_METHOD = gql`
     }
   }
 `;
+
+export const CREATE_CUSTOMER_TOKEN = gql`
+  mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
+    customerAccessTokenCreate(input: $input) {
+      customerAccessToken {
+        accessToken
+      }
+      customerUserErrors {
+        message
+      }
+    }
+  }
+`;

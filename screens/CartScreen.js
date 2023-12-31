@@ -28,9 +28,10 @@ import {
 } from "@apollo/client";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CartCard from "../components/CartCard";
-import { cartIdVar, checkoutIdVar } from "../App";
+import { accessTokenVar, cartIdVar, checkoutIdVar } from "../App";
 import { GET_BUYER_DETAILS, GET_CART_DETAILS, GET_CART_DETAILS_V2 } from "../graphql/queries";
 import {
   ADD_CHECKOUT_EMAIL,
@@ -50,10 +51,9 @@ import CoupenToggleContainer from "../components/CoupenToggleContainer";
 
 export default function CartScreen() {
   const navigation = useNavigation();
-
+  const accessToken = useReactiveVar(accessTokenVar)
   const cartId = useReactiveVar(cartIdVar);
   const checkoutId = useReactiveVar(checkoutIdVar)
-  console.log("CHECKOUT ID", checkoutId)
 
   const [
     createEmptyCart,
@@ -266,7 +266,7 @@ export default function CartScreen() {
         variables: {
           input: {}
         }
-      })
+      }) 
     }
   }, [checkoutId])
 
@@ -329,8 +329,6 @@ export default function CartScreen() {
 
   // const cartItemsId = [...cartItems].reverse();
 
-
-
   return (
     <View className="flex-1">
       {cartDetailsV2Loading && <LoadingScreen />}
@@ -370,7 +368,7 @@ export default function CartScreen() {
       )}
       {cartDetailsV2Data?.cart?.lines?.edges.length > 0 && (
         <Animated.ScrollView>
-          <View className="flex flex-row justify-between bg-white py-4 my-3">
+          {accessToken === null && (<Pressable onPress={() => navigation.navigate("AuthScreen")} className="flex flex-row justify-between bg-white py-4 my-3">
             <View className="flex flex-row gap-2 items-center">
               <UserIcon size={24} color="black" />
               <Text className="text-[14px] text-black font-medium">
@@ -378,7 +376,7 @@ export default function CartScreen() {
               </Text>
             </View>
             <ChevronRightIcon size={24} color="black" />
-          </View>
+          </Pressable>)}
           {cartProducts.map((item) => {
             return <CartCard
               key={item?.node?.id}

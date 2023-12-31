@@ -23,6 +23,7 @@ import CheckoutScreen from "../screens/CheckoutScreen";
 import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
 import CheckoutReview from "../components/CheckoutReview";
 import Collection from "../components/Collection";
+import AuthScreen from "../screens/AuthScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -148,6 +149,7 @@ export default function AppNavigation() {
             headerShown: false,
           }}
         />
+        <Stack.Screen name="AuthScreen" component={AuthScreen} />
         <Stack.Screen name="FavouriteScreen" component={FavouriteScreen} />
         <Stack.Screen
           name="NotificationScreen"
