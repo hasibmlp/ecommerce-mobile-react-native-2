@@ -273,3 +273,37 @@ export const CREATE_CUSTOMER_TOKEN = gql`
     }
   }
 `;
+
+export const UPDATE_CART_DISCOUT_CODE = gql`
+  mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]) {
+    cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+      cart {
+        id
+        discountCodes{
+          code
+          applicable
+        }
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+export const UPDATE_CART_NOTE = gql`
+  mutation cartNoteUpdate($cartId: ID!, $note:String!) {
+    cartNoteUpdate(cartId: $cartId, note:$note) {
+      cart {
+        id
+        note
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+

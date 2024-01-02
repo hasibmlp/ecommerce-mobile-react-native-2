@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   Pressable,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { MinusIcon, PlusIcon } from "react-native-heroicons/outline";
+import { MinusIcon, PlusIcon, XMarkIcon } from "react-native-heroicons/outline";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -15,15 +16,74 @@ import Animated, {
 } from "react-native-reanimated";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { useMutation, useReactiveVar } from "@apollo/client";
+import { UPDATE_CART_DISCOUT_CODE } from "../graphql/mutations";
+import { cartIdVar } from "../App";
+import { GET_CART_DETAILS_V2 } from "../graphql/queries";
+import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 
 const coupenCodeValidationSchema = yup.object({
   coupenCode: yup.string().required("Please enter a promo code"),
 });
 
-export default function CoupenToggleContainer() {
+export default function CoupenToggleContainer({discountCodes}) {
+  const cartId = useReactiveVar(cartIdVar);
   const [open, setOpen] = useState(false);
+
+  
+  const [updateCartDiscountCode, { data, loading, error }] = useMutation(UPDATE_CART_DISCOUT_CODE)
+  
+  console.log("DISCOUNT CODES DATA : ",data?.cartDiscountCodesUpdate?.cart?.discountCodes)
+
+
+  const handleSubmit = (values) => {
+    console.log(values.coupenCode)
+    if(values.coupenCode) {
+      updateCartDiscountCode({
+        variables: {
+          cartId,
+          discountCodes: [values.coupenCode]
+        },
+        refetchQueries: [
+          {
+            query: GET_CART_DETAILS_V2,
+            variables: {
+              cartId,
+            },
+          },
+        ],
+      })
+    }
+
+  }
+
+  const handleRemove = () => {
+    updateCartDiscountCode({
+      variables: {
+        cartId,
+        discountCodes: ['']
+      },
+      refetchQueries: [
+        {
+          query: GET_CART_DETAILS_V2,
+          variables: {
+            cartId,
+          },
+        },
+      ],
+    })
+  }
+
+  useEffect(() => {
+    if(data?.cartDiscountCodesUpdate?.cart?.discountCodes[0]?.applicable === false && data?.cartDiscountCodesUpdate?.cart?.discountCodes[0]?.code.length > 0 )
+      Alert.alert("Please enter a valed code")
+  }, [data])
+
+  console.log("DISCOUT CODE MUTAION: ", data)
+
   return (
     <Animated.View className="bg-white mt-3">
+      {loading && (<LoadingFullScreen />)}
       <Pressable
         onPress={() => {
           setOpen(!open);
@@ -41,7 +101,7 @@ export default function CoupenToggleContainer() {
       {open && (
         <Formik
           initialValues={{ coupenCode: "" }}
-          onSubmit={(values) => console.log(values)}
+          onSubmit={handleSubmit}
           validationSchema={coupenCodeValidationSchema}
         >
           {({
@@ -81,6 +141,14 @@ export default function CoupenToggleContainer() {
           )}
         </Formik>
       )}
+      {discountCodes[0]?.applicable && (<View className="flex-row px-4 pb-4">
+        {discountCodes.map(item => (
+          <Pressable onPress={handleRemove} className="border border-neutral-500 px-2 py-2 rounded-md flex-row items-center">
+            <Text>{item.code}</Text>
+            <XMarkIcon size={24} color="black" />
+          </Pressable>
+        ))}
+      </View>)}
     </Animated.View>
   );
 }

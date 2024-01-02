@@ -607,7 +607,6 @@ export const GET_CHECKOUT_DETAILS = gql`
         }
         email
         shippingAddress {
-          id
           firstName
           lastName
           phone
@@ -674,7 +673,6 @@ export const GET_BUYER_DETAILS = gql`
         id
         email
         shippingAddress {
-          id
           firstName
           lastName
           address1

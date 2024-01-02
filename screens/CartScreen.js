@@ -48,12 +48,14 @@ import LoadingScreen from "../components/LoadingScreen";
 import Animated, { Layout } from "react-native-reanimated";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
+import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 export default function CartScreen() {
   const navigation = useNavigation();
   const accessToken = useReactiveVar(accessTokenVar)
   const cartId = useReactiveVar(cartIdVar);
   const checkoutId = useReactiveVar(checkoutIdVar)
+
 
   const [
     createEmptyCart,
@@ -114,7 +116,7 @@ export default function CartScreen() {
       networkStatus: networkStatusV2,
       refetch: refetchV2,
     },
-  ] = useLazyQuery(GET_CART_DETAILS_V2, {
+  ] = useLazyQuery(GET_CART_DETAILS_V2, { 
     notifyOnNetworkStatusChange: true,
   });
 
@@ -311,7 +313,9 @@ export default function CartScreen() {
     }
   }, [cartId]);
 
-  if (emptyCartV2Loading) return <LoadingScreen />;
+
+
+  if (emptyCartV2Loading) return <LoadingFullScreen />;
   if (cartDetailsV2Error)
     return (
       <View className="flex-1 justify-center items-center">
@@ -331,9 +335,9 @@ export default function CartScreen() {
 
   return (
     <View className="flex-1">
-      {cartDetailsV2Loading && <LoadingScreen />}
-      {removeItemLoading && <LoadingScreen />}
-      {updateLineItemLoading && <LoadingScreen />}
+      {cartDetailsV2Loading && <LoadingFullScreen />}
+      {removeItemLoading && <LoadingFullScreen />}
+      {updateLineItemLoading && <LoadingFullScreen />}
       <SafeAreaView className="bg-white">
         <View className="w-full relative flex-row justify-center items-center h-[35px]">
           <Text className="text-[16px] text-black font-normal">
@@ -387,7 +391,7 @@ export default function CartScreen() {
           })}
 
           <GiftToggleContainer />
-          <CoupenToggleContainer />
+          <CoupenToggleContainer discountCodes={cartDetailsV2Data?.cart?.discountCodes}/>
 
           <View className="px-3 bg-white py-3 mt-3">
             <View className="flex-row justify-between items-center py-2">
