@@ -59,7 +59,6 @@ const CustomSelection = ({
         onClose()
     }
 
-    console.log(totalCustom)
 
     if(context === 'text-only') 
     return (
@@ -81,7 +80,6 @@ const CustomSelection = ({
                     }}
                     validationSchema={validationSchemaTextOnly}
                     onSubmit={(values) => {
-                        console.log("VALUES ARE SUBMITED: ", values)
                     if(values){
                         setTotalCustom(prevState => {
                         return {type: 'text-only', active: true,  selections: [{...values}]}
@@ -209,7 +207,6 @@ const CustomSelection = ({
                     }}
                     validationSchema={validationSchemaGraphicsOnly}
                     onSubmit={(values) => {
-                        console.log("VALUES ARE SUBMITED: ", values)
                     if(values){
                         setTotalCustom(prevState => {
                         return {type: 'graphics-only', active: true,  selections: [{...values}]}
@@ -284,7 +281,6 @@ const CustomSelection = ({
                     }}
                     validationSchema={validationSchemaTextWithGraphics}
                     onSubmit={(values) => {
-                        console.log("VALUES ARE SUBMITED: ", values)
                     if(values){
                         setTotalCustom(prevState => {
                         return {type: 'text-with-graphics', active: true, selections: [{...values}]}

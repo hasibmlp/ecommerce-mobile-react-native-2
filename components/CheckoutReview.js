@@ -42,6 +42,8 @@ export default function CheckoutReview({route}) {
     },
   });
 
+  console.log("CHECKOUT REVIEW DATA: ",detailData.node.shippingAddress)
+
   const {
     loading: shippingLineRatesLoading,
     error: shippingLineRatesError,
@@ -113,6 +115,9 @@ export default function CheckoutReview({route}) {
         <Text className="text-[14px] text-black font-normal uppercase">
           delevery address
         </Text>
+      </View>
+      <View className="w-full h-40 border border-black">
+
       </View>
       <View className="px-4 py-3 bg-white flex-row justify-between">
         <View>

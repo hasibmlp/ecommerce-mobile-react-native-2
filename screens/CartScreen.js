@@ -26,26 +26,24 @@ import {
   useQuery,
   useReactiveVar,
 } from "@apollo/client";
-import * as Linking from "expo-linking";
-import * as WebBrowser from "expo-web-browser";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CartCard from "../components/CartCard";
 import { accessTokenVar, cartIdVar, checkoutIdVar } from "../App";
-import { GET_BUYER_DETAILS, GET_CART_DETAILS, GET_CART_DETAILS_V2 } from "../graphql/queries";
+import { GET_BUYER_DETAILS, GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import {
-  ADD_CHECKOUT_EMAIL,
+
   ADD_CHECKOUT_LINES,
-  ADD_CHECKOUT_SHIPPING_ADDRESS,
+  CHECKOUT_CUSTOMER_ASSOCIATE,
   CREATE_CART_V2,
   CREATE_CHECKOUT,
   CREATE_EMPTY_CART,
   REMOVE_CART_ITEM,
   REMOVE_CART_ITEM_V2,
+  REPLACE_CHECKOUT_LINES,
   UPDATE_CART_ITEM,
 } from "../graphql/mutations";
-import LoadingScreen from "../components/LoadingScreen";
-import Animated, { Layout } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
@@ -55,6 +53,28 @@ export default function CartScreen() {
   const accessToken = useReactiveVar(accessTokenVar)
   const cartId = useReactiveVar(cartIdVar);
   const checkoutId = useReactiveVar(checkoutIdVar)
+  const [ user, setUser ] = useState(null)
+  const [ userToken, setUserToken ] = useState(null)
+
+  const getAcessToken = async () => {
+    const token = await AsyncStorage.getItem("my-key")
+    if(token !== null) {
+      setUserToken(token)
+    }else{
+      setUserToken(null)
+    }
+  } 
+
+  const { 
+    data: customerData,
+    loading: customerLoading,
+    error: customerError
+   } = useQuery(GET_CUSTOMER, {
+    variables: {
+      customerAccessToken: userToken,
+    }
+   })
+
 
 
   const [
@@ -108,6 +128,24 @@ export default function CartScreen() {
   ] = useMutation(ADD_CHECKOUT_LINES);
 
   const [
+    replaceCheckoutLines,
+    {
+      loading: replaCecheckoutLinesLoading,
+      error: replaceCheckoutLinesError,
+      data: replaceCheckoutLinesData,
+    },
+  ] = useMutation(REPLACE_CHECKOUT_LINES);
+ 
+  const [
+    checkoutCustomerAssociate,
+    {
+      loading: checkoutCustomerAssociateLoading,
+      error: checkoutCustomerAssociateError,
+      data: checkoutCustomerAssociateData,
+    },
+  ] = useMutation(CHECKOUT_CUSTOMER_ASSOCIATE);
+
+  const [
     getCartV2Details,
     {
       loading: cartDetailsV2Loading,
@@ -136,10 +174,7 @@ export default function CartScreen() {
     }
   })
 
-  console.log('NEWLY CREATED CHCKOUT UPDATED: ', checkoutData)
-  console.log('NEWLY CREATED CHEKCOUT LOADING: ', checkoutLoading)
-  console.log('NEWLY CREATED CART ERROR: ', checkoutError?.message)
-  // console.log("LINE ITEMS TO ADD IN CHECKOUT: ", checkoutLineItems)
+  console.log(checkoutCustomerAssociateData)
 
   const [
     removeCartItem,
@@ -228,7 +263,6 @@ export default function CartScreen() {
         }
       })
 
-    console.log("SHIPPING DETAISLS DATA 2",shippingDetailsData?.node?.shippingAddress)
 
     if(checkoutLineItems.length > 0 && checkoutId){
       addCheckoutLines({
@@ -238,7 +272,6 @@ export default function CartScreen() {
         },
         onCompleted: () => {
           const isShippingAddress = shippingDetailsData?.node?.shippingAddress !== null
-          console.log("THIS ADDRESS INSIDE CHECKOUT MUTAION: ", isShippingAddress)
           
           if(checkoutId){
             if(isShippingAddress){
@@ -256,11 +289,60 @@ export default function CartScreen() {
 
   }
 
+  const handleCheckoutV2 = () => {
+    console.log("TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 1")
+    if(!checkoutId) {
+      createCheckout({
+        variables: {
+          input: {
+            lineItems: checkoutLineItems
+          }
+        }
+      })
+    }else {
+      replaceCheckoutLines({
+        variables: {
+          checkoutId,
+          lineItems: checkoutLineItems
+        }
+      })
+    }
+
+    console.log(checkoutId)
+    console.log(userToken)
+
+
+    checkoutCustomerAssociate({
+      variables: {
+        checkoutId,
+        customerAccessToken: userToken
+      }
+    })
+
+
+    // if(user && user.addresses.edges.length > 0){
+    //   console.log("USER USER USER USER",user)
+    //   navigation.navigate("CheckoutReviewScreen")
+    // }else if(user && user.addresses.edges.length === 0) {
+    //   console.log("USER DETECTED , SHIPPING ADDRESS NEED TO BE UPDATED!!!!!")
+    //   navigation.navigate("ShippingAddressUpdateScreen", {context: 'userShippingAddressUpdate'})
+    // }else {
+    //   navigation.navigate("ShippingAddressUpdateScreen", {context: 'checkoutUserUpdate'})
+    // }
+
+    navigation.navigate("CheckoutReviewScreen")
+
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, []);
+
+  useEffect(() => {
+    getAcessToken()
+  })
 
   useEffect(() => {
     if(!checkoutId){
@@ -271,6 +353,12 @@ export default function CartScreen() {
       }) 
     }
   }, [checkoutId])
+
+  useEffect(() => {
+    if(customerData?.customer?.id) {
+      setUser(customerData.customer)
+    }
+  },[customerData])
 
   useEffect(() => {
     if(checkoutData) {
@@ -323,13 +411,9 @@ export default function CartScreen() {
       </View>
     );
 
-    console.log("CARD ID: ",cartId)
 
   const cartProducts = cartDetailsV2Data?.cart?.lines?.edges || []
 
-  console.log("aaaaaaaaaaaaaaa", cartDetailsV2Data?.cart?.shippingDiscountAllocations)
-  // console.log("bbbbbbbbbbbbbbbb", cartProducts[0]?.node?.variant.product.vendor)
-  console.log("bbbbbbbbbbbbbbbb", cartProducts[0]?.node?.discountAllocations[0])
 
   // const cartItemsId = [...cartItems].reverse();
 
@@ -427,7 +511,7 @@ export default function CartScreen() {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={handleCheckout}
+              onPress={handleCheckoutV2}
               className="items-center justify-center bg-blue-400 py-4 rounded-[5px] mt-2"
             >
               <Text className="text-[15px] font-medium uppercase text-white">

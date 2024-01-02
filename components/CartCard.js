@@ -19,8 +19,6 @@ export default function CartCard({ lineItem, onRemove, handleLineItemUpdate }) {
 
   const discountTitle = lineItem?.discountAllocations[0]?.title || lineItem?.discountAllocations[0]?.code
 
-  console.log("TOTAL DISCOUNT DISPLAY: ",lineItem.discountAllocations[0])
-
 
   return (
     <View className="bg-white flex flex-row py-4 px-2 items-center mt-0">

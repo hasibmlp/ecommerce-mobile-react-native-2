@@ -24,11 +24,9 @@ export default function App() {
   const getAcessToken = async () => {
     const token = await AsyncStorage.getItem("my-key")
     if(token !== null) accessTokenVar(token)
-    console.log(token)
   } 
 
   useEffect(() => {
-    console.log("THIS IS APP USEEFFECT")
     getAcessToken()
   })
 

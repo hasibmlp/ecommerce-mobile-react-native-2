@@ -105,8 +105,6 @@ function CollectionData ({route, openSideBar}) {
     },
   });
 
-  console.log(colloctionLoading)
-  console.log("NETWORK STATUS: ", networkStatus)
 
   const [getAllProductId, {
     loading: allProductsLoading,

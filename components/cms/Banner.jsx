@@ -2,7 +2,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { View, Image, Text } from "react-native";
 
 export default function Banner({content}) {
-  console.log(content.data)
   return (
     <View style={[{height: content.data.height || 250}]} className=" justify-end bg-white mb-3 h-[150px] overflow-hidden">
       <Image

@@ -74,7 +74,6 @@ export default function GiftToggleContainer() {
   }
 
 
-  console.log("CART NOTE UPDATE: ",data?.cartNoteUpdate?.cart?.note.length > 0)
 
 
 

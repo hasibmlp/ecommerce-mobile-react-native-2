@@ -10,7 +10,6 @@ export default function CategorySubMenuCard({ subContent, subLists }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  console.log(subContent.collectionId)
 
   const handleSubmenuPress = () => {
     setActiveIndex(subContent.id === activeIndex ? null : subContent.id);

@@ -36,7 +36,6 @@ const AuthScreen = () => {
             try {
               if (token !== null) await AsyncStorage.setItem("my-key", token);
             } catch (e) {
-              console.log("error occurred!");
             }
           }
         };
@@ -45,7 +44,6 @@ const AuthScreen = () => {
       }, [data?.customerAccessTokenCreate?.customerAccessToken]);
     
       const handleSubmit = async (values) => {
-        console.log("VALUES SUBMITTED FORM LOG IN SCREEN", values);
         try {
           await createUserToken({
             variables: {

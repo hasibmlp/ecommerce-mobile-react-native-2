@@ -66,7 +66,6 @@ export default function VariantSelectionModalContent({handleClose, context}) {
     function CustomizationContainer({customProductId, setCustomProductId}) {
       const [isModalVisible, setModalVisible] = useState(false)
       const [totalCustom, setTotalCustom] = useState({type: '', active: false, selections: []})
-      console.log("TOTAL CUSTOM ARRAY: ", customProductId)
       return(
         <View className="pb-4 pt-2">
           <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">

@@ -17,7 +17,6 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
   const [activeOptions, setActiveOptions] = useState([])
   const [ customProductId, setCustomProductId ] = useState('')
 
-  console.log("CUSTOM PRODUCT ID: ", customProductId)
 
   const navigation = useNavigation()
   const cartId = useReactiveVar(cartIdVar);

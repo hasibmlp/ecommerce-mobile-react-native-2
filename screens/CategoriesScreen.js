@@ -294,8 +294,6 @@ export default function CategoriesScreen() {
       },1)
   },[activeSubMenuIndex])
 
-  console.log(activeSubMenuIndex)
-
   if(loading) return (<LoadingScreen/>)
 
   return (

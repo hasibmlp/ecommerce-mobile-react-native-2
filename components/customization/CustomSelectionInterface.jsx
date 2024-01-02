@@ -202,7 +202,6 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose, customP
 
     if(!fontsLoaded) return null
 
-    console.log(totalCustom)
 
     return (
         <View className="flex-1">

@@ -25,7 +25,6 @@ const GraphicSelection = ({logoCollection, handleChange, value}) => {
   
         const url = "https://api.cloudinary.com/v1_1/dujrllgbs/image/upload"
   
-        console.log(result.canceled)
   
         if(!result.canceled) {
           setLoading(true)

@@ -33,11 +33,9 @@ export default function CoupenToggleContainer({discountCodes}) {
   
   const [updateCartDiscountCode, { data, loading, error }] = useMutation(UPDATE_CART_DISCOUT_CODE)
   
-  console.log("DISCOUNT CODES DATA : ",data?.cartDiscountCodesUpdate?.cart?.discountCodes)
 
 
   const handleSubmit = (values) => {
-    console.log(values.coupenCode)
     if(values.coupenCode) {
       updateCartDiscountCode({
         variables: {
@@ -79,7 +77,6 @@ export default function CoupenToggleContainer({discountCodes}) {
       Alert.alert("Please enter a valed code")
   }, [data])
 
-  console.log("DISCOUT CODE MUTAION: ", data)
 
   return (
     <Animated.View className="bg-white mt-3">

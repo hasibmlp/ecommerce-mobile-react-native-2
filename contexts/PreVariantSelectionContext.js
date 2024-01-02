@@ -80,7 +80,6 @@ function PreVariantSelectionProvider({children, productId, handleClose}) {
       isVariantAviable = true
       const option = [{name: 'Color', value: activeColor?.value}, {name: 'Size', value: activeSize}, {name: 'TYPE', value: activeType}]
       const variant = getVariantForOptions(variants, option)
-      console.log(variant)
       if(variant && variant?.quantityAvailable > 0) isVariantAviable = true
       else isVariantAviable = false
   
@@ -91,10 +90,8 @@ function PreVariantSelectionProvider({children, productId, handleClose}) {
   
     const option = [{name: 'Color', value: activeColor.value}, {name: 'Size', value: activeSize}]
     const variant = getVariantForOptions(variants, option)
-    console.log(variant.id)
   
     if (cartId) {
-      console.log("CART ID IS SET");
       addCartItem({
         variables: {
           checkoutId: cartId,
@@ -114,7 +111,6 @@ function PreVariantSelectionProvider({children, productId, handleClose}) {
         },
       });
     } else {
-      console.log("NO CART ID IS SET");
       createCart({
         variables: {
           productQuantity: 1,

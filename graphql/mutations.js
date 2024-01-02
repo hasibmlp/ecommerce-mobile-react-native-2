@@ -58,6 +58,20 @@ export const ADD_CHECKOUT_LINES = gql`
   }
 `;
 
+export const REPLACE_CHECKOUT_LINES = gql`
+  mutation checkoutLineItemsReplace($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+    checkoutLineItemsReplace(checkoutId: $checkoutId, lineItems: $lineItems) {
+      checkout {
+      id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 export const CREATE_CART_V2 = gql`
   mutation createCart($lines: [CartLineInput!]!){
     cartCreate(input:{
@@ -305,5 +319,40 @@ export const UPDATE_CART_NOTE = gql`
       }
     }
   }
+`;
+
+export const CHECKOUT_CUSTOMER_ASSOCIATE = gql`
+mutation checkoutCustomerAssociateV2($checkoutId: ID!, $customerAccessToken: String!) {
+  checkoutCustomerAssociateV2(checkoutId: $checkoutId, customerAccessToken: $customerAccessToken) {
+    checkout {
+     id
+      email
+      shippingAddress{
+        id
+        address1
+        address2
+        name
+        firstName
+        lastName
+      }
+      buyerIdentity{
+        countryCode
+      }
+      lineItems(first:5){
+        edges{
+          node{
+            id
+          }
+        }
+      }
+    }
+    checkoutUserErrors {
+      message
+    }
+    customer {
+      email
+    }
+  }
+}
 `;
 

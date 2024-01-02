@@ -795,3 +795,46 @@ query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [Prod
   }
 }
 `
+export const GET_CUSTOMER = gql`
+  query getCustomer($customerAccessToken:String!){
+    customer(customerAccessToken:$customerAccessToken){
+      id
+      firstName
+      lastName
+      email
+      acceptsMarketing
+      addresses(first:5){
+        edges{
+          node{
+            id
+            name
+            firstName
+            lastName
+            address1
+            address2
+            city
+            country
+            countryCodeV2
+            phone
+            province
+            zip
+          }
+        }
+      }
+      defaultAddress{
+        id
+        name
+        firstName
+        lastName
+        address1
+        address2
+        city
+        country
+        countryCodeV2
+        phone
+        province
+        zip
+      }
+    }
+  }
+`
