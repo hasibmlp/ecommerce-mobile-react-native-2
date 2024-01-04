@@ -5,9 +5,7 @@ import {
   Image,
   Pressable,
   SafeAreaView,
-  ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -16,11 +14,8 @@ import {
   QuestionMarkCircleIcon,
   UserIcon,
   ChevronRightIcon,
-  MinusIcon,
-  PlusIcon,
 } from "react-native-heroicons/outline";
 import {
-  makeVar,
   useLazyQuery,
   useMutation,
   useQuery,
@@ -34,6 +29,8 @@ import { GET_BUYER_DETAILS, GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_CUSTOMER 
 import {
 
   ADD_CHECKOUT_LINES,
+  ADD_CHECKOUT_SHIPPING_ADDRESS,
+  CART_BUYER_IDENTITY_UPDATE,
   CHECKOUT_CUSTOMER_ASSOCIATE,
   CREATE_CART_V2,
   CREATE_CHECKOUT,
@@ -49,6 +46,7 @@ import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 export default function CartScreen() {
+  console.log("THIS IS FROM CART SCREEN")
   const navigation = useNavigation();
   const accessToken = useReactiveVar(accessTokenVar)
   const cartId = useReactiveVar(cartIdVar);
@@ -146,6 +144,16 @@ export default function CartScreen() {
   ] = useMutation(CHECKOUT_CUSTOMER_ASSOCIATE);
 
   const [
+    cartBuyerIdentityUpdate,
+    {
+      loading: cartBuyerIdentityUpdateLoading,
+      error: cartBuyerIdentityUpdateError,
+      data: cartBuyerIdentityUpdateData,
+    },
+  ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
+
+
+  const [
     getCartV2Details,
     {
       loading: cartDetailsV2Loading,
@@ -174,8 +182,6 @@ export default function CartScreen() {
     }
   })
 
-  console.log(checkoutCustomerAssociateData)
-
   const [
     removeCartItem,
     {
@@ -197,6 +203,15 @@ export default function CartScreen() {
   ] = useMutation(REMOVE_CART_ITEM_V2, {
     notifyOnNetworkStatusChange: true
   });
+
+  const [
+    checkoutShippingAddressUpdate,
+    {
+      loading: checkoutShippingAddressUpdateLoading,
+      error: checkoutShippingAddressUpdateError,
+      data: checkoutShippingAddressUpdateData,
+    },
+  ] = useMutation(ADD_CHECKOUT_SHIPPING_ADDRESS);
 
   // console.log("CARD DETAILS",cartDetailsData.node.lineItems.edges)
 
@@ -290,7 +305,18 @@ export default function CartScreen() {
   }
 
   const handleCheckoutV2 = () => {
-    console.log("TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST TEST 1")
+
+    // if(user.id) {
+    //   cartBuyerIdentityUpdate({
+    //     variables: {
+    //       buyerIdentity: {
+    //         customerAccessToken: '5675aabfe7876031bc7cc04bf618ea86',
+    //       },
+    //       cartId
+    //     }
+    //   })
+    // }
+
     if(!checkoutId) {
       createCheckout({
         variables: {
@@ -307,20 +333,37 @@ export default function CartScreen() {
         }
       })
     }
-
-    console.log(checkoutId)
-    console.log(userToken)
+    navigation.navigate("ShippingAddressUpdateScreen")
 
 
-    checkoutCustomerAssociate({
-      variables: {
-        checkoutId,
-        customerAccessToken: userToken
-      }
-    })
-
+    // checkoutCustomerAssociate({
+    //   variables: {
+    //     checkoutId,
+    //     customerAccessToken: '22fd41b8bf1c2179c0063f33bc45f465'
+    //   }
+    // })
 
     // if(user && user.addresses.edges.length > 0){
+
+    //   // checkoutShippingAddressUpdate({
+    //   //   variables: {
+    //   //     checkoutId,
+    //   //     shippingAddress: {
+    //   //       address1: "Delma Street",
+    //   //       address2: "flat 123",
+    //   //       city: "Abu Dhabi",
+    //   //       country: "United Arab Emirates",
+    //   //       countryCodeV2: "AE",
+    //   //       firstName: "Abdulla",
+    //   //       lastName: "Haseeb",
+    //   //       name: "Abdulla Haseeb",
+    //   //       phone: "+971503690173",
+    //   //       province: "Abu Dhabi",
+    //   //       zip: ""
+    //   //     }
+    //   //   }
+    //   // })
+    //   console.log("SHIPPING ADDRESS UPDATE IF USER AND SHIPPING ADDRESS EXISTS", checkoutShippingAddressUpdateData)
     //   console.log("USER USER USER USER",user)
     //   navigation.navigate("CheckoutReviewScreen")
     // }else if(user && user.addresses.edges.length === 0) {
@@ -330,7 +373,7 @@ export default function CartScreen() {
     //   navigation.navigate("ShippingAddressUpdateScreen", {context: 'checkoutUserUpdate'})
     // }
 
-    navigation.navigate("CheckoutReviewScreen")
+    // navigation.navigate("CheckoutReviewScreen")
 
   }
 

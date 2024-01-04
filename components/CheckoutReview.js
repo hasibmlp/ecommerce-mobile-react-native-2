@@ -28,6 +28,7 @@ import LoadingScreen from "./LoadingScreen";
 export default function CheckoutReview({route}) {
   // const checkoutId = useReactiveVar(cartIdVar);
   const checkoutId = useReactiveVar(checkoutIdVar)
+
   const navigation = useNavigation();
 
   const [shippingReady, setShippingReady] = useState(false);
@@ -41,8 +42,6 @@ export default function CheckoutReview({route}) {
       checkoutId,
     },
   });
-
-  console.log("CHECKOUT REVIEW DATA: ",detailData.node.shippingAddress)
 
   const {
     loading: shippingLineRatesLoading,
@@ -116,9 +115,6 @@ export default function CheckoutReview({route}) {
           delevery address
         </Text>
       </View>
-      <View className="w-full h-40 border border-black">
-
-      </View>
       <View className="px-4 py-3 bg-white flex-row justify-between">
         <View>
           <View className="flex-row">
@@ -159,7 +155,7 @@ export default function CheckoutReview({route}) {
         </View>
         <TouchableOpacity
           onPress={() => {
-            navigation.push("ShippingAddressUpdateScreen");
+            // navigation.push("ShippingAddressUpdateScreen", { shippingFormVisible: true });
           }}
           className=" self-start p-1"
         >
@@ -198,7 +194,7 @@ export default function CheckoutReview({route}) {
 
       <View className="bg-gray-100 py-5 px-4">
         <Text className="text-[14px] text-black font-normal uppercase">
-          payment method
+          Shipment method
         </Text>
         {shippingLineRatesLoading && <ActivityIndicator size="small" />}
       </View>

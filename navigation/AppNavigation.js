@@ -24,6 +24,7 @@ import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddress
 import CheckoutReview from "../components/CheckoutReview";
 import Collection from "../components/Collection";
 import AuthScreen from "../screens/AuthScreen";
+import UserAndAddress from "../components/cart/UserAndAddress";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,6 +62,7 @@ export function CartScreens() {
         component={CheckoutShippingAddressUpdate}
         options={{ title: "Shipping Address" }}
       />
+      <Stack.Screen name="UserAndAddressScreen" component={UserAndAddress}/>
       <Stack.Screen
         name="CheckoutReviewScreen"
         component={CheckoutReview}

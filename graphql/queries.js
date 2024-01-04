@@ -452,6 +452,8 @@ export const GET_CART_DETAILS = gql`
 export const GET_CART_DETAILS_V2 = gql`
   query getCartDetails($cartId:ID!) {
     cart(id:$cartId){
+      id
+      checkoutUrl
       discountCodes{
         code
         applicable
@@ -673,6 +675,7 @@ export const GET_BUYER_DETAILS = gql`
         id
         email
         shippingAddress {
+          id
           firstName
           lastName
           address1
@@ -834,6 +837,21 @@ export const GET_CUSTOMER = gql`
         phone
         province
         zip
+      }
+    }
+  }
+`
+
+export const GET_AVAILABLE_COUNTRIES = gql`
+  query getAvailableCountry{
+    localization{
+      country{
+        name
+        isoCode
+      }
+      availableCountries{
+        isoCode
+        name
       }
     }
   }

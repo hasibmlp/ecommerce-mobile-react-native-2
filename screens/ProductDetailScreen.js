@@ -181,8 +181,6 @@ function PurchaseOption({ productId, data }) {
     }
   }
 
-  console.log(isFullModalVisible)
-
   return (
     <View>
 
@@ -550,7 +548,6 @@ const CustomizationSelection2 = ({onClose}) => {
                           }}
                           validationSchema={validationSchemaTextOnly}
                           onSubmit={(values) => {
-                              console.log("VALUES ARE SUBMITED: ", values)
                           if(values){
                               setTotalCustom(prevState => {
                               return {type: 'text-only', active: true,  selections: [{...values}]}

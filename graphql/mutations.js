@@ -356,3 +356,30 @@ mutation checkoutCustomerAssociateV2($checkoutId: ID!, $customerAccessToken: Str
 }
 `;
 
+export const CART_BUYER_IDENTITY_UPDATE = gql`
+  mutation cartBuyerIdentityUpdate($buyerIdentity: CartBuyerIdentityInput!, $cartId: ID!) {
+    cartBuyerIdentityUpdate(buyerIdentity: $buyerIdentity, cartId: $cartId) {
+      cart {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`
+
+export const CUSTOMER_ADDRESS_CREATE = gql`
+  mutation customerAddressCreate($address: MailingAddressInput!, $customerAccessToken: String!) {
+    customerAddressCreate(address: $address, customerAccessToken: $customerAccessToken) {
+      customerAddress {
+        id
+        firstName
+      }
+      customerUserErrors {
+        message
+      }
+    }
+  }
+`
