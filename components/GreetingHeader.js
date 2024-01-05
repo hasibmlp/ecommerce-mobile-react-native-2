@@ -7,10 +7,13 @@ import {
   ChevronUpIcon,
 } from "react-native-heroicons/outline";
 import { useEffect, useRef } from "react";
+import { useReactiveVar } from "@apollo/client";
+import { userVar } from "../App";
 
 export default function GreetingHeader({ state, handleToggleMenu }) {
   const currentGender = useSelector((state) => state.gender.current);
   const rotateRef = useRef(new Animated.Value(0)).current
+  const user = useReactiveVar(userVar)
 
   useEffect(() => {
     Animated.timing(rotateRef, {
@@ -33,7 +36,7 @@ export default function GreetingHeader({ state, handleToggleMenu }) {
     >
       <View className="items-start">
         <Text className="text-[20px] font-normal text-black ml-[15px] mb-2">
-          Good Morning!
+          Good Morning! {user?.firstName}
         </Text>
         <Pressable
           className="flex-row items-center"

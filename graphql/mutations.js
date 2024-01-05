@@ -367,3 +367,65 @@ export const CUSTOMER_ADDRESS_CREATE = gql`
     }
   }
 `
+
+export const CHECKOUT_DISCOUNT_CODE_APPLY = gql`
+mutation checkoutDiscountCodeApplyV2($checkoutId: ID!, $discountCode: String!) {
+  checkoutDiscountCodeApplyV2(checkoutId: $checkoutId, discountCode: $discountCode) {
+    checkout {
+      id
+    }
+    checkoutUserErrors {
+      message
+    }
+  }
+}
+`
+export const CREATE_CUSTOMER = gql`
+  mutation customerCreate($input: CustomerCreateInput!) {
+  customerCreate(input: $input) {
+    customer {
+      id
+      firstName
+      lastName
+      email
+      acceptsMarketing
+      addresses(first:50){
+        edges{
+          node{
+            id
+            name
+            firstName
+            lastName
+            address1
+            address2
+            city
+            country
+            countryCodeV2
+            phone
+            province
+            zip
+          }
+        }
+      }
+      defaultAddress{
+        id
+        name
+        firstName
+        lastName
+        address1
+        address2
+        city
+        country
+        countryCodeV2
+        phone
+        province
+        zip
+      }
+    }
+    customerUserErrors {
+      message
+    }
+  }
+}
+
+`

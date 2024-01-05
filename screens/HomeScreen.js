@@ -2,6 +2,7 @@ import { SafeAreaView, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {} from "react-native-heroicons/outline";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HomeHeader from "../components/HomeHeader";
 import GenderSelector from "../components/GenderSelector";

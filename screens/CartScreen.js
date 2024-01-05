@@ -28,25 +28,26 @@ import {
   GET_CUSTOMER,
 } from "../graphql/queries";
 import {
+  CHECKOUT_DISCOUNT_CODE_APPLY,
   CREATE_CART_V2,
   CREATE_CHECKOUT,
   REMOVE_CART_ITEM_V2,
   REPLACE_CHECKOUT_LINES,
   UPDATE_CART_ITEM,
 } from "../graphql/mutations";
-import { accessTokenVar, cartIdVar, checkoutIdVar } from "../App";
+import { cartIdVar, checkoutIdVar, userVar } from "../App";
 import CartCard from "../components/CartCard";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 export default function CartScreen() {
-  console.log("THIS IS FROM CART SCREEN")
+
   const navigation = useNavigation();
-  const accessToken = useReactiveVar(accessTokenVar)
   const cartId = useReactiveVar(cartIdVar);
   const checkoutId = useReactiveVar(checkoutIdVar)
-  console.log("CHECKOUT ID",checkoutId)
+  const user2 = useReactiveVar(userVar)
+
   const [ user, setUser ] = useState(null)
   const [ userToken, setUserToken ] = useState(null)
 
@@ -68,9 +69,11 @@ export default function CartScreen() {
       data: cartDetailsData,
       refetch
     },
-  ] = useLazyQuery(GET_CART_DETAILS_V2, { 
+  ] = useLazyQuery(GET_CART_DETAILS_V2, {
     notifyOnNetworkStatusChange: true,
   });
+
+  console.log("CART DETAILS DATA BUYER: ",cartDetailsData?.cart?.buyerIdentity)
 
   const [
     createCart,
@@ -116,6 +119,15 @@ export default function CartScreen() {
     notifyOnNetworkStatusChange: true
   });
 
+  const [
+    checkoutDiscountCodeApply,
+    {
+      loading: checkoutDiscountCodeLoading,
+      error: checkoutDiscountCodeError,
+      data: checkoutDiscountCodeData,
+    },
+  ] = useMutation(CHECKOUT_DISCOUNT_CODE_APPLY);
+
   const handleLineItemUpdate = (line) => {
     updateLineItem({
       variables: {
@@ -159,6 +171,16 @@ export default function CartScreen() {
         }
       })
     }
+
+    if(cartDetailsData?.cart?.discountCodes[0]?.applicable){
+      checkoutDiscountCodeApply({
+        variables: {
+          checkoutId,
+          discountCode: cartDetailsData?.cart?.discountCodes[0]?.code
+        }
+      })
+    }
+
     navigation.navigate("ShippingAddressUpdateScreen")
   }
 
@@ -275,7 +297,7 @@ export default function CartScreen() {
       )}
       {cartDetailsData?.cart?.lines?.edges.length > 0 && (
         <Animated.ScrollView>
-          {accessToken === null && (<Pressable onPress={() => navigation.navigate("AuthScreen")} className="flex flex-row justify-between bg-white py-4 my-3">
+          {user2 === null && (<Pressable onPress={() => navigation.navigate("AuthScreen")} className="flex flex-row justify-between bg-white py-4 my-3">
             <View className="flex flex-row gap-2 items-center">
               <UserIcon size={24} color="black" />
               <Text className="text-[14px] text-black font-medium">

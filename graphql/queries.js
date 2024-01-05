@@ -459,6 +459,9 @@ export const GET_CART_DETAILS_V2 = gql`
         code
         applicable
       }
+      buyerIdentity{
+        email
+      }
       discountAllocations{
         ... on CartAutomaticDiscountAllocation{
           discountedAmount{

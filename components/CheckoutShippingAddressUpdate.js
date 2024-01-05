@@ -162,6 +162,9 @@ export default function CheckoutShippingAddressUpdate({ route }) {
           ],
         });
       }
+
+      
+
     }else {
       Alert.alert("Please Select One Address")
     }
@@ -634,8 +637,6 @@ const UserShippingAddressList = ({user, activeAddress, setActiveAddress, setUnkn
                     delete dummy1.id
                     delete dummy2.id
                     if(index === shippingAddress.length - 1) {
-                      console.log("DUMMY 1",dummy1)
-                      console.log("DUMMY 2",dummy2)
                     }
                     return (
                     <Pressable key={index.toString()} onPress={() => handlePress(item)} className="flex-row bg-white p-5 items-center">

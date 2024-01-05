@@ -8,22 +8,20 @@ import Animated, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/buttons/Button';
 import { useReactiveVar } from '@apollo/client';
-import { accessTokenVar } from '../App';
+import { userVar } from '../App';
 import { useNavigation } from '@react-navigation/native';
 
 const TAB_WIDTH = 100
 const TABS = ['Home', 'Search', 'Profile', 'MoreOption'];
 
 export default function MoreOptionScreen() {
-  const accessToken = useReactiveVar(accessTokenVar)
   const navigation = useNavigation()
-
-  console.log("ACCESS TOKEN AVAILABLE IN LOGIN PROFILE SCREEN", accessToken)
+  const user = useReactiveVar(userVar)
 
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem('my-key')
-      accessTokenVar(null)
+      userVar(null)
     } catch(e) {
      console.log("log out failed!")
     }
@@ -33,8 +31,8 @@ export default function MoreOptionScreen() {
     <SafeAreaView className="flex-1 bg-white ">
       <View className="w-full items-center mt-40">
         <Text className="text-lg mb-3">hello</Text>
-        {accessToken && (<Button style={{backgroundColor: 'red'}} onPress={handleLogout} label="log out" flex={false} />)}
-        {accessToken === null && (<Button onPress={() => navigation.navigate("AuthScreen")} label="log in" flex={false} />)}
+        {user && (<Button style={{backgroundColor: 'red'}} colors={['#ff2800']} textColors={["#ffffff"]} onPress={handleLogout} label="log out" flex={false} />)}
+        {user === null && (<Button onPress={() => navigation.navigate("AuthScreen")} label="log in" flex={false} />)}
       </View>
     </SafeAreaView>
   );

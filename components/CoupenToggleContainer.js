@@ -33,8 +33,6 @@ export default function CoupenToggleContainer({discountCodes}) {
   
   const [updateCartDiscountCode, { data, loading, error }] = useMutation(UPDATE_CART_DISCOUT_CODE)
   
-
-
   const handleSubmit = (values) => {
     if(values.coupenCode) {
       updateCartDiscountCode({
@@ -139,8 +137,8 @@ export default function CoupenToggleContainer({discountCodes}) {
         </Formik>
       )}
       {discountCodes[0]?.applicable && (<View className="flex-row px-4 pb-4">
-        {discountCodes.map(item => (
-          <Pressable onPress={handleRemove} className="border border-neutral-500 px-2 py-2 rounded-md flex-row items-center">
+        {discountCodes.map((item, index) => (
+          <Pressable key={index.toString()} onPress={handleRemove} className="border border-neutral-500 px-2 py-2 rounded-md flex-row items-center">
             <Text>{item.code}</Text>
             <XMarkIcon size={24} color="black" />
           </Pressable>

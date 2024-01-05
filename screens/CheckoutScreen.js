@@ -40,10 +40,9 @@ export default function CheckoutScreen({ route }) {
         const url = navState.url
         const params = parseUrlParams(url)
         const stepValue = params.step
-        console.log("SKBVAOIDFAJFOWEJOSFJ",stepValue)
-        console.log(navState)
+
         if(stepValue === 'contact_information'){
-          console.log("CONTANCT INFORMATION HIT")
+
           navigation.navigate("ShippingAddressUpdateScreen", {shippingFormVisible : true})
         }else if (stepValue === 'shipping_method') {
           // navigation.navigate("CheckoutReviewScreen")

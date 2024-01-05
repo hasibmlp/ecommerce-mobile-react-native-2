@@ -24,17 +24,18 @@ export default function Button({
   const buttonColor = 
   type === 'secondary'
   ? {
-      container: {borderWidth: '1px', borderColor: active ? colors[0] : colors[1]},
-      text: {color: active ? textColors[0] : textColors[1]},
+      container: active ? colors[0] : colors[1],
+      text: active ? textColors[0] : textColors[1],
     }
   : type === 'action'
   ? {
       container: {},
-      text: {color: active ? textColors[0] : textColors[1]},
+      text: active ? textColors[0] : textColors[1],
     }
   : {
-      container: {backgroudColor: active ? colors[0] : colors[1]},
-      text: {color: active ? textColors[0] : textColors[1]},
+      // container: {backgroudColor: active ? colors[0] : colors[1]},
+      container: active ? colors[0] : colors[1] ,
+      text: active ? textColors[0] : textColors[1],
     };
 
   const buttonStyle =
@@ -55,9 +56,10 @@ export default function Button({
 
   const containerClasses = `${flex ? 'self-stretch' : 'self-center'} ${buttonStyle.container} items-center`;
 
+
   return (
-    <TouchableOpacity disabled={!active} onPress={onPress} style={[style, colors.length > 0 &&  buttonColor.container]} className={containerClasses}>
-      <Text style={[textStyle, textColors.length > 0 && buttonColor.text]} className={`${buttonStyle.text} font-medium uppercase`}>
+    <TouchableOpacity disabled={!active} onPress={onPress} style={[style,{backgroundColor: colors.length === 0 ? type === 'action' ? '' : '#3BF4FB' : buttonColor.container }]} className={containerClasses}>
+      <Text style={[textStyle, { color: textColors.length > 0 && buttonColor.text }]} className={`${buttonStyle.text} font-medium uppercase`}>
         {label}
       </Text>
     </TouchableOpacity>
