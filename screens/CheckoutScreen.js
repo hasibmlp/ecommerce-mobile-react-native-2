@@ -19,11 +19,11 @@ export default function CheckoutScreen({ route }) {
   }, []);
 
   const parseUrlParams = (url) => {
-    const queryString = url.split('?')[1];
-    const paramsArray = queryString.split('&');
+    const queryString = url?.split('?')[1];
+    const paramsArray = queryString?.split('&');
     const params = {};
 
-    paramsArray.forEach((param) => {
+    paramsArray?.forEach((param) => {
       const [key, value] = param.split('=');
       params[key] = value;
     });

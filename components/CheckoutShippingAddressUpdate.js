@@ -12,8 +12,8 @@ import {
 import { ChevronDownIcon, XMarkIcon } from "react-native-heroicons/outline";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
+import { useLazyQuery, useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -34,6 +34,7 @@ import Button from "./buttons/Button";
 import RadioButton from "./RadioButton";
 import MyModal from "./Modal/MyModal";
 import BottomModal from "./Modal/BottomModal";
+import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 
 // const phoneRegExp =
 //   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -63,42 +64,15 @@ const shippingAddressFromSchema = yup.object({
     .matches(phoneRegExp, "Enter valid phone number"),
 });
 
-const shippingAddressFromSchema2 = yup.object({
-  address1: yup
-    .string()
-    .required("address is required")
-    .min(3, "requires atleast 3 character"),
-  address2: yup.string().required().min(3, "requires atleast 3 character"),
-  city: yup.string().required("city is required"),
-  province: yup.string().required("state is required"),
-  country: yup.string().required(),
-  firstName: yup
-    .string()
-    .required("first is required")
-    .min(3, "requires atleast 3 character"),
-  lastName: yup
-    .string()
-    .required("last name is required")
-    .min(3, "requires atleast 3 character"),
-  phone: yup
-    .string()
-    .required()
-    .matches(phoneRegExp, "Enter valid phone number"),
-});
-
 export default function CheckoutShippingAddressUpdate({ route }) {
   const shippingFormVisible = route.params?.shippingFormVisible
   const [ userToken, setUserToken ] = useState(null)
-  const [ isFormModalVisible, setFormModalVisible ] = useState(false)
-console.log("STATE PASSED VISIBLITY",isFormModalVisible)
+  const [ isFormModalVisible, setFormModalVisible ] = useState({formModal: true})
   const [ user, setUser ] = useState(null)
   const [ isUnknown, setUnknown ] = useState(false)
   const [shippingAddress, setShippingAddress] = useState({});
   const checkoutId = useReactiveVar(checkoutIdVar)
   const [ activeAddress, setActiveAddress ] = useState('')
-
-
-
   
   const isLoggedIn = user ? true : false
  
@@ -106,52 +80,34 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
 
   const navigation = useNavigation();
 
-
-  const getAcessToken = async () => {
-    const token = await AsyncStorage.getItem("my-key")
-    if(token !== null) {
-      setUserToken(token)
-    }else{
-      setUserToken(null)
-    }
-  }
-
-  // const checkoutId = useReactiveVar(cartIdVar);
-
   const {
-    loading: buyerLoading,
-    error: buyerError,
-    data: buyerData,
+    loading: shippingAddressScreenLoading,
+    error: shippingAddressScreenError,
+    data: shippingAddressScreenData,
   } = useQuery(GET_BUYER_DETAILS, {
     variables: {
       checkoutId,
     },
   });
 
-
-
-  const { 
+  const [
+    getCustomer,
+    { 
     data: customerData,
     loading: customerLoading,
     error: customerError
-   } = useQuery(GET_CUSTOMER, {
+   }] = useLazyQuery(GET_CUSTOMER, {
     variables: {
       customerAccessToken: userToken,
     }
    })
-
-  const { 
-    data: availableCountriesData,
-    loading: availableCountriesLoading,
-    error: availableCountriesError
-   } = useQuery(GET_AVAILABLE_COUNTRIES)
 
   const [
     updateCheckoutEmail,
     { loading: emailLoading, error: emailError, data: emailData },
   ] = useMutation(ADD_CHECKOUT_EMAIL);
 
-  console.log("UPDATED EMAIL DATA: ", emailData)
+
 
   const [
     updateShippingAddress,
@@ -166,45 +122,49 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
   
 
   
-  const handleEmailShippingUpdate = () => {
-    const shippingValues = {
-      address1: activeAddress?.address1 || '',
-      address2: activeAddress?.address2 || '',
-      city: activeAddress?.city || '',
-      company: activeAddress?.company || '',
-      country: activeAddress?.country || '',
-      firstName: activeAddress?.firstName || '',
-      lastName: activeAddress?.lastName || '',
-      phone: activeAddress?.phone || '',
-      province: activeAddress?.province || '',
-      zip: activeAddress?.zip || ''
-    };
+  const handlePreSelectionUpdate = () => {
+    if(activeAddress) {
+      const shippingValues = {
+        address1: activeAddress?.address1 ,
+        address2: activeAddress?.address2 ,
+        city: activeAddress?.city ,
+        company: activeAddress?.company ,
+        country: activeAddress?.country ,
+        firstName: activeAddress?.firstName ,
+        lastName: activeAddress?.lastName ,
+        phone: activeAddress?.phone ,
+        province: activeAddress?.province ,
+        zip: activeAddress?.zip ,
+      };
+  
+      updateCheckoutEmail({
+        variables: {
+          checkoutId,
+          email: user?.email,
+        },
+        refetchQueries: [
+          GET_CHECKOUT_DETAILS,
+          GET_BUYER_DETAILS,
+          GET_AVAILABLE_SHIPPING_RATES,
+        ],
+      });
 
-            updateCheckoutEmail({
-              variables: {
-                checkoutId,
-                email: user?.email,
-              },
-              refetchQueries: [
-                GET_CHECKOUT_DETAILS,
-                GET_BUYER_DETAILS,
-                GET_AVAILABLE_SHIPPING_RATES,
-              ],
-            });
-
-            if (!emailLoading) {
-              updateShippingAddress({
-                variables: {
-                  checkoutId,
-                  shippingAddress: shippingValues,
-                },
-                refetchQueries: [
-                  GET_CHECKOUT_DETAILS,
-                  GET_BUYER_DETAILS,
-                  GET_AVAILABLE_SHIPPING_RATES,
-                ],
-              });
-            }
+      if (!emailLoading) {
+        updateShippingAddress({
+          variables: {
+            checkoutId,
+            shippingAddress: shippingValues,
+          },
+          refetchQueries: [
+            GET_CHECKOUT_DETAILS,
+            GET_BUYER_DETAILS,
+            GET_AVAILABLE_SHIPPING_RATES,
+          ],
+        });
+      }
+    }else {
+      Alert.alert("Please Select One Address")
+    }
   }
 
   const handleLogout = async () => {
@@ -216,23 +176,48 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
     }
   }
 
+
+
   useFocusEffect(
     useCallback(() => {
-      // Ensure the form is visible when shippingFormVisible is true
-      setFormModalVisible(Boolean(route.params?.shippingFormVisible));
+      const getAcessToken = async () => {
+        const token = await AsyncStorage.getItem("my-key")
+        if(token !== null) {
+          setUserToken(token)
+        }else{
+          setUserToken(null)
+        }
+      }
+      getAcessToken()
+    },[userToken])
+  )
 
-    }, [route.params?.shippingFormVisible])
-  );
+  useEffect(() => {
+    if(userToken !== null){
+      getCustomer()
+    }
+  },[userToken])
+
+  useEffect(() => {
+    if(shippingAddressScreenData) {
+      setTimeout(() => {
+        if(shippingFormVisible) {
+          setFormModalVisible(true)
+        }
+      },250)
+      
+    }
+  },[shippingFormVisible, shippingAddressScreenData])
 
   // useEffect(() => {
   //   isLoggedIn ? setUnknown(false) : setUnknown(true)
   // },[isLoggedIn])
 
   useEffect(() => {
-    if(buyerData) {
-      setActiveAddress(buyerData?.node?.shippingAddress)
+    if(shippingAddressScreenData) {
+      setActiveAddress(shippingAddressScreenData?.node?.shippingAddress)
     }
-  }, [buyerData])
+  }, [shippingAddressScreenData])
 
   useEffect(() => {
     if(customerData?.customer?.id) {
@@ -258,15 +243,11 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
             .message
         );
       } else {
-        // navigation.navigate("CheckoutReviewScreen");
+        navigation.navigate("CheckoutReviewScreen");
       }
     }
   }, [emailData, shippingData]);
 
-
-  useEffect(() => {
-    getAcessToken()
-  })
 
   if (emailLoading && shippingLoading)
     return (
@@ -281,18 +262,22 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
       </View>
     );
 
-  if (buyerLoading)
+  if (shippingAddressScreenLoading)
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Loading..</Text>
+        <Text>Loading.. buyer loading</Text>
       </View>
     );
-  if (buyerError)
+  if (shippingAddressScreenError)
     return (
       <View className="flex-1 justify-center items-center">
-        <Text>Error occured {buyerError.message}</Text>
+        <Text>Error occured {shippingAddressScreenError.message}</Text>
       </View>
     );
+
+  if(customerLoading) {
+    return <LoadingFullScreen />
+  }
 
   return (
     <KeyboardAvoidingView
@@ -301,21 +286,20 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
       enabled
       keyboardVerticalOffset={100}
     >
-
-
-      <ScrollView> 
-        {!customerLoading && (<Formik 
+      <ScrollView>
+        {(
+          <Formik
           initialValues={{
-              email: buyerData?.node ? buyerData?.node?.email : "",
-              address1: buyerData?.node ? buyerData?.node?.shippingAddress?.address1 : "",
-              address2: buyerData?.node ? buyerData?.node?.shippingAddress?.address2 : "",
-              city: buyerData?.node ? buyerData?.node?.shippingAddress?.city : "",
-              province: buyerData?.node ? buyerData?.node?.shippingAddress?.province : "",
-              country: buyerData?.node ? buyerData?.node?.shippingAddress?.country : "",
-              firstName: buyerData?.node ? buyerData?.node?.shippingAddress?.firstName : "",
-              lastName: buyerData?.node ? buyerData?.node?.shippingAddress?.lastName : "",
-              phone: buyerData?.node ? buyerData?.node?.shippingAddress?.phone : "",
-              zip: buyerData?.node ? buyerData?.node?.shippingAddress?.zip : "", 
+              email: shippingAddressScreenData?.node?.email ?? "",
+              phone: shippingAddressScreenData?.node?.shippingAddress?.phone ?? "",
+              address1: shippingAddressScreenData?.node?.shippingAddress?.address1 ?? "",
+              address2: shippingAddressScreenData?.node?.shippingAddress?.address2 ?? "",
+              city: shippingAddressScreenData?.node?.shippingAddress?.city ?? "",
+              province: shippingAddressScreenData?.node?.shippingAddress?.province ?? "",
+              country: shippingAddressScreenData?.node?.shippingAddress?.country ?? "",
+              firstName: shippingAddressScreenData?.node?.shippingAddress?.firstName ?? "",
+              lastName: shippingAddressScreenData?.node?.shippingAddress?.lastName ?? "",
+              zip: shippingAddressScreenData?.node?.shippingAddress?.zip ?? "", 
             }
           }
           validationSchema={shippingAddressFromSchema}
@@ -327,7 +311,7 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
             updateCheckoutEmail({
               variables: {
                 checkoutId,
-                email: user?.email ? user?.email : values.email,  
+                email: values.email,  
               },
               refetchQueries: [
                 GET_CHECKOUT_DETAILS,
@@ -370,12 +354,9 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
             errors,
           }) => (
             <View className="flex-1">
-
-            <MyModal visible={isFormModalVisible} slide="toUp">
-                  <ModalForm values={values} errors={errors} touched={touched} handleChange={handleChange} handleBlur={handleBlur} handleSubmit={handleSubmit} onClose={() => setFormModalVisible(false)}/>
-            </MyModal>
-
-              <Text>{JSON.stringify(values)}</Text>
+              <MyModal visible={isFormModalVisible} slide="toUp">
+                    <ModalForm values={values} errors={errors} touched={touched} handleChange={handleChange} handleBlur={handleBlur} handleSubmit={handleSubmit} onClose={() => setFormModalVisible(false)}/>
+              </MyModal>
 
               <View className="px-4 py-3 bg-gray-100">
                 <Text className="text-[13px] text-gray-500 font-medium uppercase">
@@ -459,7 +440,7 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
               {isLoggedIn && (<UserShippingAddressList user={user} activeAddress={activeAddress} setActiveAddress={setActiveAddress} setUnknown={setUnknown} />)}
               
             {isLoggedIn && (<View className="bg-white pb-5">
-              <Button onPress={() => setUnknown(true)} label="Create New Address" type="action" size="sm"/>
+              <Button onPress={() => setFormModalVisible(true)} label="Create New Address" type="action" size="sm"/>
             </View>)}
 
               {isUnknown && (<ShippingAddressForm errors={errors} touched={touched}
@@ -479,7 +460,7 @@ console.log("STATE PASSED VISIBLITY",isFormModalVisible)
         </Formik>)}
         {!isUnknown && (<TouchableOpacity
           className="bg-blue-400 py-4 rounded-[5px] mx-4 mt-5 mb-2"
-          onPress={handleEmailShippingUpdate}
+          onPress={handlePreSelectionUpdate}
         >
           <Text className="text-[15px] text-white font-medium text-center uppercase">
             save and continue
@@ -627,10 +608,45 @@ const UserShippingAddressList = ({user, activeAddress, setActiveAddress, setUnkn
     <View>
       <View className="bg-white py-5">
                 {shippingAddress?.map((item, index) => {
+                    const dummy1 = {
+                      address1: item?.node?.address1?.length > 0 ? item?.node?.address1 : undefined ,
+                      address2: item?.node?.address2?.length > 0 ? item?.node?.address2 : undefined ,
+                      city: item?.node?.city?.length > 0 ? item?.node?.city : undefined ,
+                      country: item?.node?.country?.length > 0 ? item?.node?.country : undefined ,
+                      firstName: activeAddress?.firstName?.length > 0 ? item?.node?.firstName : undefined ,
+                      lastName: item?.node?.lastName?.length > 0 ? item?.node?.lastName : undefined ,
+                      phone: item?.node?.phone?.length > 0 ? item?.node?.phone : undefined ,
+                      province: item?.node?.province?.length > 0 ? item?.node?.province : undefined ,
+                      zip: item?.node?.zip?.length > 0 ? item?.node?.zip : undefined ,
+                    }
+                    const dummy2 = {
+                      address1: activeAddress?.address1?.length > 0 ? activeAddress?.address1 : undefined ,
+                      address2: activeAddress?.address2?.length > 0 ? activeAddress?.address2 : undefined ,
+                      city: activeAddress?.city?.length > 0 ? activeAddress?.city : undefined ,
+                      country: activeAddress?.country?.length > 0 ? activeAddress?.country : undefined ,
+                      firstName: activeAddress?.firstName?.length > 0 ? activeAddress?.firstName : undefined ,
+                      lastName: activeAddress?.lastName?.length > 0 ? activeAddress?.lastName : undefined ,
+                      phone: activeAddress?.phone?.length > 0 ? activeAddress?.phone : undefined ,
+                      province: activeAddress?.province?.length > 0 ? activeAddress?.province : undefined ,
+                      zip: activeAddress?.zip?.length > 0 ? activeAddress?.zip : undefined ,
+                    }
+                    const areEqualAddress = JSON.stringify(dummy1) === JSON.stringify(dummy2)
+                    delete dummy1.id
+                    delete dummy2.id
+                    if(index === shippingAddress.length - 1) {
+                      console.log("DUMMY 1",dummy1)
+                      console.log("DUMMY 2",dummy2)
+                    }
                     return (
                     <Pressable key={index.toString()} onPress={() => handlePress(item)} className="flex-row bg-white p-5 items-center">
 
-                    <RadioButton checked={activeAddress === item?.node} />
+                    <RadioButton checked={areEqualAddress} />
+
+
+                    <View className="flex-col">
+
+                    </View>
+
 
                     <View className="ml-2">
                       <View className="flex-row">

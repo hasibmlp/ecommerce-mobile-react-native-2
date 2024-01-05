@@ -193,22 +193,6 @@ export const ADD_CUSTOM_VARIANT_ID = gql`
   }
 `;
 
-export const REMOVE_CART_ITEM = gql`
-  mutation checkoutLineItemsRemove($checkoutId: ID!, $lineItemIds: [ID!]!) {
-    checkoutLineItemsRemove(
-      checkoutId: $checkoutId
-      lineItemIds: $lineItemIds
-    ) {
-      checkout {
-        id
-      }
-      checkoutUserErrors {
-        message
-      }
-    }
-  }
-`;
-
 export const REMOVE_CART_ITEM_V2 = gql`
     mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {

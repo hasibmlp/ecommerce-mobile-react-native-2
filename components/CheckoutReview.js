@@ -155,7 +155,7 @@ export default function CheckoutReview({route}) {
         </View>
         <TouchableOpacity
           onPress={() => {
-            // navigation.push("ShippingAddressUpdateScreen", { shippingFormVisible: true });
+            navigation.push("ShippingAddressUpdateScreen", { shippingFormVisible: true });
           }}
           className=" self-start p-1"
         >

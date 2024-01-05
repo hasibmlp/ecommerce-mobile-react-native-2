@@ -402,6 +402,7 @@ export const GET_CART_DETAILS = gql`
           }
         }
         shippingAddress {
+          id
           firstName
           lastName
           address1
@@ -609,6 +610,7 @@ export const GET_CHECKOUT_DETAILS = gql`
         }
         email
         shippingAddress {
+          id
           firstName
           lastName
           phone
@@ -806,7 +808,7 @@ export const GET_CUSTOMER = gql`
       lastName
       email
       acceptsMarketing
-      addresses(first:5){
+      addresses(first:50){
         edges{
           node{
             id
