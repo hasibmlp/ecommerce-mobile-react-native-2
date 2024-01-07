@@ -1,23 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const CREATE_CART = gql`
-  mutation checkoutCreate($productQuantity: Int!, $productId: ID!, $customAttributes: [AttributeInput!]) {
-    checkoutCreate(
-      input: {
-        lineItems: [{ quantity: $productQuantity, variantId: $productId, customAttributes: $customAttributes }]
-      }
-    ) {
-      checkout {
-        id
-      }
-      checkoutUserErrors {
-        message
-      }
-      queueToken
-    }
-  }
-`;
-
 export const CREATE_CHECKOUT = gql`
   mutation checkoutCreate($input: CheckoutCreateInput!) {
     checkoutCreate(input: $input) {
@@ -72,11 +54,9 @@ export const REPLACE_CHECKOUT_LINES = gql`
   }
 `;
 
-export const CREATE_CART_V2 = gql`
-  mutation createCart($lines: [CartLineInput!]!){
-    cartCreate(input:{
-      lines:$lines,
-    }){
+export const CREATE_CART = gql`
+  mutation createCart($input: CartInput!){
+    cartCreate(input:$input){
       cart{
         id
       }
@@ -360,6 +340,44 @@ export const CUSTOMER_ADDRESS_CREATE = gql`
       customerAddress {
         id
         firstName
+      }
+      customerUserErrors {
+        message
+      }
+    }
+  }
+`
+
+export const CUSTOMER_ADDRESS_UPDATE = gql`
+  mutation customerAddressUpdate($address: MailingAddressInput!, $customerAccessToken: String!, $id: ID!) {
+    customerAddressUpdate(address: $address, customerAccessToken: $customerAccessToken, id: $id) {
+      customerAddress {
+        id
+      }
+      customerUserErrors {
+        message
+      }
+    }
+  }
+`
+
+export const CUSTOMER_ADDRESS_DELETE = gql`
+mutation customerAddressDelete($customerAccessToken: String!, $id: ID!) {
+  customerAddressDelete(customerAccessToken: $customerAccessToken, id: $id) {
+    customerUserErrors {
+      message
+    }
+    deletedCustomerAddressId
+  }
+}
+
+`
+
+export const CUSTOMER_DEFAULT_ADDRESS_UPDATE = gql`
+  mutation customerDefaultAddressUpdate($addressId: ID!, $customerAccessToken: String!) {
+    customerDefaultAddressUpdate(addressId: $addressId, customerAccessToken: $customerAccessToken) {
+      customer {
+        id
       }
       customerUserErrors {
         message

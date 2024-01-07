@@ -15,7 +15,7 @@ import {
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 
 import RadioButton from "./RadioButton";
-import { cartIdVar, checkoutIdVar } from "../App";
+import { cartIdVar, checkoutIdVar, userVar } from "../App";
 import {
   GET_AVAILABLE_SHIPPING_RATES,
   GET_CHECKOUT_DETAILS,
@@ -25,9 +25,10 @@ import { useEffect, useState } from "react";
 import { SET_SHIPPING_METHOD } from "../graphql/mutations";
 import LoadingScreen from "./LoadingScreen";
 
-export default function CheckoutReview({route}) {
+export default function CheckoutReview({ route }) {
   // const checkoutId = useReactiveVar(cartIdVar);
-  const checkoutId = useReactiveVar(checkoutIdVar)
+  const checkoutId = useReactiveVar(checkoutIdVar);
+  const user = useReactiveVar(userVar);
 
   const navigation = useNavigation();
 
@@ -53,7 +54,7 @@ export default function CheckoutReview({route}) {
     variables: {
       checkoutId,
     },
-    fetchPolicy: 'network-only'
+    fetchPolicy: "network-only",
   });
 
   const [
@@ -75,7 +76,6 @@ export default function CheckoutReview({route}) {
     });
   }
 
-
   useEffect(() => {
     if (shippingLineRatesData) {
       if (shippingLineRatesData?.node?.availableShippingRates) {
@@ -88,7 +88,7 @@ export default function CheckoutReview({route}) {
 
   useEffect(() => {
     if (!shippingReady) {
-      startPolling(5000)
+      startPolling(5000);
     } else {
       stopPolling();
     }
@@ -155,7 +155,9 @@ export default function CheckoutReview({route}) {
         </View>
         <TouchableOpacity
           onPress={() => {
-            navigation.push("ShippingAddressUpdateScreen", { shippingFormVisible: true });
+            navigation.push("ShippingAddressUpdateScreen", {
+              shippingFormVisible: true,
+            });
           }}
           className=" self-start p-1"
         >
@@ -163,34 +165,39 @@ export default function CheckoutReview({route}) {
         </TouchableOpacity>
       </View>
 
-      <View className="bg-gray-100 py-5 px-4">
-        <Text className="text-[14px] text-black font-normal uppercase">
-          create account (optional)
-        </Text>
-      </View>
-      <View className="bg-white py-5 px-3">
-        <Text>
-          Save your details, delivery address and checkout quicker next time.
-        </Text>
-        <View className="flex-row items-center border-b border-gray-100 py-3">
-          <EnvelopeIcon size={23} color="black" />
-          <Text className="text-[13px] text-black font-medium ml-3">
-            {detailData?.node?.email}
-          </Text>
-        </View>
-        <View className="flex-row items-center pt-3">
-          <LockClosedIcon size={23} color="black" />
-          <View className="">
-            <Text className="text-[13px] text-black font-medium ml-3">
-              Set password
+      {!user && (
+        <View>
+          <View className="bg-gray-100 py-5 px-4">
+            <Text className="text-[14px] text-black font-normal uppercase">
+              create account (optional)
             </Text>
-            <TextInput
-              className="text-[13px] text-black font-medium ml-3 mt-1"
-              placeholder="Minimun 6 character"
-            />
+          </View>
+          <View className="bg-white py-5 px-3">
+            <Text>
+              Save your details, delivery address and checkout quicker next
+              time.
+            </Text>
+            <View className="flex-row items-center border-b border-gray-100 py-3">
+              <EnvelopeIcon size={23} color="black" />
+              <Text className="text-[13px] text-black font-medium ml-3">
+                {detailData?.node?.email}
+              </Text>
+            </View>
+            <View className="flex-row items-center pt-3">
+              <LockClosedIcon size={23} color="black" />
+              <View className="">
+                <Text className="text-[13px] text-black font-medium ml-3">
+                  Set password
+                </Text>
+                <TextInput
+                  className="text-[13px] text-black font-medium ml-3 mt-1"
+                  placeholder="Minimun 6 character"
+                />
+              </View>
+            </View>
           </View>
         </View>
-      </View>
+      )}
 
       <View className="bg-gray-100 py-5 px-4">
         <Text className="text-[14px] text-black font-normal uppercase">
@@ -214,7 +221,9 @@ export default function CheckoutReview({route}) {
               </Text>
               <View className="flex-row items-center">
                 <Text className="text-[14px] text-black font-normal mr-3">
-                  {item?.price?.amount === '0.0' ? 'Free' : (item?.price?.amount + " " + item?.price?.currencyCode)}
+                  {item?.price?.amount === "0.0"
+                    ? "Free"
+                    : item?.price?.amount + " " + item?.price?.currencyCode}
                 </Text>
                 <RadioButton
                   checked={
@@ -247,9 +256,12 @@ export default function CheckoutReview({route}) {
           <Text className="text-[16px] text-black font-normal">Delivery</Text>
           <Text className="text-[16px] text-red-800 font-light">
             {shippingLineRatesData?.node?.shippingLine
-              ?( shippingLineRatesData?.node?.shippingLine?.price?.amount === '0.0' ? 'Free' : (shippingLineRatesData?.node?.shippingLine?.price?.amount +
-                " " +
-                shippingLineRatesData?.node?.shippingLine?.price?.currencyCode))
+              ? shippingLineRatesData?.node?.shippingLine?.price?.amount ===
+                "0.0"
+                ? "Free"
+                : shippingLineRatesData?.node?.shippingLine?.price?.amount +
+                  " " +
+                  shippingLineRatesData?.node?.shippingLine?.price?.currencyCode
               : "--"}{" "}
           </Text>
         </View>
@@ -277,7 +289,9 @@ export default function CheckoutReview({route}) {
             });
           }}
           className={`items-center justify-center ${
-            !shippingLineRatesData?.node?.shippingLine ? "bg-blue-200" : "bg-blue-400"
+            !shippingLineRatesData?.node?.shippingLine
+              ? "bg-blue-200"
+              : "bg-blue-400"
           }  py-4 rounded-[5px] mt-2`}
         >
           <Text className="text-[15px] font-medium uppercase text-white">

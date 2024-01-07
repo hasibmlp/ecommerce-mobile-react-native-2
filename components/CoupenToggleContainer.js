@@ -18,7 +18,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useMutation, useReactiveVar } from "@apollo/client";
 import { UPDATE_CART_DISCOUT_CODE } from "../graphql/mutations";
-import { cartIdVar } from "../App";
+import { cartVar } from "../App";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 
@@ -27,7 +27,7 @@ const coupenCodeValidationSchema = yup.object({
 });
 
 export default function CoupenToggleContainer({discountCodes}) {
-  const cartId = useReactiveVar(cartIdVar);
+  const cart = useReactiveVar(cartVar)
   const [open, setOpen] = useState(false);
 
   
@@ -37,14 +37,14 @@ export default function CoupenToggleContainer({discountCodes}) {
     if(values.coupenCode) {
       updateCartDiscountCode({
         variables: {
-          cartId,
+          cartId: cart?.id,
           discountCodes: [values.coupenCode]
         },
         refetchQueries: [
           {
             query: GET_CART_DETAILS_V2,
             variables: {
-              cartId,
+              cartId: cart?.id,
             },
           },
         ],
@@ -56,14 +56,14 @@ export default function CoupenToggleContainer({discountCodes}) {
   const handleRemove = () => {
     updateCartDiscountCode({
       variables: {
-        cartId,
+        cartId: cart?.id,
         discountCodes: ['']
       },
       refetchQueries: [
         {
           query: GET_CART_DETAILS_V2,
           variables: {
-            cartId,
+            cartId: cart?.id,
           },
         },
       ],

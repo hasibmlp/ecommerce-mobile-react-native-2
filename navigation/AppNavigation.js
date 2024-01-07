@@ -28,9 +28,11 @@ import AuthScreen from "../screens/AuthScreen";
 import UserAndAddress from "../components/cart/UserAndAddress";
 import InitialSplashScreen from "../components/splash/InitialSplashScreen";
 import { useEffect, useState } from "react";
-import { userVar } from "../App";
-import { useLazyQuery, useReactiveVar } from "@apollo/client";
-import { GET_CUSTOMER } from "../graphql/queries";
+import { cartIdVar, cartVar, userVar } from "../App";
+import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
+import { GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
+import ProfileScreen from "../screens/ProfileScreen";
+import { CREATE_CART } from "../graphql/mutations";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -93,17 +95,116 @@ export function CartScreens() {
   );
 }
 
+export const MoreOptionsScreens = () => {
+  const user = useReactiveVar(userVar)
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="MoreOptionHome" component={MoreOptionsScreen} options={{
+        headerShown: false
+      }} />
+      <Stack.Screen
+       navigationKey={user ? 'user' : 'guest'}
+       name="ProfileScreen"
+       component={ProfileScreen} options={{
+       headerShown: false
+      }} />
+    </Stack.Navigator>
+  )
+}
+
 export function HomeTabs() {
+  const user = useReactiveVar(userVar)
+  const cartGlobalId = useReactiveVar(cartIdVar)
+  const cart = useReactiveVar(cartVar)
+
+  const [ createCart ] = useMutation(CREATE_CART)
+  const [ getCartDetails, { data: cartDetailData } ] = useLazyQuery(GET_CART_DETAILS_V2)
+
+  // useEffect(() => {
+  //   async () => {
+  //     try{
+  //       await AsyncStorage.setItem('app-initial', true)
+  //     }catch(e){
+
+  //     }
+  //   }
+  // }, [])
+
+  // useEffect(() => {
+  //   const rm = async () => {
+  //     await AsyncStorage.removeItem('cart-id')
+  //   }
+  //   rm()
+  // }, [])
 
   useEffect(() => {
-    async () => {
-      try{
-        await AsyncStorage.setItem('app-initial', true)
-      }catch(e){
-
+  
+    const setCart = async () => {
+      try {
+        const token = await AsyncStorage.getItem('my-key');
+        const cartId = await AsyncStorage.getItem('cart-id');
+  
+        console.log("CART ID", cartId);
+  
+        const cartInput = token ? { email: user.email, phone: user.phone, customerAccessToken: token } : {};
+  
+        if (!cartId ) {
+          await createCart({
+            variables: {
+              input: cartInput
+            },
+            onCompleted: (data) => {
+              const set = async () => {
+                if (data?.cartCreate?.cart?.id) {
+                  try {
+                    await AsyncStorage.setItem('cart-id', data?.cartCreate?.cart?.id);
+                    console.log("Successfully created cart id");
+                  } catch (e) {
+                    console.log("Error setting cart ID in AsyncStorage:", e);
+                  }
+                }
+              };
+              set();
+            },
+            refetchQueries: [
+              {
+                query: GET_CART_DETAILS_V2
+              },
+            ]
+          });
+        } else {
+          console.log("Cart id exists");
+        }
+      } catch (e) {
+        console.log("Error setting up the cart: ", e);
       }
-    }
-  }, [])
+    };
+  
+    const getCart = async () => {
+      const cartId = await AsyncStorage.getItem('cart-id');
+      if (cartId) {
+        getCartDetails({
+          variables: {
+            cartId: cartId
+          },
+          onCompleted: (data) => {
+            console.log("cart details fetched successfully");
+            cartVar(data?.cart)
+          }
+        });
+      }
+    };
+  
+    const initializeCart = async () => {
+      await setCart();
+      await getCart();
+    };
+  
+    initializeCart();
+
+  },[user])
+  
+
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -149,7 +250,7 @@ export function HomeTabs() {
       />
       <Tab.Screen
         name="MoreOptionsScreen"
-        component={MoreOptionsScreen}
+        component={MoreOptionsScreens}
         options={{
           title: "More",
           tabBarIcon: ({ color, size }) => (
@@ -180,6 +281,7 @@ export default function AppNavigation() {
     const getToken = async () => {
       try{
         const token = await AsyncStorage.getItem('my-key')
+        console.log("TOKEN",token)
         if(token) {
           getUser({
             variables: {
@@ -195,7 +297,7 @@ export default function AppNavigation() {
       }
     }
     getToken()
-  })
+  },[user])
 
   useEffect(() => {
     if(data?.customer) {

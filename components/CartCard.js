@@ -11,7 +11,6 @@ import LoadingScreen from "./LoadingScreen";
 import BottomModal from "./Modal/BottomModal";
 
 export default function CartCard({ lineItem, onRemove, handleLineItemUpdate }) {
-  const cartId = cartIdVar();
 
   const totalPriceOfLineitem = lineItem.cost.totalAmount.amount 
   const subTotalPriceOfLineitem = lineItem.cost.subtotalAmount.amount 

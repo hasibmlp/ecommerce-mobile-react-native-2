@@ -135,104 +135,104 @@ export const GET_COLLECTION = gql`
 `;
 
 export const GET_PRODUCT = gql`
-query getProductVairants($productId: ID!) {
-  product(id: $productId) {
-    id
-    vendor
-    title
-    description
-    onlineStoreUrl
-    priceRange{
-      maxVariantPrice{
-        amount
-        currencyCode
-      }
-      minVariantPrice{
-        amount
-        currencyCode
-     }
-    }
-    compareAtPriceRange{
-      minVariantPrice{
-        amount
-        currencyCode
-      }
-    }
-    images(first: 100) {
-      edges {
-        node {
-          id
-          url
-          altText
+  query getProductVairants($productId: ID!) {
+    product(id: $productId) {
+      id
+      vendor
+      title
+      description
+      onlineStoreUrl
+      priceRange {
+        maxVariantPrice {
+          amount
+          currencyCode
+        }
+        minVariantPrice {
+          amount
+          currencyCode
         }
       }
-    }
-    options {
-      id
-      name
-      values
-    }
-    variants(first: 100) {
-      edges {
-        node {
-          id
-          quantityAvailable
-          availableForSale
-          currentlyNotInStock
-          selectedOptions {
-            name
-            value
-          }
-          image {
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
+      images(first: 100) {
+        edges {
+          node {
             id
             url
+            altText
           }
         }
       }
-    }
-    metafield(key: "offer_announcement_text", namespace: "mobile") {
+      options {
+        id
+        name
+        values
+      }
+      variants(first: 100) {
+        edges {
+          node {
+            id
+            quantityAvailable
+            availableForSale
+            currentlyNotInStock
+            selectedOptions {
+              name
+              value
+            }
+            image {
+              id
+              url
+            }
+          }
+        }
+      }
+      metafield(key: "offer_announcement_text", namespace: "mobile") {
         value
+      }
     }
   }
-}
-`
+`;
 
 export const GET_PRODUCT_VARIANTS_AND_IMAGES_AND_OPTIONS = gql`
-query getProductVairants($productId: ID!) {
-  product(id: $productId) {
-    id
-    images(first: 100) {
-      edges {
-        node {
-          id
-          url
-          altText
-        }
-      }
-    }
-    options {
-      name
-      values
-    }
-    variants(first: 100) {
-      edges {
-        node {
-          id
-          quantityAvailable
-          selectedOptions {
-            name
-            value
-          }
-          image {
+  query getProductVairants($productId: ID!) {
+    product(id: $productId) {
+      id
+      images(first: 100) {
+        edges {
+          node {
             id
             url
+            altText
+          }
+        }
+      }
+      options {
+        name
+        values
+      }
+      variants(first: 100) {
+        edges {
+          node {
+            id
+            quantityAvailable
+            selectedOptions {
+              name
+              value
+            }
+            image {
+              id
+              url
+            }
           }
         }
       }
     }
   }
-}
-`
+`;
 
 export const GET_PRODUCT_VARIANTS = gql`
   query getProductVairants($productId: ID!) {
@@ -359,42 +359,42 @@ export const GET_CART_DETAILS = gql`
             node {
               id
               quantity
-              unitPrice{
+              unitPrice {
                 amount
               }
-							discountAllocations{
-                discountApplication{
-                  value{
+              discountAllocations {
+                discountApplication {
+                  value {
                     __typename
                   }
                   allocationMethod
                   targetSelection
                   targetType
                 }
-                allocatedAmount{
+                allocatedAmount {
                   amount
                   currencyCode
                 }
               }
               variant {
                 id
-                image{
+                image {
                   url
                   altText
                 }
-                selectedOptions{
+                selectedOptions {
                   name
                   value
                 }
-                product{
+                product {
                   productType
                   vendor
                   title
                 }
-                unitPrice{
+                unitPrice {
                   amount
                 }
-                price{
+                price {
                   amount
                 }
               }
@@ -411,17 +411,17 @@ export const GET_CART_DETAILS = gql`
           country
           phone
         }
-        discountApplications(first:10){
-          edges{
-            node{
-              ... on DiscountCodeApplication{
+        discountApplications(first: 10) {
+          edges {
+            node {
+              ... on DiscountCodeApplication {
                 allocationMethod
                 applicable
                 code
                 targetSelection
                 targetType
-                value{
-                  ... on MoneyV2{
+                value {
+                  ... on MoneyV2 {
                     amount
                     currencyCode
                   }
@@ -451,113 +451,116 @@ export const GET_CART_DETAILS = gql`
   }
 `;
 export const GET_CART_DETAILS_V2 = gql`
-  query getCartDetails($cartId:ID!) {
-    cart(id:$cartId){
+  query getCartDetails($cartId: ID!) {
+    cart(id: $cartId) {
       id
       checkoutUrl
-      discountCodes{
+      discountCodes {
         code
         applicable
       }
-      buyerIdentity{
+      buyerIdentity {
         email
+        customer{
+          email
+        }
       }
-      discountAllocations{
-        ... on CartAutomaticDiscountAllocation{
-          discountedAmount{
+      discountAllocations {
+        ... on CartAutomaticDiscountAllocation {
+          discountedAmount {
             amount
           }
           title
         }
-        ... on CartCodeDiscountAllocation{
+        ... on CartCodeDiscountAllocation {
           code
-          discountedAmount{
+          discountedAmount {
             amount
             currencyCode
           }
         }
-        ... on CartCustomDiscountAllocation{
+        ... on CartCustomDiscountAllocation {
           title
-          discountedAmount{
+          discountedAmount {
             amount
             currencyCode
           }
         }
       }
-      lines(first:10){
-        edges{
-          node{
+      lines(first: 10) {
+        edges {
+          node {
             id
             quantity
-            discountAllocations{
-              ... on CartAutomaticDiscountAllocation{
+            discountAllocations {
+              ... on CartAutomaticDiscountAllocation {
                 title
-                discountedAmount{
+                discountedAmount {
                   amount
                   currencyCode
                 }
               }
-              ... on CartCodeDiscountAllocation{
+              ... on CartCodeDiscountAllocation {
                 code
-                discountedAmount{
+                discountedAmount {
                   amount
                   currencyCode
                 }
               }
-              ... on CartCustomDiscountAllocation{
+              ... on CartCustomDiscountAllocation {
                 title
-                discountedAmount{
+                discountedAmount {
                   amount
                   currencyCode
                 }
               }
             }
-            cost{
-              subtotalAmount{
+            cost {
+              subtotalAmount {
                 amount
                 currencyCode
               }
-              totalAmount{
+              totalAmount {
                 amount
                 currencyCode
               }
             }
-            merchandise{
-              ... on ProductVariant{
+            merchandise {
+              ... on ProductVariant {
                 id
-                image{
+                image {
                   url
                   altText
                 }
-                selectedOptions{
+                selectedOptions {
                   name
                   value
                 }
-                product{
+                product {
                   productType
                   vendor
                   title
                 }
               }
             }
-            discountAllocations{
-                ... on CartCodeDiscountAllocation{
-                  code
-                }
+            discountAllocations {
+              ... on CartCodeDiscountAllocation {
+                code
               }
             }
           }
         }
-      cost{
-        subtotalAmount{
+      }
+      cost {
+        subtotalAmount {
           amount
           currencyCode
         }
-        totalTaxAmount{
+        totalTaxAmount {
           amount
           currencyCode
         }
-        totalAmount{
+        totalAmount {
           amount
           currencyCode
         }
@@ -577,31 +580,31 @@ export const GET_CHECKOUT_DETAILS = gql`
             node {
               id
               quantity
-              unitPrice{
+              unitPrice {
                 amount
               }
-							discountAllocations{
-                allocatedAmount{
+              discountAllocations {
+                allocatedAmount {
                   amount
                 }
               }
               variant {
                 id
-                image{
+                image {
                   url
                   altText
                 }
-                selectedOptions{
+                selectedOptions {
                   name
                   value
                 }
-                product{
+                product {
                   title
                 }
-                unitPrice{
+                unitPrice {
                   amount
                 }
-                price{
+                price {
                   amount
                 }
               }
@@ -695,20 +698,30 @@ export const GET_BUYER_DETAILS = gql`
   }
 `;
 
-
-
-const myTitle = "price"
+const myTitle = "price";
 
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!], $sortKey: ProductCollectionSortKeys, $reverse: Boolean ) {
+  query getCollectionById(
+    $collectionId: ID!
+    $cursor: String
+    $filterInput: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+  ) {
     collection(id: $collectionId) {
       id
       title
-      image{
+      image {
         url
       }
-      
-      products(first: 18, after: $cursor, filters: $filterInput, sortKey: $sortKey, reverse: $reverse) {
+
+      products(
+        first: 18
+        after: $cursor
+        filters: $filterInput
+        sortKey: $sortKey
+        reverse: $reverse
+      ) {
         filters {
           id
           label
@@ -726,23 +739,23 @@ export const GET_COLLECTION_BY_ID = gql`
             id
             title
             vendor
-            priceRange{
-              maxVariantPrice{
+            priceRange {
+              maxVariantPrice {
                 amount
                 currencyCode
               }
-              minVariantPrice{
-                amount
-                currencyCode
-            }
-            }
-            compareAtPriceRange{
-              minVariantPrice{
+              minVariantPrice {
                 amount
                 currencyCode
               }
             }
-            featuredImage{
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            featuredImage {
               altText
               id
               url
@@ -783,37 +796,54 @@ export const GET_COLLECTION_BY_ID = gql`
   }
 `;
 
-
 export const GET_ALL_PRODUCTS_ID_IN_COLLECTION = gql`
-query getCollectionById($collectionId: ID!, $cursor: String, $filterInput: [ProductFilter!]) {
-  collection(id: $collectionId) {
-    id
-    products(first: 250, after: $cursor, filters: $filterInput) {
-      edges {
-        cursor
-        node {
-          id
+  query getCollectionById(
+    $collectionId: ID!
+    $cursor: String
+    $filterInput: [ProductFilter!]
+  ) {
+    collection(id: $collectionId) {
+      id
+      products(first: 250, after: $cursor, filters: $filterInput) {
+        edges {
+          cursor
+          node {
+            id
+          }
         }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
       }
     }
   }
-}
-`
+`;
 export const GET_CUSTOMER = gql`
-  query getCustomer($customerAccessToken:String!){
-    customer(customerAccessToken:$customerAccessToken){
+  query getCustomer($customerAccessToken: String!) {
+    customer(customerAccessToken: $customerAccessToken) {
       id
       firstName
       lastName
       email
       acceptsMarketing
-      addresses(first:50){
-        edges{
-          node{
+      lastIncompleteCheckout {
+        lineItems(first: 50) {
+          edges {
+            node {
+              id
+              title
+              quantity
+              variant {
+                id
+              }
+            }
+          }
+        }
+      }
+      addresses(first: 50 reverse:true) {
+        edges {
+          node {
             id
             name
             firstName
@@ -829,7 +859,7 @@ export const GET_CUSTOMER = gql`
           }
         }
       }
-      defaultAddress{
+      defaultAddress {
         id
         name
         firstName
@@ -845,19 +875,27 @@ export const GET_CUSTOMER = gql`
       }
     }
   }
-`
+`;
 
 export const GET_AVAILABLE_COUNTRIES = gql`
-  query getAvailableCountry{
-    localization{
-      country{
+  query getAvailableCountry {
+    localization {
+      country {
         name
         isoCode
       }
-      availableCountries{
+      availableCountries {
         isoCode
         name
       }
     }
   }
-`
+`;
+export const GET_SHIPPING_COUNTRIES = gql`
+  query getShipsToCountries {
+    shop {
+      name
+      shipsToCountries
+    }
+  }
+`;

@@ -2,12 +2,12 @@
 import { useEffect } from "react";
 import { useState } from "react";
 import { createContext } from "react";
-import { ADD_CART_ITEM, ADD_CART_ITEM_V2, ADD_CART_ITEM_WITH_CUSTOM_ID, ADD_CUSTOM_VARIANT_ID, CREATE_CART, CREATE_CART_V2, CREATE_CART_WITH_CUSTOM_ID } from "../graphql/mutations";
+import { ADD_CART_ITEM, ADD_CART_ITEM_V2, ADD_CUSTOM_VARIANT_ID } from "../graphql/mutations";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
-import { cartIdVar } from "../App";
 import { useNavigation } from "@react-navigation/native";
-import { GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_PRODUCT, GET_PRODUCT_V2 } from "../graphql/queries";
-import { getVariantForOptions, getVariantForSingleOption } from "../components/utils/UtilsFunctions";
+import { GET_CART_DETAILS_V2, GET_PRODUCT } from "../graphql/queries";
+import { getVariantForOptions } from "../components/utils/UtilsFunctions";
+import { cartVar } from "../App";
 
 const VariantSelectionContext = createContext();
 
@@ -19,22 +19,12 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
 
 
   const navigation = useNavigation()
-  const cartId = useReactiveVar(cartIdVar);
+  const cart = useReactiveVar(cartVar)
 
   const { data, loading, error } = useQuery(GET_PRODUCT, {
     variables: { productId },
     fetchPolicy: "network-only",
   });
-
-  const [
-    createCart,
-    { loading: cartLoading, error: cartError, data: cartData },
-  ] = useMutation(CREATE_CART);
-
-  const [
-    createCartV2,
-    { loading: cartV2Loading, error: cartV2Error, data: cartV2Data },
-  ] = useMutation(CREATE_CART_V2);
 
   const [
     addCartItem,
@@ -53,6 +43,8 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
       data: addCartV2ItemData,
     },
   ] = useMutation(ADD_CART_ITEM_V2);
+  
+  console.log("cart: ",cart)
 
   const [
     addCustomId,
@@ -98,10 +90,10 @@ function VariantSelectionProvider({children, productId, variantId, colorValue}) 
   });
 
 const handleAddCartBtn = (onClose) => {
-  if (cartId) {
+  if (cart?.id) {
     addCartV2Item({
       variables: {
-        cartId,
+        cartId: cart?.id,
         lines: [{
           merchandiseId: selectedVariant.id,
           quantity: 1
@@ -111,7 +103,7 @@ const handleAddCartBtn = (onClose) => {
         {
           query: GET_CART_DETAILS_V2,
           variables: {
-            cartId,
+            cartId: cart?.id,
           },
         },
       ],
@@ -169,18 +161,6 @@ const handleAddCartBtn = (onClose) => {
 
   } else {
 
-    createCartV2({
-      variables: {
-        lines: [{
-          merchandiseId: selectedVariant.id,
-          quantity: 1
-        }]
-      },
-      onCompleted: () => {
-        typeof(onClose) === 'function' && onClose()
-      }
-    })
-
     // createCart({
     //   variables: {
     //     productQuantity: 1,
@@ -223,12 +203,6 @@ const handleAddCartBtn = (onClose) => {
   }
 
 }
-
-useEffect(() => {
-  if (cartV2Data) {
-    cartIdVar(cartV2Data?.cartCreate?.cart?.id);
-  }
-}, [cartV2Data]);
 
 useEffect(() => {
   if(variants && variants.length === 1) {

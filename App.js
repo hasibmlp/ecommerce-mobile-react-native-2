@@ -11,6 +11,7 @@ import { shopifyClient } from "./graphql/shopifyClient";
 import { createContext, useEffect, useState } from "react";
 
 export const cartIdVar = makeVar("");
+export const cartVar = makeVar(null);
 export const checkoutIdVar = makeVar("");
 export const userVar = makeVar(null)
 export const bottomModaVar = makeVar(false); 

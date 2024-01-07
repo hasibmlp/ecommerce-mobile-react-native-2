@@ -20,65 +20,65 @@ import {
   useQuery,
   useReactiveVar,
 } from "@apollo/client";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated from "react-native-reanimated";
 
-import { 
-  GET_CART_DETAILS_V2, 
-  GET_CUSTOMER,
-} from "../graphql/queries";
+import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import {
+  ADD_CART_ITEM_V2,
+  CART_BUYER_IDENTITY_UPDATE,
   CHECKOUT_DISCOUNT_CODE_APPLY,
-  CREATE_CART_V2,
   CREATE_CHECKOUT,
   REMOVE_CART_ITEM_V2,
   REPLACE_CHECKOUT_LINES,
   UPDATE_CART_ITEM,
 } from "../graphql/mutations";
-import { cartIdVar, checkoutIdVar, userVar } from "../App";
+import { cartIdVar, cartVar, checkoutIdVar, userVar } from "../App";
 import CartCard from "../components/CartCard";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 export default function CartScreen() {
-
   const navigation = useNavigation();
-  const cartId = useReactiveVar(cartIdVar);
-  const checkoutId = useReactiveVar(checkoutIdVar)
-  const user2 = useReactiveVar(userVar)
+  const checkoutId = useReactiveVar(checkoutIdVar);
+  const user = useReactiveVar(userVar);
+  const cart = useReactiveVar(cartVar);
 
-  const [ user, setUser ] = useState(null)
-  const [ userToken, setUserToken ] = useState(null)
+  const [userToken, setUserToken] = useState(null);
 
-  const { 
+  const {
     data: customerData,
     loading: customerLoading,
-    error: customerError
-   } = useQuery(GET_CUSTOMER, {
+    error: customerError,
+  } = useQuery(GET_CUSTOMER, {
     variables: {
       customerAccessToken: userToken,
-    }
-   })
+    },
+  });
 
-   const [
+  const [
     getCartDetails,
     {
       loading: cartDetailsLoading,
       error: cartDetailsError,
       data: cartDetailsData,
-      refetch
+      refetch,
     },
   ] = useLazyQuery(GET_CART_DETAILS_V2, {
     notifyOnNetworkStatusChange: true,
   });
 
-  console.log("CART DETAILS DATA BUYER: ",cartDetailsData?.cart?.buyerIdentity)
+  console.log("CART DATA",cartDetailsData?.cart?.buyerIdentity)
 
   const [
-    createCart,
-    { loading: cartCreateLoading, error: cartCreateError, data: cartCreateData },
-  ] = useMutation(CREATE_CART_V2);
+    addLineItem,
+    {
+      loading: addLineItemLoading,
+      error: addLineItemError,
+      data: addLineItemData,
+    },
+  ] = useMutation(ADD_CART_ITEM_V2);
 
   const [
     updateLineItem,
@@ -91,12 +91,17 @@ export default function CartScreen() {
 
 
   const [
-    createCheckout,
+    updateCartBuyerIdentity,
     {
-      loading: checkoutLoading,
-      error: checkoutError,
-      data: checkoutData,
+      loading: updateCartBuyerIdentityLoading,
+      error: updateCartBuyerIdentityError,
+      data: updateCartBuyerIdentityData,
     },
+  ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
+
+  const [
+    createCheckout,
+    { loading: checkoutLoading, error: checkoutError, data: checkoutData },
   ] = useMutation(CREATE_CHECKOUT);
 
   const [
@@ -116,7 +121,7 @@ export default function CartScreen() {
       data: removeItemData,
     },
   ] = useMutation(REMOVE_CART_ITEM_V2, {
-    notifyOnNetworkStatusChange: true
+    notifyOnNetworkStatusChange: true,
   });
 
   const [
@@ -131,58 +136,56 @@ export default function CartScreen() {
   const handleLineItemUpdate = (line) => {
     updateLineItem({
       variables: {
-        cartId,
-        lines: line || []
+        cartId: cart?.id,
+        lines: line || [],
       },
       onCompleted: () => {
-        refetch()
-      }
-    })
-  } 
+        refetch();
+      },
+    });
+  };
 
   function handleItemRemove(id) {
     removeCartItem({
       variables: {
-        cartId,
-        lineIds: [
-          id
-        ]
+        cartId: cart?.id,
+        lineIds: [id],
       },
       onCompleted: () => {
-        refetch()
-      }
-    })
+        refetch();
+      },
+    });
   }
 
   const handleCheckoutV2 = () => {
-    if(!checkoutId) {
+    if (!checkoutId) {
       createCheckout({
         variables: {
           input: {
-            lineItems: checkoutLineItems
-          }
+            lineItems: checkoutLineItems,
+          },
         },
-      })
-    }else {
+      });
+    } else {
       replaceCheckoutLines({
         variables: {
           checkoutId,
-          lineItems: checkoutLineItems
-        }
-      })
+          lineItems: checkoutLineItems,
+        },
+      });
     }
 
-    if(cartDetailsData?.cart?.discountCodes[0]?.applicable){
+    if (cartDetailsData?.cart?.discountCodes[0]?.applicable) {
       checkoutDiscountCodeApply({
         variables: {
           checkoutId,
-          discountCode: cartDetailsData?.cart?.discountCodes[0]?.code
-        }
-      })
+          discountCode: cartDetailsData?.cart?.discountCodes[0]?.code,
+        },
+      });
     }
 
-    navigation.navigate("ShippingAddressUpdateScreen")
-  }
+    navigation.navigate("ShippingAddressUpdateScreen");
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,72 +195,68 @@ export default function CartScreen() {
 
   useEffect(() => {
     const getAcessToken = async () => {
-      const token = await AsyncStorage.getItem("my-key")
-      if(token !== null) {
-        setUserToken(token)
-      }else{
-        setUserToken(null)
+      const token = await AsyncStorage.getItem("my-key");
+      if (token !== null) {
+        setUserToken(token);
+      } else {
+        setUserToken(null);
       }
-    } 
-    getAcessToken()
-  })
+    };
+    getAcessToken();
+  });
 
   useEffect(() => {
-    if(customerData?.customer?.id) {
-      setUser(customerData.customer)
+    if (checkoutData) {
+      checkoutIdVar(checkoutData?.checkoutCreate?.checkout?.id);
     }
-  },[customerData])
+  }, [checkoutData]);
 
   useEffect(() => {
-    if(checkoutData) {
-      checkoutIdVar(checkoutData?.checkoutCreate?.checkout?.id)
-    }
-  }, [checkoutData])
-
-  useEffect(() => {
-    if (!cartId) {
-      createCart({
-        variables: {
-          lines: []
-        }
-      });
-    }
-  }, [cartId]);
-
-  useEffect(() => {
-    if (cartCreateData) {
-      cartIdVar(cartCreateData?.cartCreate?.cart?.id);
-    }
-  }, [cartCreateData]);
-
-  useEffect(() => {
-    if (cartId) {
+    if (cart?.id) {
       getCartDetails({
         variables: {
-          cartId,
+          cartId: cart?.id,
         },
-        fetchPolicy: "network-only"
-      })
+      });
     }
-  }, [cartId]);
+  }, [cart, user]);
 
-  const checkoutLineItems = cartDetailsData?.cart?.lines?.edges.map(item => {
+  useEffect(() => {
+
+    const lastIncompleteCheckout = user?.lastIncompleteCheckout;
+    if (lastIncompleteCheckout) {
+      const incompleLineItems = lastIncompleteCheckout?.lineItems?.edges?.map(
+        (item) => ({
+          merchandiseId: item?.node?.variant?.id,
+          quantity: item?.node?.quantity,
+        })
+      );
+
+      if (incompleLineItems?.length > 0) {
+        addLineItem({
+          variables: {
+            cartId: cart?.id,
+            lines: incompleLineItems,
+          },
+          onCompleted: () => {
+            refetch();
+          },
+        });
+      }
+    }
+  }, [user]);
+
+
+  const checkoutLineItems = cartDetailsData?.cart?.lines?.edges.map((item) => {
     return {
       variantId: item?.node?.merchandise?.id,
-      quantity: item?.node?.quantity
-    }
-  })
+      quantity: item?.node?.quantity,
+    };
+  });
 
-  const cartProducts = cartDetailsData?.cart?.lines?.edges || []
+  const cartProducts = cartDetailsData?.cart?.lines?.edges || [];
 
 
-  if (cartCreateLoading) return <LoadingFullScreen />;
-  if (cartDetailsError)
-    return (
-      <View className="flex-1 justify-center items-center">
-        <Text>Error occured {cartDetailsError.message}</Text>
-      </View>
-    );
   return (
     <View className="flex-1">
       {cartDetailsLoading && <LoadingFullScreen />}
@@ -274,7 +273,7 @@ export default function CartScreen() {
           </View>
         </View>
       </SafeAreaView>
-      {cartDetailsData?.cart?.lines?.edges.length === 0 && (
+      {cartProducts.length === 0 && (
         <View className="flex-1 items-center justify-center bg-white">
           <View className="w-[120px] h-[100px]">
             <Image
@@ -295,28 +294,37 @@ export default function CartScreen() {
           </TouchableOpacity>
         </View>
       )}
-      {cartDetailsData?.cart?.lines?.edges.length > 0 && (
+      {cartProducts.length > 0 && (
         <Animated.ScrollView>
-          {user2 === null && (<Pressable onPress={() => navigation.navigate("AuthScreen")} className="flex flex-row justify-between bg-white py-4 my-3">
-            <View className="flex flex-row gap-2 items-center">
-              <UserIcon size={24} color="black" />
-              <Text className="text-[14px] text-black font-medium">
-                Log in or create an account for faster checkout
-              </Text>
-            </View>
-            <ChevronRightIcon size={24} color="black" />
-          </Pressable>)}
+          {user === null && (
+            <Pressable
+              onPress={() => navigation.navigate("AuthScreen")}
+              className="flex flex-row justify-between bg-white py-4 my-3"
+            >
+              <View className="flex flex-row gap-2 items-center">
+                <UserIcon size={24} color="black" />
+                <Text className="text-[14px] text-black font-medium">
+                  Log in or create an account for faster checkout
+                </Text>
+              </View>
+              <ChevronRightIcon size={24} color="black" />
+            </Pressable>
+          )}
           {cartProducts.map((item) => {
-            return <CartCard
-              key={item?.node?.id}
-              lineItem={item?.node}
-              handleLineItemUpdate={handleLineItemUpdate}
-              onRemove={() => handleItemRemove(item?.node?.id)}
-            />
+            return (
+              <CartCard
+                key={item?.node?.id}
+                lineItem={item?.node}
+                handleLineItemUpdate={handleLineItemUpdate}
+                onRemove={() => handleItemRemove(item?.node?.id)}
+              />
+            );
           })}
 
           <GiftToggleContainer />
-          <CoupenToggleContainer discountCodes={cartDetailsData?.cart?.discountCodes}/>
+          <CoupenToggleContainer
+            discountCodes={cartDetailsData?.cart?.discountCodes}
+          />
 
           <View className="px-3 bg-white py-3 mt-3">
             <View className="flex-row justify-between items-center py-2">
@@ -329,9 +337,7 @@ export default function CartScreen() {
               </Text>
             </View>
             <View className="flex-row justify-between items-center py-2">
-              <Text className="text-[16px] text-black font-normal">
-                Tax
-              </Text>
+              <Text className="text-[16px] text-black font-normal">Tax</Text>
               <Text className="text-[16px] text-black font-normal">
                 {cartDetailsData?.cart?.cost?.totalTaxAmount?.amount}{" "}
                 {cartDetailsData?.cart?.cost?.totalTaxAmount?.currencyCode}
