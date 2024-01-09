@@ -691,6 +691,7 @@ export const GET_BUYER_DETAILS = gql`
           city
           province
           country
+          zip
           phone
         }
       }

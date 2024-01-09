@@ -6,7 +6,7 @@ export const CREATE_CHECKOUT = gql`
       checkout {
         id
         webUrl
-        shippingAddress{
+        shippingAddress {
           id
           firstName
           lastName
@@ -17,7 +17,7 @@ export const CREATE_CHECKOUT = gql`
           countryCodeV2
           phone
           zip
-      }
+        }
       }
       checkoutUserErrors {
         message
@@ -28,7 +28,10 @@ export const CREATE_CHECKOUT = gql`
 `;
 
 export const ADD_CHECKOUT_LINES = gql`
-  mutation checkoutLineItemsAdd($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+  mutation checkoutLineItemsAdd(
+    $checkoutId: ID!
+    $lineItems: [CheckoutLineItemInput!]!
+  ) {
     checkoutLineItemsAdd(checkoutId: $checkoutId, lineItems: $lineItems) {
       checkout {
         id
@@ -41,10 +44,13 @@ export const ADD_CHECKOUT_LINES = gql`
 `;
 
 export const REPLACE_CHECKOUT_LINES = gql`
-  mutation checkoutLineItemsReplace($checkoutId: ID!, $lineItems: [CheckoutLineItemInput!]!) {
+  mutation checkoutLineItemsReplace(
+    $checkoutId: ID!
+    $lineItems: [CheckoutLineItemInput!]!
+  ) {
     checkoutLineItemsReplace(checkoutId: $checkoutId, lineItems: $lineItems) {
       checkout {
-      id
+        id
       }
       userErrors {
         field
@@ -55,9 +61,9 @@ export const REPLACE_CHECKOUT_LINES = gql`
 `;
 
 export const CREATE_CART = gql`
-  mutation createCart($input: CartInput!){
-    cartCreate(input:$input){
-      cart{
+  mutation createCart($input: CartInput!) {
+    cartCreate(input: $input) {
+      cart {
         id
       }
     }
@@ -68,9 +74,7 @@ export const CREATE_CART_WITH_CUSTOM_ID = gql`
   mutation checkoutCreateWithCustomId($productQuantity: Int!, $productId: ID!) {
     checkoutCreate(
       input: {
-        lineItems: [
-          { quantity: $productQuantity, variantId: $productId }
-        ]
+        lineItems: [{ quantity: $productQuantity, variantId: $productId }]
       }
     ) {
       checkout {
@@ -99,11 +103,9 @@ export const CREATE_EMPTY_CART = gql`
 `;
 
 export const CREATE_CART_EMPTY_V2 = gql`
-  mutation createCart{
-    cartCreate(input:{
-      lines:[],
-    }){
-      cart{
+  mutation createCart {
+    cartCreate(input: { lines: [] }) {
+      cart {
         id
       }
     }
@@ -111,10 +113,20 @@ export const CREATE_CART_EMPTY_V2 = gql`
 `;
 
 export const ADD_CART_ITEM = gql`
-  mutation checkoutLineItemAdd($checkoutId: ID!, $variantId: ID!, $customAttributes: [AttributeInput!]) {
+  mutation checkoutLineItemAdd(
+    $checkoutId: ID!
+    $variantId: ID!
+    $customAttributes: [AttributeInput!]
+  ) {
     checkoutLineItemsAdd(
       checkoutId: $checkoutId
-      lineItems: [{ variantId: $variantId, quantity: 1, customAttributes: $customAttributes }]
+      lineItems: [
+        {
+          variantId: $variantId
+          quantity: 1
+          customAttributes: $customAttributes
+        }
+      ]
     ) {
       checkout {
         id
@@ -137,7 +149,7 @@ export const ADD_CART_ITEM_V2 = gql`
         message
       }
     }
-  } 
+  }
 `;
 
 export const UPDATE_CART_ITEM = gql`
@@ -154,14 +166,11 @@ export const UPDATE_CART_ITEM = gql`
   }
 `;
 
-
 export const ADD_CUSTOM_VARIANT_ID = gql`
   mutation checkoutLineItemAdd($checkoutId: ID!, $customId: ID!) {
     checkoutLineItemsAdd(
       checkoutId: $checkoutId
-      lineItems: [
-          { quantity: 1, variantId: $customId }
-        ]
+      lineItems: [{ quantity: 1, variantId: $customId }]
     ) {
       checkout {
         id
@@ -174,7 +183,7 @@ export const ADD_CUSTOM_VARIANT_ID = gql`
 `;
 
 export const REMOVE_CART_ITEM_V2 = gql`
-    mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
+  mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         id
@@ -212,6 +221,18 @@ export const ADD_CHECKOUT_SHIPPING_ADDRESS = gql`
     ) {
       checkout {
         id
+        shippingAddress {
+          id
+          firstName
+          lastName
+          address1
+          address2
+          country
+          province
+          city
+          zip
+          phone
+        }
       }
       checkoutUserErrors {
         message
@@ -257,7 +278,7 @@ export const UPDATE_CART_DISCOUT_CODE = gql`
     cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
       cart {
         id
-        discountCodes{
+        discountCodes {
           code
           applicable
         }
@@ -271,8 +292,8 @@ export const UPDATE_CART_DISCOUT_CODE = gql`
 `;
 
 export const UPDATE_CART_NOTE = gql`
-  mutation cartNoteUpdate($cartId: ID!, $note:String!) {
-    cartNoteUpdate(cartId: $cartId, note:$note) {
+  mutation cartNoteUpdate($cartId: ID!, $note: String!) {
+    cartNoteUpdate(cartId: $cartId, note: $note) {
       cart {
         id
         note
@@ -286,42 +307,51 @@ export const UPDATE_CART_NOTE = gql`
 `;
 
 export const CHECKOUT_CUSTOMER_ASSOCIATE = gql`
-mutation checkoutCustomerAssociateV2($checkoutId: ID!, $customerAccessToken: String!) {
-  checkoutCustomerAssociateV2(checkoutId: $checkoutId, customerAccessToken: $customerAccessToken) {
-    checkout {
-     id
-      email
-      shippingAddress{
+  mutation checkoutCustomerAssociateV2(
+    $checkoutId: ID!
+    $customerAccessToken: String!
+  ) {
+    checkoutCustomerAssociateV2(
+      checkoutId: $checkoutId
+      customerAccessToken: $customerAccessToken
+    ) {
+      checkout {
         id
-        address1
-        address2
-        name
-        firstName
-        lastName
-      }
-      buyerIdentity{
-        countryCode
-      }
-      lineItems(first:5){
-        edges{
-          node{
-            id
+        email
+        shippingAddress {
+          id
+          address1
+          address2
+          name
+          firstName
+          lastName
+        }
+        buyerIdentity {
+          countryCode
+        }
+        lineItems(first: 5) {
+          edges {
+            node {
+              id
+            }
           }
         }
       }
-    }
-    checkoutUserErrors {
-      message
-    }
-    customer {
-      email
+      checkoutUserErrors {
+        message
+      }
+      customer {
+        email
+      }
     }
   }
-}
 `;
 
 export const CART_BUYER_IDENTITY_UPDATE = gql`
-  mutation cartBuyerIdentityUpdate($buyerIdentity: CartBuyerIdentityInput!, $cartId: ID!) {
+  mutation cartBuyerIdentityUpdate(
+    $buyerIdentity: CartBuyerIdentityInput!
+    $cartId: ID!
+  ) {
     cartBuyerIdentityUpdate(buyerIdentity: $buyerIdentity, cartId: $cartId) {
       cart {
         id
@@ -332,11 +362,17 @@ export const CART_BUYER_IDENTITY_UPDATE = gql`
       }
     }
   }
-`
+`;
 
 export const CUSTOMER_ADDRESS_CREATE = gql`
-  mutation customerAddressCreate($address: MailingAddressInput!, $customerAccessToken: String!) {
-    customerAddressCreate(address: $address, customerAccessToken: $customerAccessToken) {
+  mutation customerAddressCreate(
+    $address: MailingAddressInput!
+    $customerAccessToken: String!
+  ) {
+    customerAddressCreate(
+      address: $address
+      customerAccessToken: $customerAccessToken
+    ) {
       customerAddress {
         id
         firstName
@@ -346,11 +382,19 @@ export const CUSTOMER_ADDRESS_CREATE = gql`
       }
     }
   }
-`
+`;
 
 export const CUSTOMER_ADDRESS_UPDATE = gql`
-  mutation customerAddressUpdate($address: MailingAddressInput!, $customerAccessToken: String!, $id: ID!) {
-    customerAddressUpdate(address: $address, customerAccessToken: $customerAccessToken, id: $id) {
+  mutation customerAddressUpdate(
+    $address: MailingAddressInput!
+    $customerAccessToken: String!
+    $id: ID!
+  ) {
+    customerAddressUpdate(
+      address: $address
+      customerAccessToken: $customerAccessToken
+      id: $id
+    ) {
       customerAddress {
         id
       }
@@ -359,23 +403,28 @@ export const CUSTOMER_ADDRESS_UPDATE = gql`
       }
     }
   }
-`
+`;
 
 export const CUSTOMER_ADDRESS_DELETE = gql`
-mutation customerAddressDelete($customerAccessToken: String!, $id: ID!) {
-  customerAddressDelete(customerAccessToken: $customerAccessToken, id: $id) {
-    customerUserErrors {
-      message
+  mutation customerAddressDelete($customerAccessToken: String!, $id: ID!) {
+    customerAddressDelete(customerAccessToken: $customerAccessToken, id: $id) {
+      customerUserErrors {
+        message
+      }
+      deletedCustomerAddressId
     }
-    deletedCustomerAddressId
   }
-}
-
-`
+`;
 
 export const CUSTOMER_DEFAULT_ADDRESS_UPDATE = gql`
-  mutation customerDefaultAddressUpdate($addressId: ID!, $customerAccessToken: String!) {
-    customerDefaultAddressUpdate(addressId: $addressId, customerAccessToken: $customerAccessToken) {
+  mutation customerDefaultAddressUpdate(
+    $addressId: ID!
+    $customerAccessToken: String!
+  ) {
+    customerDefaultAddressUpdate(
+      addressId: $addressId
+      customerAccessToken: $customerAccessToken
+    ) {
       customer {
         id
       }
@@ -384,66 +433,71 @@ export const CUSTOMER_DEFAULT_ADDRESS_UPDATE = gql`
       }
     }
   }
-`
+`;
 
 export const CHECKOUT_DISCOUNT_CODE_APPLY = gql`
-mutation checkoutDiscountCodeApplyV2($checkoutId: ID!, $discountCode: String!) {
-  checkoutDiscountCodeApplyV2(checkoutId: $checkoutId, discountCode: $discountCode) {
-    checkout {
-      id
-    }
-    checkoutUserErrors {
-      message
+  mutation checkoutDiscountCodeApplyV2(
+    $checkoutId: ID!
+    $discountCode: String!
+  ) {
+    checkoutDiscountCodeApplyV2(
+      checkoutId: $checkoutId
+      discountCode: $discountCode
+    ) {
+      checkout {
+        id
+      }
+      checkoutUserErrors {
+        message
+      }
     }
   }
-}
-`
+`;
 export const CREATE_CUSTOMER = gql`
   mutation customerCreate($input: CustomerCreateInput!) {
-  customerCreate(input: $input) {
-    customer {
-      id
-      firstName
-      lastName
-      email
-      acceptsMarketing
-      addresses(first:50){
-        edges{
-          node{
-            id
-            name
-            firstName
-            lastName
-            address1
-            address2
-            city
-            country
-            countryCodeV2
-            phone
-            province
-            zip
-          }
-        }
-      }
-      defaultAddress{
+    customerCreate(input: $input) {
+      customer {
         id
-        name
         firstName
         lastName
-        address1
-        address2
-        city
-        country
-        countryCodeV2
-        phone
-        province
-        zip
+        email
+        acceptsMarketing
+        addresses(first: 50) {
+          edges {
+            node {
+              id
+              name
+              firstName
+              lastName
+              address1
+              address2
+              city
+              country
+              countryCodeV2
+              phone
+              province
+              zip
+            }
+          }
+        }
+        defaultAddress {
+          id
+          name
+          firstName
+          lastName
+          address1
+          address2
+          city
+          country
+          countryCodeV2
+          phone
+          province
+          zip
+        }
+      }
+      customerUserErrors {
+        message
       }
     }
-    customerUserErrors {
-      message
-    }
   }
-}
-
-`
+`;

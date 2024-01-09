@@ -31,7 +31,7 @@ import {
   ADD_CHECKOUT_SHIPPING_ADDRESS,
   CUSTOMER_ADDRESS_CREATE,
 } from "../graphql/mutations";
-import { cartIdVar, checkoutIdVar } from "../App";
+import { cartIdVar, cartVar, checkoutIdVar, userVar } from "../App";
 import {
   GET_AVAILABLE_COUNTRIES,
   GET_AVAILABLE_SHIPPING_RATES,
@@ -45,6 +45,7 @@ import RadioButton from "./RadioButton";
 import MyModal from "./Modal/MyModal";
 import BottomModal from "./Modal/BottomModal";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
+import AddressList from "./AddressList";
 
 // const phoneRegExp =
 //   /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
@@ -75,12 +76,13 @@ const shippingAddressFromSchema = yup.object({
 });
 
 export default function CheckoutShippingAddressUpdate({ route }) {
+  const user = useReactiveVar(userVar)
+  const cart = useReactiveVar(cartVar)
   const shippingFormVisible = route.params?.shippingFormVisible;
   const [userToken, setUserToken] = useState(null);
   const [isFormModalVisible, setFormModalVisible] = useState({
     formModal: true,
   });
-  const [user, setUser] = useState(null);
   const [isUnknown, setUnknown] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({});
   const checkoutId = useReactiveVar(checkoutIdVar);
@@ -176,8 +178,37 @@ export default function CheckoutShippingAddressUpdate({ route }) {
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("my-key");
-      setUserToken(null);
-    } catch (err) {}
+      userVar(null); 
+      await AsyncStorage.removeItem("cart-id");
+      cartVar(null);
+      navigation.navigate('Cart')
+    } catch (err) {
+      console.log('ERROR LOG OUT USER: ', err)
+    }
+  };
+
+  const handleAddressSelection = (item) => {
+    checkoutAddress = {
+      firstName: item.firstName,
+      lastName: item.lastName,
+      address1: item.address1,
+      address2: item.address2,
+      country: item.country,
+      province: item.province,
+      city: item.city,
+      zip: item.zip,
+      phone: item.phone,
+    };
+    console.log("DEFAULT ADDRESS ",item)
+    updateShippingAddress({
+      variables: {
+        checkoutId,
+        shippingAddress: checkoutAddress
+      },
+      onCompleted: (data) => {
+        console.log("UPDATE CHECKOUT ADDRESS SUCCESSFUL: ", data?.checkoutShippingAddressUpdateV2?.checkout?.shippingAddress)
+      }
+    });
   };
 
   useFocusEffect(
@@ -220,13 +251,6 @@ export default function CheckoutShippingAddressUpdate({ route }) {
     }
   }, [shippingAddressScreenData]);
 
-  useEffect(() => {
-    if (customerData?.customer?.id) {
-      setUser(customerData.customer);
-    } else {
-      setUser(null);
-    }
-  }, [customerData]);
 
   useEffect(() => {
     if (emailData && shippingData) {
@@ -285,6 +309,9 @@ export default function CheckoutShippingAddressUpdate({ route }) {
       enabled
       keyboardVerticalOffset={100}
     >
+
+      {shippingLoading && (<LoadingFullScreen />)}
+
       <ScrollView>
         {
           <Formik
@@ -457,35 +484,10 @@ export default function CheckoutShippingAddressUpdate({ route }) {
                   </Text>
                 </View>
 
-                {isLoggedIn && (
-                  <UserShippingAddressList
-                    user={user}
-                    activeAddress={activeAddress}
-                    setActiveAddress={setActiveAddress}
-                    setUnknown={setUnknown}
-                  />
-                )}
-
-                {isLoggedIn && (
-                  <View className="bg-white pb-5">
-                    <Button
-                      onPress={() => setFormModalVisible(true)}
-                      label="Create New Address"
-                      type="action"
-                      size="sm"
-                    />
-                  </View>
-                )}
-
-                {isUnknown && (
-                  <ShippingAddressForm
-                    errors={errors}
-                    touched={touched}
-                    values={values}
-                    handleBlur={handleBlur}
-                    handleChange={handleChange}
-                  />
-                )}
+                <AddressList
+                  intention="selection"
+                  onItemPress={(item) => handleAddressSelection(item)}
+                />
 
                 {isUnknown && (
                   <TouchableOpacity

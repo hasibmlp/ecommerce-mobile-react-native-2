@@ -226,6 +226,11 @@ const ShippingAddressForm = ({
 
   const { data, error, loading } = useQuery(GET_SHIPPING_COUNTRIES);
 
+  const handleCountrySelect = (value) => {
+    setFieldValue('country', value)
+    setCountryModal(false)
+  }
+
   return (
     <View>
       <View>
@@ -325,7 +330,7 @@ const ShippingAddressForm = ({
                     /> */}
           <View className="flex-row justify-between">
             <Text className="text-[16px] text-black font-normal">
-              United Arab Emirates
+              {values.country || 'Select country*'}
             </Text>
             <ChevronDownIcon size={20} color="black" />
           </View>
@@ -356,7 +361,7 @@ const ShippingAddressForm = ({
               <ScrollView className="">
                 {data.shop.shipsToCountries.map((item) => (
                   <Pressable
-                    onPress={() => setCountryModal(false)}
+                    onPress={() => handleCountrySelect('United Arab Emirates')}
                     key={item}
                     className="bg-white w-full h-12 justify-center px-3 border-b border-neutral-200"
                   >

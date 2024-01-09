@@ -18,6 +18,7 @@ import { useState } from "react";
 import { CREATE_CART } from "../graphql/mutations";
 import MyModal from "../components/Modal/MyModal";
 import AddressForm from "../components/AddressForm";
+import AddressList from "../components/AddressList";
 
 const ProfileScreen = () => {
   const user = useReactiveVar(userVar);
@@ -73,37 +74,6 @@ export default ProfileScreen;
 
 const InformationContainer = () => {
   const [activeTab, setActiveTab] = useState("add");
-  const [ addressModalVisible, setAddressModalVisible ] = useState(false)
-  const [ modalAddress, setModalAddress ] = useState('')
-  const user = useReactiveVar(userVar);
-
-  const handleEditButton = (item) => {
-    setAddressModalVisible(true)
-    setModalAddress(item)
-  }
-
-  const handleCreateButton = () => {
-    setAddressModalVisible(true)
-    setModalAddress("new")
-  }
-
-  const userAddresses = user?.addresses?.edges;
-
-  const filteredUserAddresses = userAddresses.map((item) => ({ ...item.node }));
-
-  filteredUserAddresses.sort((a, b) => {
-    const isDefaultAddressA = a.id === user?.defaultAddress?.id;
-    const isDefaultAddressB = b.id === user?.defaultAddress?.id;
-  
-    if (isDefaultAddressA === isDefaultAddressB) {
-      return 0;
-    }
-  
-    return isDefaultAddressA ? -1 : 1;
-  });
-
-
-  console.log('FILTERD AND SORTED ARRAY: ', filteredUserAddresses)
 
   return (
     <View className="mt-3">
@@ -136,71 +106,7 @@ const InformationContainer = () => {
 
       <View className="">
         {activeTab === "add" && (
-          <View className="bg-white">
-            {filteredUserAddresses.length === 0 && (
-              <View className="p-5">
-                <Text className="text-sm text-neutral-500 font-normal">
-                  There is no saved address
-                </Text>
-              </View>
-            )}
-
-            {filteredUserAddresses.length > 0 && filteredUserAddresses.map((item) => {
-              console.log(item?.address1)
-              return(
-              <View key={item?.id} className="flex-row items-center py-3">
-                <View className="p-3 bg-neutral-200 mx-2">
-                  <MapPinIcon size={28} color="black" strokeWidth={1} />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-[16px] text-black font-normal ml-2">
-                    {item?.firstName + " " + item?.lastName}
-                  </Text>
-                  <Text className="text-[16px] text-black font-normal ml-2">
-                    {item?.phone}
-                  </Text>
-                  <Text className="text-[16px] text-black font-normal ml-2 w-[250px]">
-                    {item?.address1 +
-                      ", " +
-                      item?.address2 +
-                      ", " +
-                      item?.city +
-                      ", " +
-                      item?.country +
-                      (item?.zip ? ", " + item?.zip : "")}
-                  </Text>
-                  {user.defaultAddress.id === item?.id && (
-                    <View className="self-start border border-neutral-300 px-2 rounded-md mt-1">
-                      <Text className="text-sm text-black font-medium ">
-                        Default address
-                      </Text>
-                    </View>
-                  )}
-                </View>
-                <View className="p-4">
-                  {/* <PencilIcon size={20} color="black" /> */}
-                  <Button onPress={() => handleEditButton(item)} label="edit" type="action" />
-                </View>
-              </View>
-            )})}
-
-            <MyModal visible={addressModalVisible} slide="toUp">
-              <AddressForm formData={modalAddress} onClose={() => setAddressModalVisible(false)} />
-            </MyModal>
-
-            <Panel
-              onPress={handleCreateButton}
-              style={{ borderTopWidth: 0.5, borderColor: "#ddd" }}
-              alignment="left"
-              rightIcon={<PlusIcon size={22} color="black" />}
-            >
-              <View className="flex-row items-center">
-                <Text className="text-sm font-normal px-5">
-                  Add new address
-                </Text>
-              </View>
-            </Panel>
-          </View>
+          <AddressList />
         )}
         {activeTab === "card" && (
           <Panel alignment="center" label="No Card Information" />
@@ -209,3 +115,4 @@ const InformationContainer = () => {
     </View>
   );
 };
+

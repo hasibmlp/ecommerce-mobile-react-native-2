@@ -158,33 +158,40 @@ export default function CartScreen() {
   }
 
   const handleCheckoutV2 = () => {
-    if (!checkoutId) {
-      createCheckout({
-        variables: {
-          input: {
+
+    if(user) {
+      if (!checkoutId) {
+        createCheckout({
+          variables: {
+            input: {
+              lineItems: checkoutLineItems,
+            },
+          },
+        });
+      } else {
+        replaceCheckoutLines({
+          variables: {
+            checkoutId,
             lineItems: checkoutLineItems,
           },
-        },
-      });
-    } else {
-      replaceCheckoutLines({
-        variables: {
-          checkoutId,
-          lineItems: checkoutLineItems,
-        },
-      });
+        });
+      }
+  
+      if (cartDetailsData?.cart?.discountCodes[0]?.applicable) {
+        checkoutDiscountCodeApply({
+          variables: {
+            checkoutId,
+            discountCode: cartDetailsData?.cart?.discountCodes[0]?.code,
+          },
+        });
+      }
+  
+      navigation.navigate("ShippingAddressUpdateScreen");
+
+    }else{
+      navigation.navigate('CheckoutScreen', { url: cartDetailsData?.cart?.checkoutUrl })
     }
 
-    if (cartDetailsData?.cart?.discountCodes[0]?.applicable) {
-      checkoutDiscountCodeApply({
-        variables: {
-          checkoutId,
-          discountCode: cartDetailsData?.cart?.discountCodes[0]?.code,
-        },
-      });
-    }
-
-    navigation.navigate("ShippingAddressUpdateScreen");
   };
 
   useLayoutEffect(() => {
