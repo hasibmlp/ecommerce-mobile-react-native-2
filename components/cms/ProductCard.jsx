@@ -1,9 +1,9 @@
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import PriceContainer from "../PriceContainer";
 import ColorSwatchImage from "../buttons/ColorSwatchImage";
 import { PlusIcon } from "react-native-heroicons/outline";
 
-export default function ProductCard({context, product,  width=160, height=250, style}) {
+export default function ProductCard({context, product,  width=160, height=250, style, onpress}) {
     const amount = {
         price: product?.priceRange.minVariantPrice.amount,
         comparePrice: product?.compareAtPriceRange?.minVariantPrice.amount,
@@ -13,12 +13,12 @@ export default function ProductCard({context, product,  width=160, height=250, s
     const TOTALNUMBEROFCOLORSHOWN = 4
     const totalNumberOfReminingColor = product?.options.find(op => op.name === 'Color')?.values.length -TOTALNUMBEROFCOLORSHOWN
     return(
-        <View style={[{width},style]} className="justify-center mr-[10px]">
+        <TouchableOpacity onPress={onpress} style={[{width},style]} className="justify-center mr-[10px]">
       <View style={{height}} className="w-full overflow-hidden rounded-[2px] bg-gray-300">
-        {product.images && (
+        {product.featuredImage?.url && (
           <Image
             className="h-full w-full"
-            src={product.images.edges[0].node.url}
+            src={product.featuredImage?.url} 
           />
         )}
       </View>
@@ -39,6 +39,6 @@ export default function ProductCard({context, product,  width=160, height=250, s
             <Text className="ml-1 text-[13px] text-black font-light">{totalNumberOfReminingColor > 0 && '+' +  totalNumberOfReminingColor}</Text>
         </View>}
       </View>
-    </View>
+    </TouchableOpacity>
     )
 }

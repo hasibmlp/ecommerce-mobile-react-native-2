@@ -16,6 +16,8 @@ export const checkoutIdVar = makeVar("");
 export const userVar = makeVar(null)
 export const bottomModaVar = makeVar(false); 
 export const selctedProductForBottomModalVar = makeVar(null);
+export const checkoutVisitedVar = makeVar(false)
+export const isLoggedinFrstTimeVar = makeVar(false)
 
 export const SideBarContext = createContext()
 

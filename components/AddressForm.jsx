@@ -17,17 +17,23 @@ import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 import { GET_CUSTOMER, GET_SHIPPING_COUNTRIES } from "../graphql/queries";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useEffect, useState } from "react";
-import RadioButton from "./RadioButton";
+import RadioButton from "./buttons/RadioButton";
 import { userVar } from "../App";
 import Button from "./buttons/Button";
-import { CUSTOMER_ADDRESS_CREATE, CUSTOMER_ADDRESS_DELETE, CUSTOMER_ADDRESS_UPDATE, CUSTOMER_DEFAULT_ADDRESS_UPDATE } from "../graphql/mutations";
+import {
+  CUSTOMER_ADDRESS_CREATE,
+  CUSTOMER_ADDRESS_DELETE,
+  CUSTOMER_ADDRESS_UPDATE,
+  CUSTOMER_DEFAULT_ADDRESS_UPDATE,
+} from "../graphql/mutations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CheckBox from "./Sidebar/Buttons/Checkbox";
 
 const AddressForm = ({ onClose, formData }) => {
   const user = useReactiveVar(userVar);
   const [userToken, setUserToken] = useState(null);
 
-  console.log(userToken)
+  console.log(userToken);
 
   useEffect(() => {
     const getToken = async () => {
@@ -49,89 +55,108 @@ const AddressForm = ({ onClose, formData }) => {
     CUSTOMER_ADDRESS_CREATE
   );
 
-  const [defaultAddressUpdate, { data: defaultAddressUpdateData, loading: defaultAddressUpdateLoading, error: defaultAddressUpdateError }] = useMutation(CUSTOMER_DEFAULT_ADDRESS_UPDATE)
+  const [
+    defaultAddressUpdate,
+    {
+      data: defaultAddressUpdateData,
+      loading: defaultAddressUpdateLoading,
+      error: defaultAddressUpdateError,
+    },
+  ] = useMutation(CUSTOMER_DEFAULT_ADDRESS_UPDATE);
 
-  const [addressUpdate, { data: addressUpdateData, loading: addressUpdateLoading, error: addressUpdateError }] = useMutation(CUSTOMER_ADDRESS_UPDATE)
+  const [
+    addressUpdate,
+    {
+      data: addressUpdateData,
+      loading: addressUpdateLoading,
+      error: addressUpdateError,
+    },
+  ] = useMutation(CUSTOMER_ADDRESS_UPDATE);
 
-  const [addressDelete, { data: addressDeleteData, loading: addressDeleteLoading, error: addressDeleteError }] = useMutation(CUSTOMER_ADDRESS_DELETE)
+  const [
+    addressDelete,
+    {
+      data: addressDeleteData,
+      loading: addressDeleteLoading,
+      error: addressDeleteError,
+    },
+  ] = useMutation(CUSTOMER_ADDRESS_DELETE);
 
   const handleFormSubmit = (values) => {
-    const shippingAddress = { ...values }
+    const shippingAddress = { ...values };
     shippingAddress.country = "United Arab Emirates";
-    delete shippingAddress.defaultAddress
+    delete shippingAddress.defaultAddress;
 
-    console.log("default address",values)
+    console.log("default address", values);
 
-    if(values?.defaultAddress) {
-        defaultAddressUpdate({
-            variables: {
-                addressId: formData?.id,
-                customerAccessToken: userToken
-            }
-        })
+    if (values?.defaultAddress) {
+      defaultAddressUpdate({
+        variables: {
+          addressId: formData?.id,
+          customerAccessToken: userToken,
+        },
+      });
     }
 
-    if(formData === 'new') {
-        customerAddressCreate({
-          variables: {
-            customerAccessToken: userToken,
-            address: shippingAddress,
-          },
-          onCompleted: (data) => {
-            onClose()
-          },
-          refetchQueries: [
-            {
-                query: GET_CUSTOMER,
-                variables: {
-                    customerAccessToken: userToken
-                }
-            }
-          ]
-        });
-    }else {
-        addressUpdate({
+    if (formData === "new") {
+      customerAddressCreate({
+        variables: {
+          customerAccessToken: userToken,
+          address: shippingAddress,
+        },
+        onCompleted: (data) => {
+          onClose();
+        },
+        refetchQueries: [
+          {
+            query: GET_CUSTOMER,
             variables: {
-                address: shippingAddress,
-                customerAccessToken: userToken,
-                id: formData?.id,
+              customerAccessToken: userToken,
             },
-            onCompleted: () => {
-                onClose()
+          },
+        ],
+      });
+    } else {
+      addressUpdate({
+        variables: {
+          address: shippingAddress,
+          customerAccessToken: userToken,
+          id: formData?.id,
+        },
+        onCompleted: () => {
+          onClose();
+        },
+        refetchQueries: [
+          {
+            query: GET_CUSTOMER,
+            variables: {
+              customerAccessToken: userToken,
             },
-            refetchQueries: [
-                {
-                    query: GET_CUSTOMER,
-                    variables: {
-                        customerAccessToken: userToken
-                    }
-                }
-            ]
-        })
+          },
+        ],
+      });
     }
-
-
   };
 
   const handleAddressDelete = () => {
     addressDelete({
-        variables: {
+      variables: {
+        customerAccessToken: userToken,
+        id: formData?.id,
+      },
+      onCompleted: () => {
+        onClose();
+      },
+      refetchQueries: [
+        {
+          query: GET_CUSTOMER,
+          variables: {
             customerAccessToken: userToken,
-            id: formData?.id
+          },
         },
-        onCompleted: () => {
-            onClose()
-        },
-        refetchQueries: [
-            {
-                query: GET_CUSTOMER,
-                variables: {
-                    customerAccessToken: userToken
-                }
-            }
-        ]
-    })
-  }
+      ],
+    });
+  };
 
   console.log(data);
   console.log(loading);
@@ -168,7 +193,7 @@ const AddressForm = ({ onClose, formData }) => {
           values,
           errors,
           touched,
-          setFieldValue
+          setFieldValue,
         }) => (
           <View className="flex-1">
             <View className="px-4 py-3 bg-gray-100 ">
@@ -177,9 +202,9 @@ const AddressForm = ({ onClose, formData }) => {
               </Text>
             </View>
 
-            {loading && (<LoadingFullScreen />)}
-            {addressUpdateLoading && (<LoadingFullScreen />)}
-            {addressDeleteLoading && (<LoadingFullScreen />)}
+            {loading && <LoadingFullScreen />}
+            {addressUpdateLoading && <LoadingFullScreen />}
+            {addressDeleteLoading && <LoadingFullScreen />}
 
             <ShippingAddressForm
               formData={formData}
@@ -200,8 +225,15 @@ const AddressForm = ({ onClose, formData }) => {
               </Text>
             </TouchableOpacity>
 
-            {formData !== 'new' && (<Button onPress={handleAddressDelete} style={{marginTop: 22}} label="remove address" type="action" flex={false}/>)}
-
+            {formData !== "new" && (
+              <Button
+                onPress={handleAddressDelete}
+                style={{ marginTop: 22 }}
+                label="remove address"
+                type="action"
+                flex={false}
+              />
+            )}
           </View>
         )}
       </Formik>
@@ -219,7 +251,7 @@ const ShippingAddressForm = ({
   handleBlur,
   handleSubmit,
   formData,
-  setFieldValue
+  setFieldValue,
 }) => {
   const user = useReactiveVar(userVar);
   const [countryModal, setCountryModal] = useState(false);
@@ -227,9 +259,9 @@ const ShippingAddressForm = ({
   const { data, error, loading } = useQuery(GET_SHIPPING_COUNTRIES);
 
   const handleCountrySelect = (value) => {
-    setFieldValue('country', value)
-    setCountryModal(false)
-  }
+    setFieldValue("country", value);
+    setCountryModal(false);
+  };
 
   return (
     <View>
@@ -284,9 +316,7 @@ const ShippingAddressForm = ({
         <View className="px-4 py-3 border-b border-gray-100 bg-white">
           <Text
             className={`text-[16px] ${
-              errors.phone && touched.phone
-                ? "text-red-500"
-                : "text-black"
+              errors.phone && touched.phone ? "text-red-500" : "text-black"
             } font-medium mb-1`}
           >
             Phone*
@@ -330,7 +360,7 @@ const ShippingAddressForm = ({
                     /> */}
           <View className="flex-row justify-between">
             <Text className="text-[16px] text-black font-normal">
-              {values.country || 'Select country*'}
+              {values.country || "Select country*"}
             </Text>
             <ChevronDownIcon size={20} color="black" />
           </View>
@@ -361,7 +391,7 @@ const ShippingAddressForm = ({
               <ScrollView className="">
                 {data.shop.shipsToCountries.map((item) => (
                   <Pressable
-                    onPress={() => handleCountrySelect('United Arab Emirates')}
+                    onPress={() => handleCountrySelect("United Arab Emirates")}
                     key={item}
                     className="bg-white w-full h-12 justify-center px-3 border-b border-neutral-200"
                   >
@@ -497,13 +527,17 @@ const ShippingAddressForm = ({
           />
         </View>
 
-        {formData !== 'new' && (<Pressable
-            onPress={() => setFieldValue('defaultAddress', !values.defaultAddress)}
-          className="flex-row items-center px-4 mt-3"
-        >
-          <RadioButton checked={values.defaultAddress} />
-          <Text className="text-base ml-2">Set this as default address</Text>
-        </Pressable>)}
+        {formData !== "new" && (
+          <Pressable
+            onPress={() =>
+              setFieldValue("defaultAddress", !values.defaultAddress)
+            }
+            className="flex-row items-center px-4 mt-3"
+          >
+            <CheckBox active={values.defaultAddress} />
+            <Text className="text-base ml-2">Set this as default address</Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );

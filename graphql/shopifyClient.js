@@ -5,7 +5,7 @@ import { relayStylePagination } from "@apollo/client/utilities";
 const token = "ff031bf264f816c80da166c05bc93a87";
 
 const httpLink = createHttpLink({
-  uri: "https://shopscrubsandclogs.com/api/2021-07/graphql.json",
+  uri: "https://shopscrubsandclogs.com/api/2024-01/graphql.json",
 });
 
 const authLink = setContext((_, { headers }) => {

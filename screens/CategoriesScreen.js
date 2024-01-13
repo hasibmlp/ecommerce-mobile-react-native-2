@@ -13,9 +13,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSelector } from "react-redux";
 import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import { GET_CATEGORIES_OF_COLLECTIONS } from "../graphql/queries";
 import LoadingScreen from "../components/LoadingScreen";
+import { userVar } from "../App";
 
 const TAB_WIDTH = 150;
 
@@ -275,6 +276,9 @@ const tabsArray = [
 ];
 
 export default function CategoriesScreen() {
+  const user = useReactiveVar(userVar)
+
+  console.log("USER LOGGED IN CATEGORY SCREEN : ", user?.email);
   const [activeContent, setActiveContent] = useState([]);
   const [activeSubMenuIndex, setActiveSubMenuIndex] = useState(null)
   const scrollRef = useRef()

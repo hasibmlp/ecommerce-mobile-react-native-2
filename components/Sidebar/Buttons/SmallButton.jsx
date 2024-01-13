@@ -4,9 +4,8 @@ import { XMarkIcon } from "react-native-heroicons/outline"
 import { SideBarContext } from "../../../App"
 import { FilterSelectionContext } from "../../../contexts/FilterSelectionContext"
 
-export default function SmallButton ({title, id, showsWithActiveOnly=true}) {
+export default function SmallButton ({title, id, showsWithActiveOnly=true, setActiveFilterInput, setLoading}) {
     const [active , setActive] = useState(true)
-    const {setActiveFilterInput, setLoading} = useContext(FilterSelectionContext)
     const handlePress = () => {
         setLoading(true)
         if(showsWithActiveOnly){

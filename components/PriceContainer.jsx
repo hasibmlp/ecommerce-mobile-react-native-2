@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 
-export default function PriceContainer({amount, size='md', withTax=false, withOfferTag=false, containerStyle}) {
+export default function PriceContainer({amount, size='md', withTax=false, withOfferTag=false, containerStyle, position="center"}) {
     const {price, comparePrice, currencyCode} = amount
     const discountPercentage = Math.round(((comparePrice - price) / comparePrice) * 100)
     const isDiscountApplyed = price < comparePrice
@@ -21,7 +21,7 @@ export default function PriceContainer({amount, size='md', withTax=false, withOf
     }
     
     return(
-      <View style={containerStyle} className="items-center">
+      <View style={containerStyle} className={`${position === 'left' ? 'items-start' : position === 'right' ? 'items-end' : 'items-center'}`}>
         <View className="flex-row items-center">
           <Text className={`${mainTextSize} font-normal text-[#4baaca]`}>
               {price} {currencyCode}

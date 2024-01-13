@@ -8,8 +8,8 @@ import AddressForm from "./AddressForm";
 import Panel from "./actions/Panel";
 import { useState } from "react";
 import Button from "./buttons/Button";
-import CheckBox from "./Sidebar/Checkbox";
-import RadioButton from "./RadioButton";
+import CheckBox from "./Sidebar/Buttons/Checkbox";
+import RadioButton from "./buttons/RadioButton";
 
 const AddressList = ({
   intention = "default",
@@ -36,7 +36,9 @@ const AddressList = ({
 
   const userAddresses = user?.addresses?.edges;
 
-  const filteredUserAddresses = userAddresses?.map((item) => ({ ...item.node }));
+  const filteredUserAddresses = userAddresses?.map((item) => ({
+    ...item.node,
+  }));
 
   filteredUserAddresses?.sort((a, b) => {
     const isDefaultAddressA = a?.id === user?.defaultAddress?.id;
@@ -60,7 +62,7 @@ const AddressList = ({
       )}
       {filteredUserAddresses?.length > 0 &&
         filteredUserAddresses?.map((item) => {
-          let checked = false
+          let checked = false;
           if (selectedAddress) {
             const customerAddressToCheck = {
               address1: item?.address1?.length > 0 ? item?.address1 : undefined,
@@ -69,20 +71,48 @@ const AddressList = ({
               province: item?.province?.length > 0 ? item?.province : undefined,
               city: item?.city?.length > 0 ? item?.city : undefined,
               zip: item?.zip?.length > 5 ? item?.zip : undefined,
-              firstName: item?.firstName?.length > 0 ? item?.firstName : undefined,
+              firstName:
+                item?.firstName?.length > 0 ? item?.firstName : undefined,
               lastName: item?.lastName?.length > 0 ? item?.lastName : undefined,
               phone: item?.phone?.length > 0 ? item?.phone : undefined,
             };
             const checkoutAddressToCheck = {
-              address1: selectedAddress?.address1?.length > 0 ? selectedAddress?.address1 : undefined,
-              address2: selectedAddress?.address2?.length > 0 ? selectedAddress?.address2 : undefined,
-              country: selectedAddress?.country?.length > 0 ? selectedAddress?.country : undefined,
-              province: selectedAddress?.province?.length > 0 ? selectedAddress?.province : undefined,
-              city: selectedAddress?.city?.length > 0 ? selectedAddress?.city : undefined,
-              zip: selectedAddress?.zip?.length > 5 ? selectedAddress?.zip : undefined,
-              firstName: selectedAddress?.firstName?.length > 0 ? selectedAddress?.firstName : undefined,
-              lastName: selectedAddress?.lastName?.length > 0 ? selectedAddress?.lastName : undefined,
-              phone: selectedAddress?.phone?.length > 0 ? selectedAddress?.phone : undefined,
+              address1:
+                selectedAddress?.address1?.length > 0
+                  ? selectedAddress?.address1
+                  : undefined,
+              address2:
+                selectedAddress?.address2?.length > 0
+                  ? selectedAddress?.address2
+                  : undefined,
+              country:
+                selectedAddress?.country?.length > 0
+                  ? selectedAddress?.country
+                  : undefined,
+              province:
+                selectedAddress?.province?.length > 0
+                  ? selectedAddress?.province
+                  : undefined,
+              city:
+                selectedAddress?.city?.length > 0
+                  ? selectedAddress?.city
+                  : undefined,
+              zip:
+                selectedAddress?.zip?.length > 5
+                  ? selectedAddress?.zip
+                  : undefined,
+              firstName:
+                selectedAddress?.firstName?.length > 0
+                  ? selectedAddress?.firstName
+                  : undefined,
+              lastName:
+                selectedAddress?.lastName?.length > 0
+                  ? selectedAddress?.lastName
+                  : undefined,
+              phone:
+                selectedAddress?.phone?.length > 0
+                  ? selectedAddress?.phone
+                  : undefined,
             };
             // console.log("customer address : ",customerAddressToCheck)
             // console.log("checkout address : ",checkoutAddressToCheck)
@@ -90,8 +120,6 @@ const AddressList = ({
               JSON.stringify(customerAddressToCheck) ===
               JSON.stringify(checkoutAddressToCheck);
           }
-
-
 
           return (
             <Pressable

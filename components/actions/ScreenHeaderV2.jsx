@@ -14,6 +14,8 @@ export default function ScreenHeaderV2({scrollRef, layout, title, left, right, c
         opacity: opacity,
       };
     });
+
+
     return (
       <View className={`w-full h-12 ${fly && 'absolute top-0'} z-50`}>
   
@@ -23,7 +25,7 @@ export default function ScreenHeaderV2({scrollRef, layout, title, left, right, c
           <View className="flex-row items-center">{right}</View>
       </View>
   
-      <Animated.View style={scrollRef ? headerAnimatedStyle: {}} className="h-12 w-full items-center bg-white justify-center absolute top-0">
+      <Animated.View style={scrollRef?.value ? {}: {}} className="h-12 w-full items-center bg-white justify-center absolute top-0">
           <View className="h-full absolute left-4 flex-row items-center">{left}</View>
           {!children && (<Text className="text-[16px] font-normal text-black">
             {title?.length > 20 ? title.slice(0, 20) + '...' : title}

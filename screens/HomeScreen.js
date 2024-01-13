@@ -8,8 +8,13 @@ import HomeHeader from "../components/HomeHeader";
 import GenderSelector from "../components/GenderSelector";
 import GreetingHeader from "../components/GreetingHeader";
 import MainContentV2 from "../components/MainContentV2";
+import { userVar } from "../App";
+import { useReactiveVar } from "@apollo/client";
 
 export default function HomeScreen() {
+  const user = useReactiveVar(userVar)
+
+  console.log("USER LOGGED IN HOME SCREEN : ", user?.email);
   const [toggleGenderMenuBar, setToggleGenderMenuBar] = useState(false);
   const navigation = useNavigation();
 

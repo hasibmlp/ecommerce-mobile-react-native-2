@@ -1,9 +1,7 @@
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import BrandCard from "../BrandCard";
-import { useNavigation } from "@react-navigation/native";
 
 export default function BrandCardContainer({ content }) {
-    const navigation = useNavigation()
     return (
       <View className="bg-white py-4 mb-3">
         <ScrollView

@@ -27,7 +27,7 @@ import { useFonts } from "expo-font";
 
 import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
-import HeartButton from "../components/HeartButton";
+import HeartButton from "../components/buttons/HeartButton";
 import {
   VariantSelectionContext,
   VariantSelectionProvider,
@@ -56,6 +56,8 @@ import { Formik } from "formik";
 import ImageSelection from "../components/customization/ImageSelection";
 import Selection from "../components/customization/Selection";
 import ColorSelection from "../components/customization/ColorSelection";
+import { userVar } from "../App";
+import { useReactiveVar } from "@apollo/client";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -64,6 +66,9 @@ const themeColor = "bg-[#4baaca]";
 const textColor = "text-[#4baaca]";
 
 export default function ProductDetailScreen({ route }) {
+  const user = useReactiveVar(userVar)
+
+  console.log("USER LOGGED IN PRODUCT SCREEN : ", user?.email);
   const navigation = useNavigation();
   const { productId, colorValue } = route.params;
   const scrollRef = useSharedValue(0);

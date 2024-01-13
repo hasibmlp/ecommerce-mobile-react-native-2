@@ -10,7 +10,7 @@ import {
   MagnifyingGlassIcon,
   RectangleStackIcon,
 } from "react-native-heroicons/outline";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HomeScreen from "../screens/HomeScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
@@ -21,18 +21,16 @@ import MoreOptionsScreen from "../screens/MoreOptionsScreen";
 import SearchScreen from "../screens/SearchScreen";
 import CategoriesScreen from "../screens/CategoriesScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
-import CheckoutShippingAddressUpdate from "../components/CheckoutShippingAddressUpdate";
-import CheckoutReview from "../components/CheckoutReview";
-import Collection from "../components/Collection";
+import Collection from "../screens/CollectionScreen";
 import AuthScreen from "../screens/AuthScreen";
-import UserAndAddress from "../components/cart/UserAndAddress";
-import InitialSplashScreen from "../components/splash/InitialSplashScreen";
+import InitialSplashScreen from "../screens/InitialSplashScreen";
 import { useEffect, useState } from "react";
 import { cartIdVar, cartVar, userVar } from "../App";
 import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
-import { GET_CART_DETAILS, GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
+import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import ProfileScreen from "../screens/ProfileScreen";
-import { CREATE_CART } from "../graphql/mutations";
+import { CART_BUYER_IDENTITY_UPDATE, CREATE_CART } from "../graphql/mutations";
+import SearchResultsScreen from "../screens/SearchResultsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,156 +54,76 @@ export function Home() {
         component={ProductDetailScreen}
       />
       <Stack.Screen name="FavouriteScreen" component={FavouriteScreen} />
-      <Stack.Screen
-        name="NotificationScreen"
-        component={NotificationScreen}
-      />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
     </Stack.Navigator>
   );
 }
 
 export function CartScreens() {
-  const navigation = useNavigation();
+  const user = useReactiveVar(userVar);
+
   return (
     <Stack.Navigator>
       <Stack.Screen name="Cart" component={CartScreen} />
-      <Stack.Screen name="CheckoutScreen" component={CheckoutScreen} />
       <Stack.Screen
-        name="ShippingAddressUpdateScreen"
-        component={CheckoutShippingAddressUpdate}
-        options={{ title: "Shipping Address" }}
+        navigationKey={user ? "user" : "guest"}
+        name="CheckoutScreen"
+        component={CheckoutScreen}
       />
-      <Stack.Screen name="UserAndAddressScreen" component={UserAndAddress}/>
+    </Stack.Navigator>
+  );
+}
+
+export function SearchScreens({route}) {
+  
+  return (
+    <Stack.Navigator>
       <Stack.Screen
-        name="CheckoutReviewScreen"
-        component={CheckoutReview}
+        name="SearchScreens"
+        component={SearchScreen}
         options={{
-          title: "Checkout Review",
-          headerLeft: () => (
-            <HeaderBackButton
-              onPress={() => {
-                navigation.navigate("Cart");
-              }}
-              label="Bag"
-            />
-          ),
+          headerShown: false,
         }}
+      />
+      <Stack.Screen
+        name="SearchResultsScreen"
+        component={SearchResultsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProductDetailScreenInSearch"
+        component={ProductDetailScreen}
       />
     </Stack.Navigator>
   );
 }
 
 export const MoreOptionsScreens = () => {
-  const user = useReactiveVar(userVar)
+  const user = useReactiveVar(userVar);
   return (
     <Stack.Navigator>
-      <Stack.Screen name="MoreOptionHome" component={MoreOptionsScreen} options={{
-        headerShown: false
-      }} />
       <Stack.Screen
-       navigationKey={user ? 'user' : 'guest'}
-       name="ProfileScreen"
-       component={ProfileScreen} options={{
-       headerShown: false
-      }} />
+        name="MoreOptionHome"
+        component={MoreOptionsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        navigationKey={user ? "user" : "guest"}
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export function HomeTabs() {
-  const user = useReactiveVar(userVar)
-  const cartGlobalId = useReactiveVar(cartIdVar)
-  const cart = useReactiveVar(cartVar)
-
-  const [ createCart ] = useMutation(CREATE_CART)
-  const [ getCartDetails, { data: cartDetailData } ] = useLazyQuery(GET_CART_DETAILS_V2)
-
-  // useEffect(() => {
-  //   async () => {
-  //     try{
-  //       await AsyncStorage.setItem('app-initial', true)
-  //     }catch(e){
-
-  //     }
-  //   }
-  // }, [])
-
-  // useEffect(() => {
-  //   const rm = async () => {
-  //     await AsyncStorage.removeItem('cart-id')
-  //   }
-  //   rm()
-  // }, [])
-
-  useEffect(() => {
-  
-    const setCart = async () => {
-      try {
-        const token = await AsyncStorage.getItem('my-key');
-        const cartId = await AsyncStorage.getItem('cart-id');
-  
-        console.log("CART ID", cartId);
-  
-        const cartInput = token ? { email: user.email, phone: user.phone, customerAccessToken: token } : {};
-  
-        if (!cartId ) {
-          await createCart({
-            variables: {
-              input: cartInput
-            },
-            onCompleted: (data) => {
-              const set = async () => {
-                if (data?.cartCreate?.cart?.id) {
-                  try {
-                    await AsyncStorage.setItem('cart-id', data?.cartCreate?.cart?.id);
-                    console.log("Successfully created cart id");
-                  } catch (e) {
-                    console.log("Error setting cart ID in AsyncStorage:", e);
-                  }
-                }
-              };
-              set();
-            },
-            refetchQueries: [
-              {
-                query: GET_CART_DETAILS_V2
-              },
-            ]
-          });
-        } else {
-          console.log("Cart id exists");
-        }
-      } catch (e) {
-        console.log("Error setting up the cart: ", e);
-      }
-    };
-  
-    const getCart = async () => {
-      const cartId = await AsyncStorage.getItem('cart-id');
-      if (cartId) {
-        getCartDetails({
-          variables: {
-            cartId: cartId
-          },
-          onCompleted: (data) => {
-            console.log("cart details fetched successfully");
-            cartVar(data?.cart)
-          }
-        });
-      }
-    };
-  
-    const initializeCart = async () => {
-      await setCart();
-      await getCart();
-    };
-  
-    initializeCart();
-
-  },[user])
-  
-
-
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen
@@ -215,7 +133,7 @@ export function HomeTabs() {
           tabBarIcon: ({ color, size }) => (
             <HomeIcon size={size} color="black" strokeWidth={1} />
           ),
-            tabBarVisible: false, //like this
+          tabBarVisible: false, //like this
         }}
       />
       <Tab.Screen
@@ -239,8 +157,8 @@ export function HomeTabs() {
         }}
       />
       <Tab.Screen
-        name="SearchScreen"
-        component={SearchScreen}
+        name="SearchScreens"
+        component={SearchScreens}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MagnifyingGlassIcon size={size} color="black" strokeWidth={1} />
@@ -262,60 +180,209 @@ export function HomeTabs() {
   );
 }
 
-
 export default function AppNavigation() {
-  const user = useReactiveVar(userVar)
-  const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER)
+  const user = useReactiveVar(userVar);
+  const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER);
   const [appInitialFlag, setAppInitialFlag] = useState(false);
+
+  const [createCart] = useMutation(CREATE_CART);
+  const [getCartDetails, { data: cartDetailData }] =
+    useLazyQuery(GET_CART_DETAILS_V2);
+
+  const [
+    updateCartBuyer,
+    {
+      data: updateCartBuyerData,
+      loading: updateCartBuyerLoading,
+      error: updateCartBuyerError,
+    },
+  ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
+
+  // const [
+  //   updateCartBuyerIdentity,
+  //   {
+  //     loading: updateCartBuyerIdentityLoading,
+  //     error: updateCartBuyerIdentityError,
+  //     data: updateCartBuyerIdentityData,
+  //   },
+  // ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
+
+  //   useEffect(() => {
+  //   const removeToken = async() => {
+  //     await AsyncStorage.removeItem('cart-id')
+  //     cartVar(null)
+  //   }
+  //   removeToken()
+  // }, [])
 
   useEffect(() => {
     const checkAppInitial = async () => {
-      const appInitial = await AsyncStorage.getItem('app-initial');
+      const appInitial = await AsyncStorage.getItem("app-initial");
       setAppInitialFlag(appInitial);
     };
 
     checkAppInitial();
-  },[])
+  }, []);
 
   useEffect(() => {
+    let myUser = null;
+    let myToken = null;
+    let myCartId = null;
     const getToken = async () => {
-      try{
-        const token = await AsyncStorage.getItem('my-key')
-        console.log("TOKEN",token)
-        if(token) {
-          getUser({
+      try {
+        const token = await AsyncStorage.getItem("my-key");
+        myToken = token;
+        console.log("TOKEN", token);
+        console.log("MYTOKEN", myToken);
+        if (token) {
+          await getUser({
             variables: {
-              customerAccessToken: token
-            }
-          })
+              customerAccessToken: token,
+            },
+            onCompleted: async (data) => {
+              myUser = await data?.customer;
+              userVar(await data?.customer);
+              console.log(
+                "user fetched succefully and assigned to user object: ",
+                data?.customer
+              );
+            },
+          });
+        } else {
+          userVar(null);
         }
-        else {
-          userVar(null)
-        }
-      }catch(e) {
-        console.log(e)
+      } catch (e) {
+        console.log(e);
       }
-    }
-    getToken()
-  },[user])
+    };
 
-  useEffect(() => {
-    if(data?.customer) {
-      userVar(data?.customer)
-    }
-  }, [data])
+    const setCart = async () => {
+      try {
+        const cartId = await AsyncStorage.getItem("cart-id");
+
+        console.log("CART ID", cartId);
+
+        console.log("USER IN SETTING CART: ", myUser);
+        console.log("TOKEN IN SETTING CART: ", myToken);
+
+        // const cartInput = (user?.email && user?.phone)
+        //   ? { email: user.email, phone: user.phone, customerAccessToken: token }
+        //   : {};
+
+        // const cartInput = myToken
+        //   ? {
+        //       buyerIdentity: {
+        //         email: myUser?.email,
+        //         phone: myUser?.phone,
+        //         customerAccessToken: myToken,
+        //       },
+        //     }
+        //   : {};
+
+        const cartInput = {};
+
+        if (!cartId) {
+          await createCart({
+            variables: {
+              input: cartInput,
+            },
+            onCompleted: (data) => {
+              console.log("CART CREATED SUCCEFULLY");
+              const set = async () => {
+                if (data?.cartCreate?.cart?.id) {
+                  try {
+                    await AsyncStorage.setItem(
+                      "cart-id",
+                      data?.cartCreate?.cart?.id
+                    );
+                    console.log("CART ID SET TO ASYNC STORAGE");
+                  } catch (e) {
+                    console.log("Error setting cart ID in AsyncStorage:", e);
+                  }
+                }
+              };
+              set();
+            },
+            refetchQueries: [
+              {
+                query: GET_CART_DETAILS_V2,
+              },
+            ],
+          });
+        } else {
+          console.log("Cart id exists");
+        }
+      } catch (e) {
+        console.log("Error setting up the cart: ", e);
+      }
+    };
+
+    const getCart = async () => {
+      const cartId = await AsyncStorage.getItem("cart-id");
+      console.log("CART ID IN GETTING CART: ", cartId);
+      if (cartId) {
+        getCartDetails({
+          variables: {
+            cartId: cartId,
+          },
+          onCompleted: async (cartData) => {
+            console.log("cart details fetched successfully");
+
+            if (myToken) {
+              updateCartBuyer({
+                variables: {
+                  buyerIdentity: {
+                    customerAccessToken: myToken,
+                    email: myUser.email,
+                    phone: myUser.phone,
+                  },
+                  cartId: cartId,
+                },
+                onCompleted: (data) => {
+                  const newCart = { ...cartData?.cart };
+                  newCart.buyerIdentity =
+                    data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
+                  console.log(
+                    "BUYER IDENTITY ADDED: ",
+                    JSON.stringify(data, null, 2)
+                  );
+                  cartVar(newCart);
+                },
+              });
+            } else {
+              cartVar(cartData?.cart);
+            }
+          },
+        });
+      }
+    };
+
+    const initializeCart = async () => {
+      await setCart();
+      await getCart();
+      // await setUserToCart();
+    };
+
+    const initializeApp = async () => {
+      await getToken();
+      await initializeCart();
+    };
+
+    initializeApp();
+  }, []);
 
   return (
     <NavigationContainer>
-
       <Stack.Navigator>
-        {appInitialFlag && (<Stack.Screen 
-        name="InitialScreen" 
-        component={InitialSplashScreen}
-        options={{
-          headerShown: false
-        }}
-        />)}
+        {appInitialFlag && (
+          <Stack.Screen
+            name="InitialScreen"
+            component={InitialSplashScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+        )}
         <Stack.Screen
           name="MainScreen"
           component={HomeTabs}
@@ -323,9 +390,14 @@ export default function AppNavigation() {
             headerShown: false,
           }}
         />
-        <Stack.Screen name="AuthScreen" component={AuthScreen} />
+        {!user && (
+          <Stack.Screen
+            // navigationKey={user ? "user" : "guest"}
+            name="AuthScreen"
+            component={AuthScreen}
+          />
+        )}
       </Stack.Navigator>
-
     </NavigationContainer>
   );
 }

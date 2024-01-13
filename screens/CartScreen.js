@@ -33,7 +33,15 @@ import {
   REPLACE_CHECKOUT_LINES,
   UPDATE_CART_ITEM,
 } from "../graphql/mutations";
-import { cartIdVar, cartVar, checkoutIdVar, userVar } from "../App";
+
+import {
+  cartIdVar,
+  cartVar,
+  checkoutIdVar,
+  checkoutVisitedVar,
+  isLoggedinFrstTimeVar,
+  userVar,
+} from "../App";
 import CartCard from "../components/CartCard";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
@@ -41,21 +49,12 @@ import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 export default function CartScreen() {
   const navigation = useNavigation();
-  const checkoutId = useReactiveVar(checkoutIdVar);
   const user = useReactiveVar(userVar);
   const cart = useReactiveVar(cartVar);
+  const checkoutVisited = useReactiveVar(checkoutVisitedVar);
+  const isLoggedinId = useReactiveVar(isLoggedinFrstTimeVar);
 
-  const [userToken, setUserToken] = useState(null);
-
-  const {
-    data: customerData,
-    loading: customerLoading,
-    error: customerError,
-  } = useQuery(GET_CUSTOMER, {
-    variables: {
-      customerAccessToken: userToken,
-    },
-  });
+  console.log("USER LOGGED IN CART SCREEN : ", user?.email);
 
   const [
     getCartDetails,
@@ -67,28 +66,13 @@ export default function CartScreen() {
     },
   ] = useLazyQuery(GET_CART_DETAILS_V2, {
     notifyOnNetworkStatusChange: true,
+    fetchPolicy: "network-only",
   });
 
-  console.log("CART DATA",cartDetailsData?.cart?.buyerIdentity)
-
-  const [
-    addLineItem,
-    {
-      loading: addLineItemLoading,
-      error: addLineItemError,
-      data: addLineItemData,
-    },
-  ] = useMutation(ADD_CART_ITEM_V2);
-
-  const [
-    updateLineItem,
-    {
-      loading: updateLineItemLoading,
-      error: updateLineItemError,
-      data: updateLineItemData,
-    },
-  ] = useMutation(UPDATE_CART_ITEM);
-
+  console.log(
+    "CART DATA FETCHED BUYER IDENTITY: ",
+    cartDetailsData?.cart?.buyerIdentity
+  );
 
   const [
     updateCartBuyerIdentity,
@@ -100,18 +84,13 @@ export default function CartScreen() {
   ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
 
   const [
-    createCheckout,
-    { loading: checkoutLoading, error: checkoutError, data: checkoutData },
-  ] = useMutation(CREATE_CHECKOUT);
-
-  const [
-    replaceCheckoutLines,
+    updateLineItem,
     {
-      loading: replaCecheckoutLinesLoading,
-      error: replaceCheckoutLinesError,
-      data: replaceCheckoutLinesData,
+      loading: updateLineItemLoading,
+      error: updateLineItemError,
+      data: updateLineItemData,
     },
-  ] = useMutation(REPLACE_CHECKOUT_LINES);
+  ] = useMutation(UPDATE_CART_ITEM);
 
   const [
     removeCartItem,
@@ -123,15 +102,6 @@ export default function CartScreen() {
   ] = useMutation(REMOVE_CART_ITEM_V2, {
     notifyOnNetworkStatusChange: true,
   });
-
-  const [
-    checkoutDiscountCodeApply,
-    {
-      loading: checkoutDiscountCodeLoading,
-      error: checkoutDiscountCodeError,
-      data: checkoutDiscountCodeData,
-    },
-  ] = useMutation(CHECKOUT_DISCOUNT_CODE_APPLY);
 
   const handleLineItemUpdate = (line) => {
     updateLineItem({
@@ -157,41 +127,54 @@ export default function CartScreen() {
     });
   }
 
-  const handleCheckoutV2 = () => {
+  const handleCheckoutV2 = async () => {
+    // Check if there is a user token exist
+    const userToken = await AsyncStorage.getItem("my-key");
+    console.log("USER TOKEN FROM HANDLE CHECKOUT", userToken);
 
-    if(user) {
-      if (!checkoutId) {
-        createCheckout({
-          variables: {
-            input: {
-              lineItems: checkoutLineItems,
-            },
+    if (!userToken) {
+      console.log("User token doesn't exit block ran......");
+      navigation.navigate("CheckoutScreen", {
+        url: await cart.checkoutUrl,
+      });
+    } else {
+      console.log(
+        "CHECKOUT URL FROM CART: ",
+        cartDetailsData?.cart?.checkoutUrl
+      );
+      await updateCartBuyerIdentity({
+        variables: {
+          buyerIdentity: {
+            // customerAccessToken: "22fd41b8bf1c2179c0063f33bc45f465",
+            customerAccessToken: userToken,
+            email: user?.email,
           },
-        });
-      } else {
-        replaceCheckoutLines({
-          variables: {
-            checkoutId,
-            lineItems: checkoutLineItems,
-          },
-        });
-      }
-  
-      if (cartDetailsData?.cart?.discountCodes[0]?.applicable) {
-        checkoutDiscountCodeApply({
-          variables: {
-            checkoutId,
-            discountCode: cartDetailsData?.cart?.discountCodes[0]?.code,
-          },
-        });
-      }
-  
-      navigation.navigate("ShippingAddressUpdateScreen");
+          cartId: cart?.id,
+        },
+        onCompleted: (data) => {
+          const newCart = { ...cart };
+          newCart.buyerIdentity =
+            data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
 
-    }else{
-      navigation.navigate('CheckoutScreen', { url: cartDetailsData?.cart?.checkoutUrl })
+          console.log("BUYER IDENTITY ADDED: ", JSON.stringify(data, null, 2));
+          // Replace "/cart/c/" with "/checkouts/cn/"
+          const modifiedUrl =
+            data?.cartBuyerIdentityUpdate?.cart?.checkoutUrl.replace(
+              /\/cart\/c\//,
+              "/checkouts/cn/"
+            );
+          const withoutParams = modifiedUrl.split("?")[0];
+
+          console.log(withoutParams);
+
+          cartVar(newCart);
+
+          navigation.navigate("CheckoutScreen", {
+            url: checkoutVisited ? withoutParams : isLoggedinId ? cart?.checkoutUrl :  withoutParams,
+          });
+        },
+      });
     }
-
   };
 
   useLayoutEffect(() => {
@@ -200,23 +183,17 @@ export default function CartScreen() {
     });
   }, []);
 
-  useEffect(() => {
-    const getAcessToken = async () => {
-      const token = await AsyncStorage.getItem("my-key");
-      if (token !== null) {
-        setUserToken(token);
-      } else {
-        setUserToken(null);
-      }
-    };
-    getAcessToken();
-  });
-
-  useEffect(() => {
-    if (checkoutData) {
-      checkoutIdVar(checkoutData?.checkoutCreate?.checkout?.id);
-    }
-  }, [checkoutData]);
+  // useEffect(() => {
+  //   const getAcessToken = async () => {
+  //     const token = await AsyncStorage.getItem("my-key");
+  //     if (token !== null) {
+  //       setUserToken(token);
+  //     } else {
+  //       setUserToken(null);
+  //     }
+  //   };
+  //   getAcessToken();
+  // });
 
   useEffect(() => {
     if (cart?.id) {
@@ -226,49 +203,16 @@ export default function CartScreen() {
         },
       });
     }
-  }, [cart, user]);
-
-  useEffect(() => {
-
-    const lastIncompleteCheckout = user?.lastIncompleteCheckout;
-    if (lastIncompleteCheckout) {
-      const incompleLineItems = lastIncompleteCheckout?.lineItems?.edges?.map(
-        (item) => ({
-          merchandiseId: item?.node?.variant?.id,
-          quantity: item?.node?.quantity,
-        })
-      );
-
-      if (incompleLineItems?.length > 0) {
-        addLineItem({
-          variables: {
-            cartId: cart?.id,
-            lines: incompleLineItems,
-          },
-          onCompleted: () => {
-            refetch();
-          },
-        });
-      }
-    }
-  }, [user]);
-
-
-  const checkoutLineItems = cartDetailsData?.cart?.lines?.edges.map((item) => {
-    return {
-      variantId: item?.node?.merchandise?.id,
-      quantity: item?.node?.quantity,
-    };
-  });
+  }, [cart?.id, user]);
 
   const cartProducts = cartDetailsData?.cart?.lines?.edges || [];
-
 
   return (
     <View className="flex-1">
       {cartDetailsLoading && <LoadingFullScreen />}
       {removeItemLoading && <LoadingFullScreen />}
       {updateLineItemLoading && <LoadingFullScreen />}
+      {updateCartBuyerIdentityLoading && <LoadingFullScreen />}
       <SafeAreaView className="bg-white">
         <View className="w-full relative flex-row justify-center items-center h-[35px]">
           <Text className="text-[16px] text-black font-normal">

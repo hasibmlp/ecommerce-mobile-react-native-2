@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from "react-native";
-import Skeleton from "../Skeleton";
+import Skeleton from "../skeletons/Skeleton";
 
 export default function ModalSkeleton() {
   return (

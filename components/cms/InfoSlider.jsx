@@ -9,8 +9,6 @@ import {
     TruckIcon
   } from "react-native-heroicons/outline";
 
-import CardSlider from "../CardSlider";
-
 const informations = [
     {
         iconName: 'TruckIcon',

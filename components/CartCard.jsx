@@ -1,13 +1,6 @@
-import { useMutation, useQuery } from "@apollo/client";
-import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
-import { ChevronDownIcon, ChevronUpDownIcon, TagIcon, TrashIcon } from "react-native-heroicons/outline";
-import { GET_CART_DETAILS, GET_CART_ITEM } from "../graphql/queries";
-import { cartIdVar } from "../App";
-import { REMOVE_CART_ITEM } from "../graphql/mutations";
-import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
-import LoadingScreen from "./LoadingScreen";
+import { ChevronUpDownIcon, TagIcon, TrashIcon } from "react-native-heroicons/outline";
 import BottomModal from "./Modal/BottomModal";
 
 export default function CartCard({ lineItem, onRemove, handleLineItemUpdate }) {

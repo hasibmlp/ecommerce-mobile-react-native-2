@@ -1,26 +1,24 @@
-import { createContext, useState } from "react"
+import { createContext, useState } from "react";
 
-const FilterSelectionContext = createContext()
+const FilterSelectionContext = createContext();
 
-function FilterSelectionProvider({children}) {
-    const [filters , setFilters] = useState([])
-    const [activeFilterInput, setActiveFilterInput] = useState([])
-    const [loading, setLoading] = useState(false)
+function FilterSelectionProvider({ children }) {
+  
 
-    return (
-        <FilterSelectionContext.Provider 
-        value={{
-            filters,
-            setFilters,
-            activeFilterInput,
-            setActiveFilterInput,
-            loading,
-            setLoading
-        }}
-        >
-            {children}
-        </FilterSelectionContext.Provider>
-    )
+  return (
+    <FilterSelectionContext.Provider
+      value={{
+        filters,
+        setFilters,
+        activeFilterInput,
+        setActiveFilterInput,
+        loading,
+        setLoading,
+      }}
+    >
+      {children}
+    </FilterSelectionContext.Provider>
+  );
 }
 
-export {FilterSelectionContext, FilterSelectionProvider}
+export { FilterSelectionContext, FilterSelectionProvider };

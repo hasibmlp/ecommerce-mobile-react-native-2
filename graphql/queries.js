@@ -348,108 +348,6 @@ export const GET_VARIANT_BY_ID = gql`
   }
 `;
 
-export const GET_CART_DETAILS = gql`
-  query GetCheckoutList($checkoutId: ID!) {
-    node(id: $checkoutId) {
-      ... on Checkout {
-        id
-        webUrl
-        lineItems(first: 20) {
-          edges {
-            node {
-              id
-              quantity
-              unitPrice {
-                amount
-              }
-              discountAllocations {
-                discountApplication {
-                  value {
-                    __typename
-                  }
-                  allocationMethod
-                  targetSelection
-                  targetType
-                }
-                allocatedAmount {
-                  amount
-                  currencyCode
-                }
-              }
-              variant {
-                id
-                image {
-                  url
-                  altText
-                }
-                selectedOptions {
-                  name
-                  value
-                }
-                product {
-                  productType
-                  vendor
-                  title
-                }
-                unitPrice {
-                  amount
-                }
-                price {
-                  amount
-                }
-              }
-            }
-          }
-        }
-        shippingAddress {
-          id
-          firstName
-          lastName
-          address1
-          address2
-          city
-          country
-          phone
-        }
-        discountApplications(first: 10) {
-          edges {
-            node {
-              ... on DiscountCodeApplication {
-                allocationMethod
-                applicable
-                code
-                targetSelection
-                targetType
-                value {
-                  ... on MoneyV2 {
-                    amount
-                    currencyCode
-                  }
-                }
-              }
-            }
-          }
-        }
-        totalTax {
-          amount
-          currencyCode
-        }
-        subtotalPrice {
-          amount
-          currencyCode
-        }
-        lineItemsSubtotalPrice {
-          amount
-          currencyCode
-        }
-        totalPrice {
-          amount
-          currencyCode
-        }
-      }
-    }
-  }
-`;
 export const GET_CART_DETAILS_V2 = gql`
   query getCartDetails($cartId: ID!) {
     cart(id: $cartId) {
@@ -461,7 +359,8 @@ export const GET_CART_DETAILS_V2 = gql`
       }
       buyerIdentity {
         email
-        customer{
+        customer {
+          id
           email
         }
       }
@@ -569,138 +468,6 @@ export const GET_CART_DETAILS_V2 = gql`
   }
 `;
 
-export const GET_CHECKOUT_DETAILS = gql`
-  query GetCheckoutDetails($checkoutId: ID!) {
-    node(id: $checkoutId) {
-      ... on Checkout {
-        id
-        webUrl
-        lineItems(first: 20) {
-          edges {
-            node {
-              id
-              quantity
-              unitPrice {
-                amount
-              }
-              discountAllocations {
-                allocatedAmount {
-                  amount
-                }
-              }
-              variant {
-                id
-                image {
-                  url
-                  altText
-                }
-                selectedOptions {
-                  name
-                  value
-                }
-                product {
-                  title
-                }
-                unitPrice {
-                  amount
-                }
-                price {
-                  amount
-                }
-              }
-            }
-          }
-        }
-        buyerIdentity {
-          __typename
-        }
-        email
-        shippingAddress {
-          id
-          firstName
-          lastName
-          phone
-          address1
-          address2
-          city
-          country
-          zip
-        }
-        totalTax {
-          amount
-          currencyCode
-        }
-        totalDuties {
-          amount
-          currencyCode
-        }
-        subtotalPrice {
-          amount
-          currencyCode
-        }
-        totalPrice {
-          amount
-          currencyCode
-        }
-      }
-    }
-  }
-`;
-
-export const GET_AVAILABLE_SHIPPING_RATES = gql`
-  query GetAvailableShippingRates($checkoutId: ID!) {
-    node(id: $checkoutId) {
-      ... on Checkout {
-        id
-        availableShippingRates {
-          ready
-          shippingRates {
-            handle
-            title
-            price {
-              amount
-              currencyCode
-            }
-          }
-        }
-        shippingLine {
-          handle
-          title
-          price {
-            amount
-            currencyCode
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const GET_BUYER_DETAILS = gql`
-  query GetBuyerDetails($checkoutId: ID!) {
-    node(id: $checkoutId) {
-      ... on Checkout {
-        id
-        email
-        shippingAddress {
-          id
-          firstName
-          lastName
-          address1
-          address2
-          city
-          province
-          country
-          zip
-          phone
-        }
-      }
-    }
-  }
-`;
-
-const myTitle = "price";
-
 export const GET_COLLECTION_BY_ID = gql`
   query getCollectionById(
     $collectionId: ID!
@@ -762,6 +529,7 @@ export const GET_COLLECTION_BY_ID = gql`
               url
             }
             options {
+              id
               name
               values
             }
@@ -827,6 +595,7 @@ export const GET_CUSTOMER = gql`
       firstName
       lastName
       email
+      phone
       acceptsMarketing
       lastIncompleteCheckout {
         lineItems(first: 50) {
@@ -842,7 +611,7 @@ export const GET_CUSTOMER = gql`
           }
         }
       }
-      addresses(first: 50 reverse:true) {
+      addresses(first: 50, reverse: true) {
         edges {
           node {
             id
@@ -892,11 +661,135 @@ export const GET_AVAILABLE_COUNTRIES = gql`
     }
   }
 `;
+
 export const GET_SHIPPING_COUNTRIES = gql`
   query getShipsToCountries {
     shop {
       name
       shipsToCountries
+    }
+  }
+`;
+
+export const GET_PREDITIVE_RESULTS = gql`
+  query predictiveSearch($query: String!) {
+    predictiveSearch(query: $query) {
+      queries {
+        text
+      }
+      products {
+        id
+        title
+        vendor
+        featuredImage {
+          id
+          altText
+          url
+        }
+        compareAtPriceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        options {
+          id
+          name
+          values
+        }
+      }
+    }
+  }
+`;
+
+export const SEARCH_PRODUCTS = gql`
+  query searchProducts(
+    $query: String!
+    $first: Int
+    $filterInput: [ProductFilter!]
+    $sortKey: SearchSortKeys
+    $reverse: Boolean
+    $cursor: String
+  ) {
+    search(
+      query: $query
+      first: $first
+      after: $cursor
+      types: PRODUCT
+      sortKey: $sortKey
+      reverse: $reverse
+      productFilters: $filterInput
+    ) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      productFilters {
+        id
+        label
+        type
+        values {
+          id
+          label
+          count
+          input
+        }
+      }
+      edges {
+        node {
+          ... on Product {
+            id
+            title
+            vendor
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            compareAtPriceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
+            featuredImage {
+              altText
+              id
+              url
+            }
+            options {
+              name
+              values
+            }
+            variants(first: 100) {
+              edges {
+                node {
+                  id
+                  quantityAvailable
+                  availableForSale
+                  currentlyNotInStock
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  image {
+                    id
+                    url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
