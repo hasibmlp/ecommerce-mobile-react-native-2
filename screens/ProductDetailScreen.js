@@ -56,7 +56,7 @@ import { Formik } from "formik";
 import ImageSelection from "../components/customization/ImageSelection";
 import Selection from "../components/customization/Selection";
 import ColorSelection from "../components/customization/ColorSelection";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 import { useReactiveVar } from "@apollo/client";
 
 const screen_width = Dimensions.get("screen").width;

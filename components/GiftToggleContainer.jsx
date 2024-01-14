@@ -20,7 +20,7 @@ import * as yup from "yup";
 import Button from "./buttons/Button";
 import { UPDATE_CART_NOTE } from "../graphql/mutations";
 import { useMutation, useReactiveVar } from "@apollo/client";
-import { cartIdVar } from "../App";
+import { cartIdVar } from "../makeVars/MakeVars";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 

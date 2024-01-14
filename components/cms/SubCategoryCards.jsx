@@ -1,4 +1,4 @@
-import { View, Image, Text } from "react-native";
+import { View } from "react-native";
 import SubCategoryItem from "../SubCategoryItem";
 
 export default function SubCategoryCards({ content }) {

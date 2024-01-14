@@ -18,7 +18,7 @@ import { GET_CUSTOMER, GET_SHIPPING_COUNTRIES } from "../graphql/queries";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useEffect, useState } from "react";
 import RadioButton from "./buttons/RadioButton";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 import Button from "./buttons/Button";
 import {
   CUSTOMER_ADDRESS_CREATE,
@@ -197,7 +197,7 @@ const AddressForm = ({ onClose, formData }) => {
         }) => (
           <View className="flex-1">
             <View className="px-4 py-3 bg-gray-100 ">
-              <Text className="text-[13px] text-gray-500 font-medium uppercase">
+              <Text  className="text-[13px] text-gray-500 font-medium uppercase">
                 Shipping Address
               </Text>
             </View>

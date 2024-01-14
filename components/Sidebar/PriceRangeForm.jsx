@@ -3,7 +3,7 @@ import Button from "../buttons/Button";
 import InputListItem from "./InputListItem";
 import { Formik } from "formik";
 import { useContext, useEffect, useRef, useState } from "react";
-import { SideBarContext } from "../../App";
+import { SideBarContext } from "../../makeVars/MakeVars";
 import * as yup from 'yup'
 import ErrorMessage from "./ErrorMessage";
 import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";

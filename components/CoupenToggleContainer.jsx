@@ -18,7 +18,7 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { useMutation, useReactiveVar } from "@apollo/client";
 import { UPDATE_CART_DISCOUT_CODE } from "../graphql/mutations";
-import { cartVar } from "../App";
+import { cartVar } from "../makeVars/MakeVars";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 

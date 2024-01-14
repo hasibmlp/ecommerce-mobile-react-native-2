@@ -16,7 +16,7 @@ import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { GET_CATEGORIES_OF_COLLECTIONS } from "../graphql/queries";
 import LoadingScreen from "../components/LoadingScreen";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 
 const TAB_WIDTH = 150;
 
@@ -309,8 +309,6 @@ export default function CategoriesScreen() {
       </View>
 
         <Animated.FlatList
-          entering={FadeIn}
-          exiting={FadeOut}
           layout={Layout.delay(100)}
           className="z-[-1]"
           ref={scrollRef}

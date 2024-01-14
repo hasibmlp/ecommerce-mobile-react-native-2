@@ -4,22 +4,26 @@ import {
   Text,
   View,
   Pressable,
-  Image,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import { Image } from "expo-image";
 import { PlusIcon } from "react-native-heroicons/outline";
 import BottomModal from "./Modal/BottomModal";
 import { getVariantForSingleOption } from "./utils/UtilsFunctions";
 import ColorSwatchImage from "./buttons/ColorSwatchImage";
 import PriceContainer from "./PriceContainer";
 
+const blurhash =
+  'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
+
+
 export function CollectionCard({ product, onPress }) {
   const navigation = useNavigation();
   const images = [product.featuredImage];
 
   handlePress = () => {
-    onPress()
+    onPress();
   };
 
   const amount = {
@@ -32,12 +36,20 @@ export function CollectionCard({ product, onPress }) {
     <View key={product.id} className=" w-full justify-center mr-[10px] ">
       <View className="w-full h-[300px] overflow-hidden rounded-[2px]">
         {images && (
-          <Pressable onPress={handlePress}>
             <Image
-              className="w-full h-full"
-              src={product?.featuredImage?.url}
+              style={{flex: 1, width: '100%', backgroundColor: 'gray'}}
+              // className="flex-1 w-full bg-neutral-200"
+              source={product?.featuredImage?.url}
+              placeholder={blurhash}
+              contentFit="cover"
+              transition={100}
             />
-          </Pressable>
+          // <Pressable onPress={handlePress}>
+          //   {/* <Image
+          //     className="w-full h-full"
+          //     src={product?.featuredImage?.url}
+          //   /> */}
+          // </Pressable>
         )}
       </View>
 

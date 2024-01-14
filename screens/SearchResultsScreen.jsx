@@ -49,7 +49,7 @@ import { ScreenHeader } from "../components/actions/ScreenHeader";
 import MyModal from "../components/Modal/MyModal";
 import FilterBody from "../components/Modal/FilterBody";
 import BottomModal from "../components/Modal/BottomModal";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
 import BackIconButton from "../components/buttons/BackIconButton";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";

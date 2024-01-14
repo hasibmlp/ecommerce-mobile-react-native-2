@@ -5,7 +5,7 @@ import { ADD_CART_ITEM_V2 } from "../graphql/mutations";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
 import { GET_CART_DETAILS_V2, GET_PRODUCT } from "../graphql/queries";
-import { cartVar } from "../App";
+import { cartVar } from "../makeVars/MakeVars";
 import { getVariantForOptions } from "../components/utils/UtilsFunctions";
 
 const VariantSelectionContext = createContext();

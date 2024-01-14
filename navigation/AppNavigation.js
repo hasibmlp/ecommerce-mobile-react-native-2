@@ -11,6 +11,7 @@ import {
   RectangleStackIcon,
 } from "react-native-heroicons/outline";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CommonActions } from "@react-navigation/native";
 
 import HomeScreen from "../screens/HomeScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
@@ -25,7 +26,7 @@ import Collection from "../screens/CollectionScreen";
 import AuthScreen from "../screens/AuthScreen";
 import InitialSplashScreen from "../screens/InitialSplashScreen";
 import { useEffect, useState } from "react";
-import { cartIdVar, cartVar, userVar } from "../App";
+import { cartIdVar, cartVar, userVar } from "../makeVars/MakeVars";
 import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
 import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import ProfileScreen from "../screens/ProfileScreen";
@@ -74,8 +75,7 @@ export function CartScreens() {
   );
 }
 
-export function SearchScreens({route}) {
-  
+export function SearchScreens() {
   return (
     <Stack.Navigator>
       <Stack.Screen

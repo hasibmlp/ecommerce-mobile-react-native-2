@@ -41,7 +41,7 @@ import {
   checkoutVisitedVar,
   isLoggedinFrstTimeVar,
   userVar,
-} from "../App";
+} from "../makeVars/MakeVars";
 import CartCard from "../components/CartCard";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";

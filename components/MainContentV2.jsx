@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { useSelector } from "react-redux";
 import { homePageData } from "../data/cms-mock-data";
 import ComponentMapper from "./cms/ComponentMapper";
+import { useEffect } from "react";
 
 export default function MainContentV2() {
   const gender = useSelector((state) => state.gender.current);

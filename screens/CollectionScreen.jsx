@@ -51,7 +51,7 @@ import {
   FilterSelectionProvider,
 } from "../contexts/FilterSelectionContext";
 import BottomModal from "../components/Modal/BottomModal";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -275,7 +275,7 @@ function CollectionBody({
   handleSortPress,
 }) {
 
-  
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y;

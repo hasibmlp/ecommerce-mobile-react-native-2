@@ -26,7 +26,7 @@ import {
   CUSTOMER_RECOVER,
 } from "../graphql/mutations";
 import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
-import { cartVar, isLoggedinFrstTimeVar, userVar } from "../App";
+import { cartVar, isLoggedinFrstTimeVar, userVar } from "../makeVars/MakeVars";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 import RadioButton from "../components/buttons/RadioButton";
 import CheckBox from "../components/Sidebar/Buttons/Checkbox";

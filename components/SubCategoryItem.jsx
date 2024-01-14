@@ -1,17 +1,29 @@
-import { View, Image, Text } from "react-native";
+import { View, Text } from "react-native";
+import { Image } from "expo-image";
 
-export default function SubCategoryItem({title, imgUrl}) {
+const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
+
+export default function SubCategoryItem({ title, imgUrl }) {
   return (
-      <View className=" items-center justify-end mb-3">
-        <Image
+    <View className=" items-center justify-end mb-3">
+      {/* <Image
           className="w-full h-[120px]"
           src={imgUrl}
+        /> */}
+      <View className="w-full h-[120px]">
+        <Image
+          style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
+          source={imgUrl}
+          placeholder={blurhash}
+          contentFit="cover"
+          transition={100}
         />
-        <View className="w-full">
-          <Text className=" text-center text-[16px] text-black bg-white font-light py-4">
-            {title}
-          </Text>
-        </View>
       </View>
+      <View className="w-full">
+        <Text className=" text-center text-[16px] text-black bg-white font-light py-4">
+          {title}
+        </Text>
+      </View>
+    </View>
   );
 }

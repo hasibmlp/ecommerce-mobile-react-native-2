@@ -6,7 +6,7 @@ import CheckList from "../Sidebar/Buttons/CheckList";
 import PriceRangeForm from "../Sidebar/PriceRangeForm";
 import ActiveFilter from "../Sidebar/ActiveFilter";
 import { useContext, useState, useEffect } from "react";
-import { SideBarContext } from "../../App";
+import { SideBarContext } from "../../makeVars/MakeVars";
 import Button from "../buttons/Button";
 import { checkTabActive } from "../utils/UtilsFunctions";
 import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";

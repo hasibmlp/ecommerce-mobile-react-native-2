@@ -4,7 +4,7 @@ import { Pressable, View } from "react-native";
 import ColorSwatch from "../swatches/ColorSwatch";
 import CheckBox from "./Checkbox";
 import OptionLabel from "../OptionLabel";
-import { SideBarContext } from "../../../App";
+import { SideBarContext } from "../../../makeVars/MakeVars";
 import { isFilterValueActive } from "../../utils/UtilsFunctions";
 import { FilterSelectionContext } from "../../utils/UtilsFunctions";
 

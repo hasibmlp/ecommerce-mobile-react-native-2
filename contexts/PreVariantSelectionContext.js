@@ -6,7 +6,7 @@ import {
 import { ADD_CART_ITEM, CREATE_CART } from "../graphql/mutations";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
-import { cartIdVar } from "../App";
+import { cartIdVar } from "../makeVars/MakeVars";
 import {
   getVariantForOptions,
   getVariantForSingleOption,

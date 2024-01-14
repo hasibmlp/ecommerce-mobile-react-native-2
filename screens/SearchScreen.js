@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 import {
   ArrowUpLeftIcon,
   ExclamationCircleIcon,

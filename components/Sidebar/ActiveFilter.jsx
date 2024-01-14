@@ -2,12 +2,16 @@ import { useContext } from "react";
 import { ScrollView } from "react-native";
 
 import SmallButton from "./Buttons/SmallButton";
-import { SideBarContext } from "../../App";
+import {} from "../../makeVars/MakeVars";
 import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";
 
-export default function ActiveFilter({ style, showsWithActiveOnly = false, activeFilterInput2 }) {
-  const activeFilterInput = activeFilterInput2 || useContext(FilterSelectionContext);
-
+export default function ActiveFilter({
+  style,
+  showsWithActiveOnly = false,
+  activeFilterInput2,
+}) {
+  const activeFilterInput =
+    activeFilterInput2 || useContext(FilterSelectionContext);
 
   return (
     <ScrollView

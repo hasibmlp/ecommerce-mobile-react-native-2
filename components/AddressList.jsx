@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 import { MapPinIcon, PlusIcon } from "react-native-heroicons/outline";
 import { useReactiveVar } from "@apollo/client";
 
-import { userVar } from "../App";
+import { userVar } from "../makeVars/MakeVars";
 import MyModal from "./Modal/MyModal";
 import AddressForm from "./AddressForm";
 import Panel from "./actions/Panel";

@@ -8,7 +8,7 @@ import {
   checkoutVisitedVar,
   isLoggedinFrstTimeVar,
   userVar,
-} from "../App";
+} from "../makeVars/MakeVars";
 import Button from "../components/buttons/Button";
 import Panel from "../components/actions/Panel";
 import { ScreenHeader } from "../components/actions/ScreenHeader";

@@ -61,7 +61,7 @@ export default function InfoSlider({content}) {
         return(
             <View style={{width: ITEM_WIDTH, height: content.data.height}} className='flex-row items-center justify-center bg-black mx-[15px] mb-4 rounded-[10px] '>
                 <View className="absolute left-5"><MaterialCommunityIcons name={item.iconName || 'square-rounded-outline'} size={24} color="white"/></View>
-                <Text className='text-[14px] font-normal text-white uppercase'>{item.title}</Text>
+                <Text style={{fontFamily: 'Nexa-Regular'}} className='text-[14px] font-normal text-white uppercase'>{item.title}</Text>
             </View>
         )
     }

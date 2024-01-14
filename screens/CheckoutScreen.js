@@ -7,7 +7,7 @@ import Overlay from "../components/Overlay";
 import LoadingScreen from "../components/LoadingScreen";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 import { useReactiveVar } from "@apollo/client";
-import { cartVar, checkoutVisitedVar, userVar } from "../App";
+import { cartVar, checkoutVisitedVar, userVar } from "../makeVars/MakeVars";
 import Button from "../components/buttons/Button";
 
 export default function CheckoutScreen({ route }) {
