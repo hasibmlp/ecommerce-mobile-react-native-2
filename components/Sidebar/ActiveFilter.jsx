@@ -8,10 +8,8 @@ import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";
 export default function ActiveFilter({
   style,
   showsWithActiveOnly = false,
-  activeFilterInput2,
+  activeFilterInput,
 }) {
-  const activeFilterInput =
-    activeFilterInput2 || useContext(FilterSelectionContext);
 
   return (
     <ScrollView

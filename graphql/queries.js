@@ -391,6 +391,14 @@ export const GET_CART_DETAILS_V2 = gql`
           node {
             id
             quantity
+            attribute(key: "custom-product-uid") {
+              key
+              value
+            }
+            attributes {
+              key
+              value
+            }
             discountAllocations {
               ... on CartAutomaticDiscountAllocation {
                 title

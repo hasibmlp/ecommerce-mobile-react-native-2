@@ -56,7 +56,10 @@ import { userVar } from "../makeVars/MakeVars";
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 export default function CollectionScreen({ route }) {
-  const user = useReactiveVar(userVar)
+  const user = useReactiveVar(userVar);
+  const [filters, setFilters] = useState([]);
+  const [activeFilterInput, setActiveFilterInput] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   console.log("USER LOGGED IN COLLECTION SCREEN : ", user?.email);
   const [isSideBarVisible, setSideBarVisible] = useState(false);
@@ -64,20 +67,37 @@ export default function CollectionScreen({ route }) {
   return (
     <View className="flex-1 items-center bg-white">
       <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
-      <FilterSelectionProvider>
-        <CollectionData
-          route={route}
-          openSideBar={() => setSideBarVisible(true)}
+      <CollectionData
+        route={route}
+        openSideBar={() => setSideBarVisible(true)}
+        setFilters={setFilters}
+        activeFilterInput={activeFilterInput}
+        setActiveFilterInput={setActiveFilterInput}
+        setLoading={setLoading}
+      />
+      <MyModal visible={isSideBarVisible}>
+        <FilterBody
+          onClose={handleSideBarClose}
+          loading={loading}
+          setLoading={setLoading}
+          filters={filters}
+          activeFilterInput={activeFilterInput}
+          setActiveFilterInput={setActiveFilterInput}
+          r
         />
-        <MyModal visible={isSideBarVisible}>
-          <FilterBody onClose={handleSideBarClose} />
-        </MyModal>
-      </FilterSelectionProvider>
+      </MyModal>
     </View>
   );
 }
 
-function CollectionData({ route, openSideBar }) {
+function CollectionData({
+  route,
+  openSideBar,
+  setFilters,
+  activeFilterInput,
+  setActiveFilterInput,
+  setLoading,
+}) {
   const [showPageIndicator, setShowPageIndicator] = useState(false);
   const [productTotalCount, setProductTotalCount] = useState(0);
   const [sortKeys, setSortKeys] = useState({
@@ -86,8 +106,6 @@ function CollectionData({ route, openSideBar }) {
     label: "Sort By",
     reverse: false,
   });
-
-  const { setFilters, activeFilterInput } = useContext(FilterSelectionContext);
 
   const navigation = useNavigation();
   const { collectionId } = route.params;
@@ -211,6 +229,9 @@ function CollectionData({ route, openSideBar }) {
         startTransition={startTransition}
         isPending={isPending}
         handleSortPress={handleSortPress}
+        activeFilterInput={activeFilterInput}
+        setActiveFilterInput={setActiveFilterInput}
+        setLoading={setLoading}
       />
       {/* {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)} */}
       {
@@ -228,6 +249,9 @@ function CollectionData({ route, openSideBar }) {
           startTransition={startTransition}
           isPending={isPending}
           handleSortPress={handleSortPress}
+          activeFilterInput={activeFilterInput}
+          setActiveFilterInput={setActiveFilterInput}
+          setLoading={setLoading}
         />
       }
       {colloctionData?.collection?.products < 0 && (
@@ -273,9 +297,10 @@ function CollectionBody({
   startTransition,
   isPending,
   handleSortPress,
+  activeFilterInput,
+  setActiveFilterInput,
+  setLoading,
 }) {
-
-
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y;
@@ -325,6 +350,9 @@ function CollectionBody({
           startTransition={startTransition}
           isPending={isPending}
           handleSortPress={handleSortPress}
+          activeFilterInput={activeFilterInput}
+          setActiveFilterInput={setActiveFilterInput}
+          setLoading={setLoading}
         />
       </View>
     </View>
@@ -368,9 +396,11 @@ function ActionSlider({
   sortKeys,
   startTransition,
   handleSortPress,
+  activeFilterInput,
+  setActiveFilterInput,
+  setLoading,
 }) {
   const [isModalVisible, setModalVisible] = useState(false);
-  const { activeFilterInput } = useContext(FilterSelectionContext);
 
   const sort_keys = [
     {
@@ -436,6 +466,8 @@ function ActionSlider({
               key={index.toString()}
               id={activeFilter.id}
               title={activeFilter.label}
+              setActiveFilterInput={setActiveFilterInput}
+              setLoading={setLoading}
             />
           );
         })}
@@ -606,6 +638,9 @@ function CollectionHeader({
   startTransition,
   isPending,
   handleSortPress,
+  activeFilterInput,
+  setActiveFilterInput,
+  setLoading,
 }) {
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -671,6 +706,9 @@ function CollectionHeader({
           startTransition={startTransition}
           isPending={isPending}
           handleSortPress={handleSortPress}
+          activeFilterInput={activeFilterInput}
+          setActiveFilterInput={setActiveFilterInput}
+          setLoading={setLoading}
         />
       </Animated.View>
     </View>

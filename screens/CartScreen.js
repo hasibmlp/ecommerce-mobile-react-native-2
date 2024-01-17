@@ -115,11 +115,11 @@ export default function CartScreen() {
     });
   };
 
-  function handleItemRemove(id) {
+  function handleItemRemove(ids) {
     removeCartItem({
       variables: {
         cartId: cart?.id,
-        lineIds: [id],
+        lineIds: ids,
       },
       onCompleted: () => {
         refetch();
@@ -170,7 +170,11 @@ export default function CartScreen() {
           cartVar(newCart);
 
           navigation.navigate("CheckoutScreen", {
-            url: checkoutVisited ? withoutParams : isLoggedinId ? cart?.checkoutUrl :  withoutParams,
+            url: checkoutVisited
+              ? withoutParams
+              : isLoggedinId
+              ? cart?.checkoutUrl
+              : withoutParams,
           });
         },
       });
@@ -205,7 +209,11 @@ export default function CartScreen() {
     }
   }, [cart?.id, user]);
 
-  const cartProducts = cartDetailsData?.cart?.lines?.edges || [];
+  const lineItems = cartDetailsData?.cart?.lines?.edges || [];
+  const cartProducts = lineItems.filter((i) => !i.node?.attribute);
+  const customProducts = lineItems.filter((i) => i.node?.attribute);
+
+  console.log(customProducts);
 
   return (
     <View className="flex-1">
@@ -262,12 +270,28 @@ export default function CartScreen() {
             </Pressable>
           )}
           {cartProducts.map((item) => {
+            const assignedCustomProductId = item?.node?.attributes?.find(
+              (att) => att.key === "custom-selection-uid"
+            )?.value;
+            const assignedCustomProduct = customProducts.find(
+              (i) => i.node.attribute.value === assignedCustomProductId
+            );
             return (
               <CartCard
                 key={item?.node?.id}
                 lineItem={item?.node}
+                assignedCustomProduct={assignedCustomProduct}
                 handleLineItemUpdate={handleLineItemUpdate}
-                onRemove={() => handleItemRemove(item?.node?.id)}
+                onRemove={() =>
+                  handleItemRemove(
+                    assignedCustomProduct
+                      ? [item?.node?.id, assignedCustomProduct?.node?.id]
+                      : [item?.node?.id]
+                  )
+                }
+                onRemoveCustomProduct={() =>
+                  handleItemRemove([assignedCustomProduct?.node?.id])
+                }
               />
             );
           })}

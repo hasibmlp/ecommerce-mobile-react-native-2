@@ -1,15 +1,11 @@
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { Dimensions, FlatList, Pressable, Text, View } from "react-native";
 import Skeleton from "../skeletons/Skeleton";
+import { Image } from "expo-image";
 import { useContext, useEffect, useRef, useState } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 import { getVariantImages } from "../utils/UtilsFunctions";
+
+const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -74,7 +70,19 @@ export default function ImageCarousel({
         renderItem={({ item }) => {
           return (
             <Pressable onPress={onPress}>
-              <Image style={{ width: width, height: height }} src={item.url} />
+              <View style={{ width: width, height: height }}>
+                  {/* <Image
+                    style={{ width: width, height: height }}
+                    src={item.url}
+                  /> */}
+                  <Image
+                    style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
+                    source={item.url}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={100}
+                  />
+              </View>
             </Pressable>
           );
         }}

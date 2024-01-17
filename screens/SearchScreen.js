@@ -18,6 +18,7 @@ import {
   XMarkIcon,
 } from "react-native-heroicons/outline";
 import { useEffect, useRef, useState } from "react";
+
 import Button from "../components/buttons/Button";
 import { GET_PREDITIVE_RESULTS } from "../graphql/queries";
 import PriceContainer from "../components/PriceContainer";
@@ -96,12 +97,12 @@ export default function SearchScreen() {
         {loading && <LoadingFullScreen />}
 
         <View className="w-full h-14 flex-row items-center bg-white shadow-sm z-10">
-          <View className="absolute h-full left-3 bg-blue-300">
+          <View className="absolute h-full left-3">
             {/* <TouchableOpacity
               onPress={() => console.log("dslfjlsjdflks")}
               className="bg-blue-300 w-8 justify-center items-center"
             > */}
-            <TouchableOpacity onpress={() => console.log("loglogloglogloglog")} className="bg-red-300 h-full items-center justify-center">
+            <TouchableOpacity onpress={() => console.log("loglogloglogloglog")} className=" h-full items-center justify-center">
               <MagnifyingGlassIcon size={24} color="black" />
             </TouchableOpacity>
             {/* </TouchableOpacity> */}
@@ -115,7 +116,7 @@ export default function SearchScreen() {
               autoFocus={true}
               value={queryValue}
             />
-            <View className="absolute right-0 bg-blue-300 h-full justify-center">
+            <View className="absolute right-0  h-full justify-center">
               {loading && (
                 <View className="">
                   <ActivityIndicator size="small" />
@@ -123,7 +124,7 @@ export default function SearchScreen() {
               )}
               {!loading && (
                 <TouchableOpacity
-                  className="bg-red-300 h-full justify-center px-4"
+                  className=" h-full justify-center px-4"
                   onPress={handleSearchInputClear}
                 >
                   <XMarkIcon size={18} color="black" />
@@ -131,14 +132,14 @@ export default function SearchScreen() {
               )}
             </View>
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => searchInputRef.current.blur()}
-            className="items-center justify-center bg-blue-300 self-stretch"
+            className="items-center justify-center  self-stretch"
           >
             <View className="border-l border-neutral-200 px-3 py-1">
               <Text className="text-sm text-black font-normal">Cancel</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <ScrollView

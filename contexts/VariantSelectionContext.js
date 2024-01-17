@@ -4,6 +4,8 @@ import { createContext } from "react";
 import { ADD_CART_ITEM_V2 } from "../graphql/mutations";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
+import { uid } from "uid";
+
 import { GET_CART_DETAILS_V2, GET_PRODUCT } from "../graphql/queries";
 import { cartVar } from "../makeVars/MakeVars";
 import { getVariantForOptions } from "../components/utils/UtilsFunctions";
@@ -19,6 +21,8 @@ function VariantSelectionProvider({
   const [selectedVariant, setSelectedVariant] = useState({});
   const [activeOptions, setActiveOptions] = useState([]);
   const [customProductId, setCustomProductId] = useState("");
+
+  console.log(customProductId);
 
   const cart = useReactiveVar(cartVar);
 
@@ -71,17 +75,58 @@ function VariantSelectionProvider({
   });
 
   const handleAddCartBtn = (onClose) => {
+    const uniqueId = uid();
+    const customSelections = customProductId?.id
+      ? JSON.stringify(customProductId?.selections[0])
+      : " ";
+
     if (cart?.id) {
+      const input = customProductId?.id
+        ? {
+            cartId: cart?.id,
+            lines: [
+              customProductId.id && {
+                merchandiseId: customProductId.id,
+                quantity: 1,
+                attributes: [
+                  {
+                    key: "custom-selection-uid",
+                    value: uniqueId,
+                  },
+                  {
+                    key: "custom-product-uid",
+                    value: uniqueId,
+                  },
+                  {
+                    key: "custom-selection",
+                    value: customSelections,
+                  },
+                ],
+              },
+              {
+                merchandiseId: selectedVariant.id,
+                quantity: 1,
+                attributes: [
+                  {
+                    key: "custom-selection-uid",
+                    value: uniqueId,
+                  },
+                ],
+              },
+            ],
+          }
+        : {
+            cartId: cart?.id,
+            lines: [
+              {
+                merchandiseId: selectedVariant.id,
+                quantity: 1,
+              },
+            ],
+          };
+
       addCartV2Item({
-        variables: {
-          cartId: cart?.id,
-          lines: [
-            {
-              merchandiseId: selectedVariant.id,
-              quantity: 1,
-            },
-          ],
-        },
+        variables: input,
         refetchQueries: [
           {
             query: GET_CART_DETAILS_V2,

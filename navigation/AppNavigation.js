@@ -2,7 +2,6 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { HeaderBackButton } from "@react-navigation/elements";
 import {
   ShoppingBagIcon,
   HomeIcon,
@@ -11,7 +10,8 @@ import {
   RectangleStackIcon,
 } from "react-native-heroicons/outline";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { CommonActions } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
 
 import HomeScreen from "../screens/HomeScreen";
 import ProductDetailScreen from "../screens/ProductDetailScreen";
@@ -25,9 +25,7 @@ import CheckoutScreen from "../screens/CheckoutScreen";
 import Collection from "../screens/CollectionScreen";
 import AuthScreen from "../screens/AuthScreen";
 import InitialSplashScreen from "../screens/InitialSplashScreen";
-import { useEffect, useState } from "react";
 import { cartIdVar, cartVar, userVar } from "../makeVars/MakeVars";
-import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
 import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import ProfileScreen from "../screens/ProfileScreen";
 import { CART_BUYER_IDENTITY_UPDATE, CREATE_CART } from "../graphql/mutations";
@@ -79,7 +77,7 @@ export function SearchScreens() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="SearchScreens"
+        name="SearchScreen"
         component={SearchScreen}
         options={{
           headerShown: false,

@@ -47,16 +47,17 @@ export default function ProductCardCarousal({ content }) {
         <View className="flex-row px-2">
           {data &&
             data.collection.products.edges?.map((product, index) => (
-              <TouchableOpacity
-                key={index.toString()}
-                onPress={() => {
+              <ProductCard
+              key={product.node.id}
+                onpress={() => {
                   navigation.navigate("ProductDetailScreen", {
                     productId: product.node.id,
                   });
                 }}
-              >
-                <ProductCard product={product.node} width={150} height={230} />
-              </TouchableOpacity>
+                product={product.node}
+                width={150}
+                height={230}
+              />
             ))}
           {!data && loading && (
             <>

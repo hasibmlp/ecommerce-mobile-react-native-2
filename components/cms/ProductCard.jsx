@@ -1,11 +1,11 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import PriceContainer from "../PriceContainer";
-import ColorSwatchImage from "../buttons/ColorSwatchImage";
 import { Image } from "expo-image";
 
-const blurhash =
-  'LEHV6nWB2yk8pyo0adR*.7kCMdnj';
+import PriceContainer from "../PriceContainer";
+import ColorSwatchImage from "../buttons/ColorSwatchImage";
 
+
+const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
 export default function ProductCard({
   context,
@@ -26,20 +26,24 @@ export default function ProductCard({
   const totalNumberOfReminingColor =
     product?.options.find((op) => op.name === "Color")?.values.length -
     TOTALNUMBEROFCOLORSHOWN;
+
+  const featuredImage =
+    product?.featuredImage ?? product?.images?.edges[0]?.node;
+
   return (
     <TouchableOpacity
       onPress={onpress}
       style={[{ width }, style]}
-      className="justify-center mr-[10px]"
+      className="justify-start mr-[10px]"
     >
       <View
         style={{ height }}
         className="w-full overflow-hidden rounded-[2px] bg-gray-300"
       >
-        {product.featuredImage?.url && (
+        {featuredImage?.url && (
           <Image
             style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-            source={product.featuredImage?.url}
+            source={featuredImage?.url}
             placeholder={blurhash}
             contentFit="cover"
             transition={100}

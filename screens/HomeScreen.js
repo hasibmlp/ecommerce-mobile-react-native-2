@@ -184,6 +184,7 @@ const HomeScreen = () => {
           onScroll={scrollHandler}
           scrollEventThrottle={16}
           className="bg-neutral-50"
+          onScrollBeginDrag={() => setOpen(false)}
         >
           <View className="h-20 w-full bg-neutral-50 z-[99] px-4 flex-row items-center justify-between">
             <View

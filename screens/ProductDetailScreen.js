@@ -249,11 +249,11 @@ function PurchaseOption({ productId, data }) {
             </TouchableOpacity>
           </View>
 
-          <MyModal visible={isFullModalVisible} slide="toUp">
+          {/* <MyModal visible={isFullModalVisible} slide="toUp">
             <CustomizationSelection2
               onClose={() => setFullModalVisible(false)}
             />
-          </MyModal>
+          </MyModal> */}
         </View>
       )}
 
