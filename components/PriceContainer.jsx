@@ -23,12 +23,12 @@ export default function PriceContainer({amount, size='md', withTax=false, withOf
     return(
       <View style={containerStyle} className={`${position === 'left' ? 'items-start' : position === 'right' ? 'items-end' : 'items-center'}`}>
         <View className="flex-row items-center">
-          <Text className={`${mainTextSize} font-normal text-[#4baaca]`}>
+          <Text style={{ fontFamily: "Nexa-Regular" }} className={`${mainTextSize} font-normal text-[#4baaca]`}>
               {price} {currencyCode}
           </Text>
           {isDiscountApplyed && (
             <>
-              <Text className={`${subTextSize} line-through font-normal text-black ml-2`}>
+              <Text style={{ fontFamily: "Nexa-Regular" }} className={`${subTextSize} line-through font-normal text-black ml-2`}>
                 {comparePrice} {currencyCode}
               </Text>
             {withOfferTag && (< Text className={`${subTextSize} font-normal text-black ml-1`}>
@@ -37,7 +37,7 @@ export default function PriceContainer({amount, size='md', withTax=false, withOf
             </>
           )}
         </View>
-        {withTax && (<Text className={`${subTextSize} text-gray-500 font-normal mt-1`}>
+        {withTax && (<Text style={{ fontFamily: "Nexa-Regular" }} className={`${subTextSize} text-gray-500 font-normal mt-1`}>
           excluding VAT
         </Text>)}
       </View>

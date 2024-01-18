@@ -21,6 +21,7 @@ import {
   XMarkIcon,
   CheckCircleIcon,
   PlusCircleIcon,
+  TrashIcon,
 } from "react-native-heroicons/outline";
 import * as Yup from "yup";
 import { useFonts } from "expo-font";
@@ -43,7 +44,9 @@ import EmailIcon from "../components/icons/EmailIcon";
 import MyModal from "../components/Modal/MyModal";
 import Animated, {
   useAnimatedScrollHandler,
+  useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import SmileIcon from "../components/icons/SmileIcon";
 import BackIconButton from "../components/buttons/BackIconButton";
@@ -58,6 +61,9 @@ import Selection from "../components/customization/Selection";
 import ColorSelection from "../components/customization/ColorSelection";
 import { userVar } from "../makeVars/MakeVars";
 import { useReactiveVar } from "@apollo/client";
+import EmbroiderySelection from "../components/Modal/EmbroiderySelection";
+import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
+import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -66,7 +72,8 @@ const themeColor = "bg-[#4baaca]";
 const textColor = "text-[#4baaca]";
 
 export default function ProductDetailScreen({ route }) {
-  const user = useReactiveVar(userVar)
+  const user = useReactiveVar(userVar);
+  const scrollY = useSharedValue(0);
 
   console.log("USER LOGGED IN PRODUCT SCREEN : ", user?.email);
   const navigation = useNavigation();
@@ -75,7 +82,7 @@ export default function ProductDetailScreen({ route }) {
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
-      scrollRef.value = e.contentOffset.y;
+      scrollY.value = e.contentOffset.y;
     },
   });
 
@@ -90,21 +97,116 @@ export default function ProductDetailScreen({ route }) {
       <SafeAreaView className="bg-white" />
       <VariantSelectionProvider productId={productId} colorValue={colorValue}>
         <View>
-          <HeaderActions scrollRef={scrollRef} />
+          <Header scrollY={scrollY} />
+
           <Animated.ScrollView
             bounces={false}
             onScroll={scrollHandler}
-            scrollEventThrottle={1}
+            scrollEventThrottle={16}
           >
             <ImageCarousel />
             <ProductContent productId={productId} />
             <RecommendedCollection />
           </Animated.ScrollView>
+
+          <Footer />
         </View>
+        <SafeAreaView className="bg-white" />
       </VariantSelectionProvider>
     </View>
   );
 }
+
+const Header = ({ scrollY }) => {
+  const { data } = useContext(VariantSelectionContext);
+  const title =
+    data?.product?.title?.length > 36
+      ? data?.product?.title.slice(0, 36) + "..."
+      : data?.product?.title;
+
+  return (
+    <ScreenHeaderV3
+      scrollY={scrollY}
+      right={
+        <ShareButton
+          message={data?.product?.title}
+          url={data?.product?.onlineStoreUrl}
+          title={data?.product?.onlineStoreUrl}
+        />
+      }
+    >
+      <View className="flex-1 w-full items-center justify-center">
+        <Text
+          style={{ fontFamily: "Nexa-Regular" }}
+          className="text-lg text-black"
+        >
+          {data?.product?.vendor}
+        </Text>
+        <Text
+          style={{ fontFamily: "Nexa-Regular" }}
+          className="text-sm text-neutral-800 "
+        >
+          {title}
+        </Text>
+      </View>
+    </ScreenHeaderV3>
+  );
+};
+
+const Footer = () => {
+  const [ visible, setVisible ] = useState(false)
+  const { isProductSuccessfullyAdded, setProductSuccessfullyAdded,  } = useContext(VariantSelectionContext)
+
+  useEffect(() => {
+    if(isProductSuccessfullyAdded === true) {
+      setVisible(true)
+    }
+    
+    setTimeout(() => {
+      setVisible(false)
+      setProductSuccessfullyAdded(false)
+    }, 4000);
+  },[isProductSuccessfullyAdded])
+  
+  return (
+    <>
+      <BottomPopup visible={visible} />
+    </>
+  );
+};
+
+const BottomPopup = ({ visible }) => {
+  const offset = useSharedValue(50);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: offset.value }],
+  }));
+
+  useEffect(() => {
+    offset.value = withTiming(visible ? 0 : 50);
+  }, [visible]);
+
+  return (
+    <Animated.View
+      style={animatedStyle}
+      className="absolute bottom-14 h-12 w-full bg-green-200 flex-row items-center justify-center"
+    >
+      <Text
+        style={{ fontFamily: "Nexa-Regular" }}
+        className="text-base text-black"
+      >
+        Product has been added,{" "}
+      </Text>
+      <TouchableOpacity className="self-stretch justify-center px-2">
+        <Text
+          style={{ fontFamily: "Nexa-Regular" }}
+          className="text-base text-black underline"
+        >
+          Click to View Cart
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 function HeaderActions({ scrollRef }) {
   const { data } = useContext(VariantSelectionContext);
@@ -157,6 +259,7 @@ function ProductContent({ productId }) {
       </View>
 
       <PurchaseOption productId={productId} data={data} />
+      <PersonalizeSetting />
       <OfferAnnouncement text={data?.product.metafield?.value} />
       <ToggleContainer />
       <SmilePointsContainer />
@@ -178,7 +281,10 @@ function ProductInfo({ data }) {
     <View className="w-full items-center">
       <TagContainer label={data.product.vendor} />
       <View className="py-3 w-[90%]">
-        <Text className="text-[20px] font-normal text-black text-center pb-2">
+        <Text
+          style={{ fontFamily: "Nexa-Regular" }}
+          className="text-[20px] font-normal text-black text-center pb-2"
+        >
           {data.product.title}
         </Text>
         <PriceContainer amount={amount} />
@@ -187,8 +293,202 @@ function ProductInfo({ data }) {
   );
 }
 
+const PersonalizeSetting = () => {
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [totalCustom, setTotalCustom] = useState({
+    type: "",
+    active: false,
+    selections: [],
+  });
+  const { customProductId, setCustomProductId } = useContext(
+    VariantSelectionContext
+  );
+
+  console.log("CUSTOM SELECTIONS:");
+
+  return (
+    <View className="bg-white px-5 pb-3">
+      {!customProductId && (
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          className="flex-row items-center justify-between h-12 px-3 border border-neutral-300 rounded-md"
+        >
+          <Text className="text-sm text-black ">Add Embroidery</Text>
+          <View className="flex-row items-center">
+            <Text className="text-sm text-black mr-1">from AED 58</Text>
+            <ChevronRightIcon size={20} color="black" />
+          </View>
+        </TouchableOpacity>
+      )}
+
+      {customProductId && (
+        <View className="border-t border-neutral-200">
+          <View className="flex-row items-center justify-between h-10 ">
+            <Text>Add Embroidery</Text>
+            <View className="flex-row items-center self-stretch">
+              <Text className="text-sm text-black px-2">
+                AED {customProductId.price}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                className=" self-stretch justify-center px-2"
+              >
+                <Text className="text-sm text-black">Edit</Text>
+              </TouchableOpacity>
+              <View className="h-6 w-[1px] bg-neutral-500 mx-2"></View>
+              <TouchableOpacity
+                onPress={() => {
+                  setCustomProductId(null);
+                  setTotalCustom(null);
+                }}
+                className=" self-stretch justify-center px-2"
+              >
+                <TrashIcon size={20} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {(customProductId.type === "text-only" ||
+            customProductId.type === "text-with-graphics") && (
+            <View className="flex-row mb-3 items-center">
+              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
+                {(customProductId.selections[0]?.firstLine ||
+                  customProductId.selections[0]?.secondLine) && (
+                  <View>
+                    {customProductId.selections[0]?.firstLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.firstLine}
+                      </Text>
+                    )}
+                    {customProductId.selections[0]?.secondLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.secondLine}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm text-balck font-medium">Text</Text>
+
+                {customProductId.selections[0]?.secondLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">First Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.firstLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.secondLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Second Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.secondLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.color && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Color: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.color}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.fontStyle && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Font: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.fontStyle}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.position && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Placement: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.position}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
+          {(customProductId.type === "graphics-only" ||
+            customProductId.type === "text-with-graphics") && (
+            <View className="flex-row mb-3">
+              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
+                {customProductId.selections[0]?.imageUrl && (
+                  <Image
+                    className="w-full h-full"
+                    src={customProductId.selections[0]?.imageUrl}
+                  />
+                )}
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm text-balck font-medium">Icon</Text>
+
+                {customProductId.selections[0]?.position && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Placement: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.position}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
+          <View className="flex-row bg-neutral-100 p-3 rounded-md">
+            <View className="items-center justify-center mr-3">
+              <View className="h-4 w-2 bg-black absolute"></View>
+              <ExclamationTriangleIcon size={28} color="#eed202" />
+            </View>
+            <View className="flex-1 mb-2">
+              <Text className="text-xs text-neutral-500 font-light">
+                Embroidery items are FINAL SALE. Order with embroidered items
+                will take up to 2 additional weeks to ship
+              </Text>
+            </View>
+          </View>
+        </View>
+      )}
+
+      <MyModal visible={isModalVisible} slide="toUp">
+        <EmbroiderySelection
+          onClose={() => setModalVisible(false)}
+          totalCustom={totalCustom}
+          setTotalCustom={setTotalCustom}
+          customProductId={customProductId}
+          setCustomProductId={setCustomProductId}
+        />
+      </MyModal>
+    </View>
+  );
+};
+
 function PurchaseOption({ productId, data }) {
-  const { options, selectedVariant, handleAddCartBtn, activeOptions } =
+  const { options, selectedVariant, handleAddCartBtn, activeOptions, loading } =
     useContext(VariantSelectionContext);
   const [isModalVisisble, setModalVisible] = useState(false);
   const [isFullModalVisible, setFullModalVisible] = useState(false);
@@ -289,6 +589,7 @@ function PurchaseOption({ productId, data }) {
                 : false
               : true
           }
+          loading={loading}
           onPress={handlePress}
           style={{ marginVertical: 12, marginHorizontal: 20 }}
         />
@@ -507,7 +808,12 @@ function InstagramImageCard() {
 function TagContainer({ label }) {
   return (
     <View className="p-1 bg-gray-200 rounded-[2px] items-center">
-      <Text className="text-[10px] text-black uppercase">{label}</Text>
+      <Text
+        style={{ fontFamily: "Nexa-Regular" }}
+        className="text-[10px] text-black uppercase"
+      >
+        {label}
+      </Text>
     </View>
   );
 }
@@ -558,7 +864,10 @@ function SelectionButton({ option, style }) {
 
   return (
     <View style={style} className={` w-5 h-10 flex-1`}>
-      <Text className="text-[12px] text-black font-medium uppercase text-center ">
+      <Text
+        style={{ fontFamily: "Nexa-Regular" }}
+        className="text-[12px] text-black font-medium uppercase text-center "
+      >
         {label}
       </Text>
       <View className="flex-row items-center justify-center mt-3">
@@ -567,7 +876,10 @@ function SelectionButton({ option, style }) {
             value={activeOptions.find((i) => i.name === "Color")?.value}
           />
         )}
-        <Text className="text-[14px] text-black font-light uppercase mr-[2px] ml-2">
+        <Text
+          style={{ fontFamily: "Nexa-Regular" }}
+          className="text-[14px] text-black font-light uppercase mr-[2px] ml-2"
+        >
           {optionValue
             ? optionValue.length > 10
               ? optionValue.slice(0, 10) + "..."

@@ -1,4 +1,4 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import RadioButton from "../buttons/RadioButton";
 import { useEffect, useState } from "react";
 
@@ -24,8 +24,8 @@ const ImageSelection = ({
 
   return (
     <View style={style} className="w-full">
-      <Text className="text-[16px] text-black font-normal mb-3">{title}</Text>
-      <View className="flex-row justify-center">
+      <Text className="text-base text-black font-normal mb-3">{title}</Text>
+      <View className="w-full flex-row justify-center">
         <ImageSelectionCard
           imageUrl={images[0]?.url}
           label={images[0]?.title}
@@ -46,7 +46,7 @@ const ImageSelection = ({
 
 const ImageSelectionCard = ({ style, label, active, onPress, imageUrl }) => {
   return (
-    <Pressable style={style} className="items-center" onPress={onPress}>
+    <TouchableOpacity style={style} className="items-center flex-1" onPress={onPress}>
       <View className="w-40 h-40 bg-gray-200">
         <Image src={imageUrl} className="w-full h-full" />
       </View>
@@ -58,7 +58,7 @@ const ImageSelectionCard = ({ style, label, active, onPress, imageUrl }) => {
         )}
         <RadioButton checked={active} />
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

@@ -156,17 +156,17 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose, customP
         'Ubuntu': require('../../assets/fonts/Ubuntu-Bold.ttf'),
       });
     const cusotmSelections = customProductId || null;
-    const activeColorCode = activeSelectionsForTextDisplay.selections.find(i => i.type === 'color-selection')?.colorCode
-    const activeFont = activeSelectionsForTextDisplay.selections.find(i => i.type === 'font-selection')?.fontFamily
-    const initialCustomTextData = totalCustom?.selections.find(item => item.type === 'text-upload')?.data
+    const activeColorCode = activeSelectionsForTextDisplay.selections.find(i => i?.type === 'color-selection')?.colorCode
+    const activeFont = activeSelectionsForTextDisplay.selections.find(i => i?.type === 'font-selection')?.fontFamily
+    const initialCustomTextData = totalCustom?.selections.find(item => item?.type === 'text-upload')?.data
     const handleTextStyle = (item) => {
         setActiveSelectionsForTextDisplay(prevState => {
-        if(item.type === 'position') {
+        if(item?.type === 'position') {
             const prevSelections = prevState.selections
             return {postion: item.postion, selections: prevSelections}
         }else {
             const prevSelection = [...prevState.selections]
-            const itemIndex = prevSelection.findIndex(i => i.type === item.type)
+            const itemIndex = prevSelection.findIndex(i => i?.type === item?.type)
             if(itemIndex > -1) {
             prevSelection.splice(itemIndex, 1)
             }

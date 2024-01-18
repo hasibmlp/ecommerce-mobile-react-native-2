@@ -73,7 +73,7 @@ export default function Button({
           }`,
         };
 
-  const containerClasses = `${flex ? "self-stretch" : "self-center"} ${
+  const containerClasses = `${flex ? "self-stretch flex-1" : "self-center"} ${
     buttonStyle.container
   } items-center`;
 
@@ -98,7 +98,7 @@ export default function Button({
         <Text
           style={[
             textStyle,
-            { color: textColors.length > 0 && buttonColor.text },
+            { color: textColors.length > 0 && buttonColor.text , fontFamily: "Nexa-Regular" },
           ]}
           className={`${buttonStyle.text} font-medium uppercase`}
         >

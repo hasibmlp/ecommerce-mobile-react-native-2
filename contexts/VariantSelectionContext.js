@@ -21,6 +21,7 @@ function VariantSelectionProvider({
   const [selectedVariant, setSelectedVariant] = useState({});
   const [activeOptions, setActiveOptions] = useState([]);
   const [customProductId, setCustomProductId] = useState("");
+  const [ isProductSuccessfullyAdded, setProductSuccessfullyAdded ] = useState(false)
 
   console.log(customProductId);
 
@@ -137,6 +138,7 @@ function VariantSelectionProvider({
         ],
         onCompleted: () => {
           typeof onClose === "function" && onClose();
+          setProductSuccessfullyAdded(true)
         },
       });
     }
@@ -213,6 +215,9 @@ function VariantSelectionProvider({
         selectedVariant,
         customProductId,
         setCustomProductId,
+        isProductSuccessfullyAdded,
+        setProductSuccessfullyAdded,
+        loading:addCartV2ItemLoading
       }}
     >
       {children}
