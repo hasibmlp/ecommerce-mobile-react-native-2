@@ -154,20 +154,21 @@ const Header = ({ scrollY }) => {
 };
 
 const Footer = () => {
-  const [ visible, setVisible ] = useState(false)
-  const { isProductSuccessfullyAdded, setProductSuccessfullyAdded,  } = useContext(VariantSelectionContext)
+  const [visible, setVisible] = useState(false);
+  const { isProductSuccessfullyAdded, setProductSuccessfullyAdded } =
+    useContext(VariantSelectionContext);
 
   useEffect(() => {
-    if(isProductSuccessfullyAdded === true) {
-      setVisible(true)
+    if (isProductSuccessfullyAdded === true) {
+      setVisible(true);
     }
-    
+
     setTimeout(() => {
-      setVisible(false)
-      setProductSuccessfullyAdded(false)
+      setVisible(false);
+      setProductSuccessfullyAdded(false);
     }, 4000);
-  },[isProductSuccessfullyAdded])
-  
+  }, [isProductSuccessfullyAdded]);
+
   return (
     <>
       <BottomPopup visible={visible} />
@@ -176,13 +177,13 @@ const Footer = () => {
 };
 
 const BottomPopup = ({ visible }) => {
-  const offset = useSharedValue(50);
+  const offset = useSharedValue(100);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
 
   useEffect(() => {
-    offset.value = withTiming(visible ? 0 : 50);
+    offset.value = withTiming(visible ? 0 : 100);
   }, [visible]);
 
   return (
@@ -207,36 +208,6 @@ const BottomPopup = ({ visible }) => {
     </Animated.View>
   );
 };
-
-function HeaderActions({ scrollRef }) {
-  const { data } = useContext(VariantSelectionContext);
-  const title =
-    data?.product?.title?.length > 36
-      ? data?.product?.title.slice(0, 36) + "..."
-      : data?.product?.title;
-  return (
-    <ScreenHeaderV2
-      left={<BackIconButton />}
-      right={
-        <ShareButton
-          message={data?.product?.title}
-          url={data?.product?.onlineStoreUrl}
-          title={data?.product?.onlineStoreUrl}
-        />
-      }
-      scrollRef={scrollRef}
-    >
-      <View className="w-[70%] h-full items-center justify-end p-2">
-        <Text className="text-[20px] font-noraml text-black">
-          {data?.product?.vendor}
-        </Text>
-        <Text className="text-[12px] font-noraml text-gray-500 mt-[2px] whitespace-nowrap">
-          {title}
-        </Text>
-      </View>
-    </ScreenHeaderV2>
-  );
-}
 
 function RecommendedCollection() {
   return (
@@ -295,11 +266,6 @@ function ProductInfo({ data }) {
 
 const PersonalizeSetting = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [totalCustom, setTotalCustom] = useState({
-    type: "",
-    active: false,
-    selections: [],
-  });
   const { customProductId, setCustomProductId } = useContext(
     VariantSelectionContext
   );
@@ -339,7 +305,6 @@ const PersonalizeSetting = () => {
               <TouchableOpacity
                 onPress={() => {
                   setCustomProductId(null);
-                  setTotalCustom(null);
                 }}
                 className=" self-stretch justify-center px-2"
               >
@@ -372,7 +337,7 @@ const PersonalizeSetting = () => {
               <View className="flex-1">
                 <Text className="text-sm text-balck font-medium">Text</Text>
 
-                {customProductId.selections[0]?.secondLine && (
+                {customProductId.selections[0]?.firstLine && (
                   <View className="flex-row">
                     <Text className="text-sm text-black ">First Line: </Text>
                     <View className=" flex-1">
@@ -475,13 +440,16 @@ const PersonalizeSetting = () => {
       )}
 
       <MyModal visible={isModalVisible} slide="toUp">
-        <EmbroiderySelection
-          onClose={() => setModalVisible(false)}
-          totalCustom={totalCustom}
-          setTotalCustom={setTotalCustom}
-          customProductId={customProductId}
-          setCustomProductId={setCustomProductId}
-        />
+        <View>
+          <TouchableOpacity onPress={() => setModalVisible(false)} className="absolute top-3 right-3 z-30 w-10 h-10 items-center justify-center">
+            <XMarkIcon size={28} color="black"/>
+          </TouchableOpacity>
+          <EmbroiderySelection
+            onClose={() => setModalVisible(false)}
+            customProductId={customProductId}
+            setCustomProductId={setCustomProductId}
+          />
+        </View>
       </MyModal>
     </View>
   );
@@ -918,227 +886,3 @@ const colorValues = [
     colorCode: "#FFA500",
   },
 ];
-
-const CustomizationSelection2 = ({ onClose }) => {
-  const [totalCustom, setTotalCustom] = useState({
-    type: "",
-    active: false,
-    selections: [],
-  });
-
-  const [activeSelectionsForTextDisplay, setActiveSelectionsForTextDisplay] =
-    useState({ postion: "", selections: [] });
-  const [price, setPrice] = useState(0);
-  const [fontsLoaded] = useFonts({
-    "Robo-Mono": require("../assets/fonts/RobotoMono-SemiBold.ttf"),
-    Kalnia: require("../assets/fonts/Kalnia-SemiBold.ttf"),
-    Ubuntu: require("../assets/fonts/Ubuntu-Bold.ttf"),
-  });
-  const activeColorCode = activeSelectionsForTextDisplay.selections.find(
-    (i) => i.type === "color-selection"
-  )?.colorCode;
-  const activeFont = activeSelectionsForTextDisplay.selections.find(
-    (i) => i.type === "font-selection"
-  )?.fontFamily;
-
-  const handleTextStyle = (item) => {
-    setActiveSelectionsForTextDisplay((prevState) => {
-      if (item.type === "position") {
-        const prevSelections = prevState.selections;
-        return { postion: item.postion, selections: prevSelections };
-      } else {
-        const prevSelection = [...prevState.selections];
-        const itemIndex = prevSelection.findIndex((i) => i.type === item.type);
-        if (itemIndex > -1) {
-          prevSelection.splice(itemIndex, 1);
-        }
-        prevSelection.push(item);
-        return { selections: prevSelection };
-      }
-    });
-  };
-
-  useEffect(() => {
-    let newPrice = 0;
-    if (totalCustom.type === "text-only") newPrice = 50;
-    else if (totalCustom.type === "graphics-only") newPrice = 100;
-    else newPrice = 150;
-
-    setPrice(newPrice);
-  }, [totalCustom]);
-
-  useEffect(() => {}, [fontsLoaded]);
-
-  if (!fontsLoaded) return null;
-
-  return (
-    <View className="flex-1">
-      <View className="h-10 flex-row items-center justify-end px-3">
-        <Pressable className="p-1" onPress={onClose}>
-          <XMarkIcon size={24} color="black" />
-        </Pressable>
-      </View>
-
-      <ScrollView className="pt-8 px-4">
-        {/* <HeaderTitle title="Customization"/> */}
-        <View className="text-form pt-3">
-          <Formik
-            initialValues={{
-              position:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].position
-                  : "",
-              language:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].language
-                  : "",
-              fontStyle:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].fontStyle
-                  : "",
-              color:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].color
-                  : "",
-              firstLine:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].firstLine
-                  : "",
-              secondLine:
-                totalCustom.selections.length > 0
-                  ? totalCustom.selections[0].secondLine
-                  : "",
-            }}
-            validationSchema={validationSchemaTextOnly}
-            onSubmit={(values) => {
-              if (values) {
-                setTotalCustom((prevState) => {
-                  return {
-                    type: "text-only",
-                    active: true,
-                    selections: [{ ...values }],
-                  };
-                });
-              } else {
-                // setTotalCustom(prevState => {
-                // const prevTotalCustom = [...prevState.selections]
-                // return {type: 'text-only', selections: filterdArray}
-                // })
-              }
-              onClose();
-            }}
-          >
-            {({
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              errors,
-              touched,
-              values,
-            }) => (
-              <>
-                <View className="mb-6">
-                  {/* <FormErrorBlock errors={errors} touched={touched} scrollY={textOnlyRef} /> */}
-                  <ImageSelection
-                    title="Position: Curved Tube (Doctor Side)"
-                    images={[
-                      {
-                        url: "https://www.shopscrubsandclogs.com/cdn/shop/files/MAZ-12142.jpg?v=1687173547",
-                      },
-                      {
-                        url: "https://www.shopscrubsandclogs.com/cdn/shop/files/MAZ-12142.jpg?v=1687173547",
-                      },
-                    ]}
-                    style={{ marginBottom: 12 }}
-                    defaultValue={values.position}
-                    handleChange={handleChange("position")}
-                  />
-                  <Selection
-                    name="language-selection"
-                    field="language"
-                    onChange={(item) => handleTextStyle(item)}
-                    label={"Language"}
-                    style={{ marginBottom: 12 }}
-                    options={[
-                      { name: "en", value: "English" },
-                      { name: "ar", value: "العربي" },
-                    ]}
-                    handleChange={handleChange("language")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.language}
-                    fontsLoaded={fontsLoaded}
-                  />
-
-                  <Selection
-                    name="font-selection"
-                    field="fontStyle"
-                    label={"Font"}
-                    onChange={(item) => handleTextStyle(item)}
-                    options={[
-                      {
-                        name: "op1",
-                        value: "Roboto Mono",
-                        fontFamily: "Robo-Mono",
-                      },
-                      { name: "op2", value: "Kalnia", fontFamily: "Kalnia" },
-                      { name: "op3", value: "Ubuntu", fontFamily: "Ubuntu" },
-                    ]}
-                    handleChange={handleChange("fontStyle")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.fontStyle}
-                    fontsLoaded={fontsLoaded}
-                  />
-                </View>
-
-                <ColorSelection
-                  onChange={(item) => handleTextStyle(item)}
-                  handleChange={handleChange("color")}
-                  handleBlur={handleBlur("color")}
-                  errors={errors}
-                  touched={touched}
-                  value={values.color}
-                  colorValues={colorValues}
-                />
-
-                <Text className="text-[14px] text-black font-normal mb-1">
-                  Enter Text here
-                </Text>
-                <TextInput
-                  style={{ color: activeColorCode, fontFamily: activeFont }}
-                  maxLength={16}
-                  className={`h-12 text-[18px] items-cetner bg-gray-100 px-2 rounded-[5px] mb-10`}
-                  onChangeText={handleChange("firstLine")}
-                  handleBlur={handleBlur("firstLine")}
-                  value={values.firstLine}
-                />
-
-                <View className="self-start mb-10">
-                  <Button
-                    label="Trems and condition"
-                    type="action"
-                    size="sm"
-                    textColors={["#000000"]}
-                  />
-                </View>
-
-                <View className="footer w-full justify-center pb-20">
-                  <View className="flex-row justify-between pb-4 mb-2 ">
-                    <Text className="text-[16px] text-black font-normal">
-                      Total Customization Price
-                    </Text>
-                    <Text className="text-[17px] text-[#89c157] font-medium">
-                      {price}
-                    </Text>
-                  </View>
-                  <Button label="Applay" onPress={handleSubmit} />
-                </View>
-              </>
-            )}
-          </Formik>
-        </View>
-      </ScrollView>
-    </View>
-  );
-};

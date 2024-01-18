@@ -34,7 +34,6 @@ export default function Button({
           text: active || !loading ? textColors[0] : textColors[1],
         }
       : {
-          // container: {backgroudColor: active || loading ? colors[0] : colors[1]},
           container: active || !loading ? colors[0] : colors[1],
           text: active || !loading ? textColors[0] : textColors[1],
         };
@@ -64,7 +63,7 @@ export default function Button({
         }
       : {
           container: `${
-            colors.length > 0 ? `bg-[${colors[active ? 0 : 1]}]` : themeColor
+            colors.length > 0 ? `bg-${colors[active ? 0 : 1]}` : themeColor
           } py-4 rounded-[5px] ${buttonContainer}`,
           text: `${
             textColors.length > 0
@@ -73,9 +72,9 @@ export default function Button({
           }`,
         };
 
-  const containerClasses = `${flex ? "self-stretch flex-1" : "self-center"} ${
-    buttonStyle.container
-  } items-center`;
+  const containerClasses = `justify-center ${
+    flex ? "self-stretch" : "self-center"
+  } ${buttonStyle.container} items-center`;
 
   return (
     <TouchableOpacity
@@ -86,10 +85,10 @@ export default function Button({
         {
           backgroundColor:
             colors.length === 0
-              ? type === "action"
+              ? ["action", "secondary"].includes(type)
                 ? "transparent"
-                : "#3BF4FB"
-              : buttonColor.container,
+                : "#00bfff"
+              : buttonStyle.container,
         },
       ]}
       className={containerClasses}
@@ -98,7 +97,10 @@ export default function Button({
         <Text
           style={[
             textStyle,
-            { color: textColors.length > 0 && buttonColor.text , fontFamily: "Nexa-Regular" },
+            {
+              color: textColors.length > 0 && buttonColor.text,
+              fontFamily: "Nexa-Regular",
+            },
           ]}
           className={`${buttonStyle.text} font-medium uppercase`}
         >

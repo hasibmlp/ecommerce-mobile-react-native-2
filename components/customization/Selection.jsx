@@ -19,9 +19,11 @@ const Selection = ({
   colorValues,
 }) => {
   const assignedOption = context === "color" ? colorValues : options;
-  const initialValue = assignedOption.find((item) => item.value === value) ?? assignedOption[0]
+  const initialValue = assignedOption.find((item) => item.value?.toLowerCase() === value?.toLowerCase()) ?? assignedOption[0]
   const [isActive, setActive] = useState(false);
   const [activeSelection, setActiveSelection] = useState(initialValue);
+
+  console.log("ASSINGED VALUES: ",value)
 
   const handleSelection = (value) => {
     setActiveSelection(value);
@@ -45,9 +47,9 @@ const Selection = ({
 
   if (context === "box")
     return (
-      <View className="mb-3">
+      <View className="mb-5">
         <Text className="text-base text-black font-medium mb-3">
-          Select {label}
+          {label}
         </Text>
         <View className="flex-row items-center w-full flex-wrap">
           {options.map((item, index) => (
@@ -117,8 +119,8 @@ const Selection = ({
 
   if (context === "color") console.log("color values: ", colorValues);
   return (
-    <View className="mb-3">
-      <Text className="pb-4">Color: {activeSelection?.value}</Text>
+    <View className="mb-5">
+      <Text className="text-base text-black font-medium mb-3">Color: {activeSelection?.value}</Text>
       <View className="flex-row flex-wrap gap-2">
         {colorValues?.map((item, index) => (
           <TouchableOpacity
