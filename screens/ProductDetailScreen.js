@@ -61,9 +61,10 @@ import Selection from "../components/customization/Selection";
 import ColorSelection from "../components/customization/ColorSelection";
 import { userVar } from "../makeVars/MakeVars";
 import { useReactiveVar } from "@apollo/client";
-import EmbroiderySelection from "../components/Modal/EmbroiderySelection";
+import EmbroiderySelection from "../components/Modal/CustomSelection";
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
+import CustomSelection from "../components/Modal/CustomSelection";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -266,11 +267,14 @@ function ProductInfo({ data }) {
 
 const PersonalizeSetting = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const { customProductId, setCustomProductId } = useContext(
+  const { customProductId, setCustomProductId, data } = useContext(
     VariantSelectionContext
   );
 
-  console.log("CUSTOM SELECTIONS:");
+  const title =
+    data?.product?.productType === "STETHOSCOPES"
+      ? "Personalize"
+      : "Add Embroidery";
 
   return (
     <View className="bg-white px-5 pb-3">
@@ -279,7 +283,7 @@ const PersonalizeSetting = () => {
           onPress={() => setModalVisible(true)}
           className="flex-row items-center justify-between h-12 px-3 border border-neutral-300 rounded-md"
         >
-          <Text className="text-sm text-black ">Add Embroidery</Text>
+          <Text className="text-sm text-black ">{title}</Text>
           <View className="flex-row items-center">
             <Text className="text-sm text-black mr-1">from AED 58</Text>
             <ChevronRightIcon size={20} color="black" />
@@ -290,7 +294,7 @@ const PersonalizeSetting = () => {
       {customProductId && (
         <View className="border-t border-neutral-200">
           <View className="flex-row items-center justify-between h-10 ">
-            <Text>Add Embroidery</Text>
+            <Text>{title}</Text>
             <View className="flex-row items-center self-stretch">
               <Text className="text-sm text-black px-2">
                 AED {customProductId.price}
@@ -424,6 +428,152 @@ const PersonalizeSetting = () => {
             </View>
           )}
 
+          {(customProductId.type === "laser-printing" ||
+            customProductId.type === "laser-with-tube-printing") && (
+            <View className="flex-row mb-3 items-center">
+              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
+                {(customProductId.selections[0]?.laserFirstLine ||
+                  customProductId.selections[0]?.laserSecondLine) && (
+                  <View>
+                    {customProductId.selections[0]?.laserFirstLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.laserFirstLine}
+                      </Text>
+                    )}
+                    {customProductId.selections[0]?.laserSecondLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.laserSecondLine}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm text-balck font-medium">
+                  {customProductId.title}
+                </Text>
+
+                {customProductId.selections[0]?.laserFirstLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">First Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.laserFirstLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.laserSecondLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Second Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.laserSecondLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.laserFontStyle && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Font: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.laserFontStyle}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
+          {(customProductId.type === "tube-printing" ||
+            customProductId.type === "laser-with-tube-printing") && (
+            <View className="flex-row mb-3 items-center">
+              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
+                {(customProductId.selections[0]?.firstLine ||
+                  customProductId.selections[0]?.secondLine) && (
+                  <View>
+                    {customProductId.selections[0]?.firstLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.firstLine}
+                      </Text>
+                    )}
+                    {customProductId.selections[0]?.secondLine && (
+                      <Text className="text-xs text-balck font-normal">
+                        {customProductId.selections[0]?.secondLine}
+                      </Text>
+                    )}
+                  </View>
+                )}
+              </View>
+
+              <View className="flex-1">
+                <Text className="text-sm text-balck font-medium">
+                  {customProductId.title}
+                </Text>
+
+                {customProductId.selections[0]?.firstLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">First Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.firstLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.secondLine && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Second Line: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.secondLine}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.color && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Color: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.color}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.fontStyle && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Font: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.fontStyle}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+
+                {customProductId.selections[0]?.position && (
+                  <View className="flex-row">
+                    <Text className="text-sm text-black ">Placement: </Text>
+                    <View className=" flex-1">
+                      <Text className="text-sm text-black ">
+                        {customProductId.selections[0]?.position}
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
           <View className="flex-row bg-neutral-100 p-3 rounded-md">
             <View className="items-center justify-center mr-3">
               <View className="h-4 w-2 bg-black absolute"></View>
@@ -441,10 +591,18 @@ const PersonalizeSetting = () => {
 
       <MyModal visible={isModalVisible} slide="toUp">
         <View>
-          <TouchableOpacity onPress={() => setModalVisible(false)} className="absolute top-3 right-3 z-30 w-10 h-10 items-center justify-center">
-            <XMarkIcon size={28} color="black"/>
+          <TouchableOpacity
+            onPress={() => setModalVisible(false)}
+            className="absolute top-3 right-3 z-30 w-10 h-10 items-center justify-center"
+          >
+            <XMarkIcon size={28} color="black" />
           </TouchableOpacity>
-          <EmbroiderySelection
+          <CustomSelection
+            context={
+              data?.product?.productType === "STETHOSCOPES"
+                ? "stethoscope"
+                : "embroidery"
+            }
             onClose={() => setModalVisible(false)}
             customProductId={customProductId}
             setCustomProductId={setCustomProductId}
@@ -481,50 +639,6 @@ function PurchaseOption({ productId, data }) {
 
   return (
     <View>
-      {data?.product?.vendor === "LITTMANN" && (
-        <View className="bg-white px-2">
-          <Text className="text-[12px] font-normal text-black uppercase mx-4 pb-3">
-            Customization:
-          </Text>
-          <View className="flex flex-row justify-between ">
-            <TouchableOpacity
-              onPress={() => setFullModalVisible(true)}
-              className="flex-row items-center justify-center self-start mx-3"
-            >
-              {false && <CheckCircleIcon size={18} color="#000" />}
-              {true && <PlusCircleIcon size={18} color="#89c157" />}
-              <Text
-                className={`text-[15px] ${
-                  false ? "text-black" : "text-[#89c157]"
-                } font-normal uppercase ml-1`}
-              >
-                {false ? "Customization Added" : "Tube printing"}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setFullModalVisible(true)}
-              className="flex-row items-center justify-center self-start mx-3"
-            >
-              {false && <CheckCircleIcon size={18} color="#000" />}
-              {true && <PlusCircleIcon size={18} color="#89c157" />}
-              <Text
-                className={`text-[15px] ${
-                  false ? "text-black" : "text-[#89c157]"
-                } font-normal uppercase ml-1`}
-              >
-                {false ? "Customization Added" : "laser customization"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* <MyModal visible={isFullModalVisible} slide="toUp">
-            <CustomizationSelection2
-              onClose={() => setFullModalVisible(false)}
-            />
-          </MyModal> */}
-        </View>
-      )}
-
       {options && options[0].values[0] !== "Default Title" && (
         <>
           <VariantSelectionButton
@@ -859,30 +973,3 @@ function SelectionButton({ option, style }) {
     </View>
   );
 }
-
-const validationSchemaTextOnly = Yup.object({
-  position: Yup.string().required(),
-  language: Yup.string().required(),
-  fontStyle: Yup.string().required(),
-  color: Yup.string().required(),
-  firstLine: Yup.string().required().max(16, "maximum character allowed 16"),
-  secondLine: Yup.string().max(16, "maximum character allowed 16"),
-});
-
-const colorValues = [
-  {
-    name: "navy",
-    value: "Navy",
-    colorCode: "#000080",
-  },
-  {
-    name: "black",
-    value: "Black",
-    colorCode: "#000",
-  },
-  {
-    name: "orange",
-    value: "Orange",
-    colorCode: "#FFA500",
-  },
-];

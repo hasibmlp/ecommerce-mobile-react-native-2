@@ -142,6 +142,7 @@ export const GET_PRODUCT = gql`
       title
       description
       onlineStoreUrl
+      productType
       priceRange {
         maxVariantPrice {
           amount
@@ -186,6 +187,10 @@ export const GET_PRODUCT = gql`
             image {
               id
               url
+            }
+            price {
+              amount
+              currencyCode
             }
           }
         }
@@ -791,6 +796,50 @@ export const SEARCH_PRODUCTS = gql`
                   image {
                     id
                     url
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_CUSTOMIZATIN_COLLECTION = gql`
+  query getCustomizationCollection($collectionId: ID, $metaIdentifiers:[HasMetafieldsIdentifier!]!) {
+    collection(id:$collectionId) {
+      id
+      title
+      description
+      handle
+      metafields(identifiers: $metaIdentifiers){
+      id
+      namespace
+      key
+      value
+    }
+      products(first: 3) {
+        edges {
+          node {
+            id
+            title
+            vendor
+            productType
+            handle
+            variants(first: 100) {
+              edges {
+                node {
+                  id
+                  title
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  price {
+                    amount
+                    currencyCode
                   }
                 }
               }

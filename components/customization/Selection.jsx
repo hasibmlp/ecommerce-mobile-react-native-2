@@ -23,8 +23,6 @@ const Selection = ({
   const [isActive, setActive] = useState(false);
   const [activeSelection, setActiveSelection] = useState(initialValue);
 
-  console.log("ASSINGED VALUES: ",value)
-
   const handleSelection = (value) => {
     setActiveSelection(value);
     setActive(false);
@@ -117,7 +115,7 @@ const Selection = ({
       </View>
     );
 
-  if (context === "color") console.log("color values: ", colorValues);
+  if (context === "color")
   return (
     <View className="mb-5">
       <Text className="text-base text-black font-medium mb-3">Color: {activeSelection?.value}</Text>

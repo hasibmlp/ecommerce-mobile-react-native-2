@@ -15,7 +15,10 @@ import {
 import VariantOption from "./VariantOption";
 import Button from "../buttons/Button";
 import ModalSkeleton from "./ModalSkeleton";
-import { ExclamationTriangleIcon, PlusCircleIcon } from "react-native-heroicons/solid";
+import {
+  ExclamationTriangleIcon,
+  PlusCircleIcon,
+} from "react-native-heroicons/solid";
 import MyModal from "./MyModal";
 import {
   CheckCircleIcon,
@@ -29,7 +32,7 @@ import TextWithContent from "../customization/TextWithContent";
 import TextOnly from "../customization/CustomSelection";
 import CustomSelection from "../customization/CustomSelection";
 import CustomSelectionInterface from "../customization/CustomSelectionInterface";
-import EmbroiderySelection from "./EmbroiderySelection";
+import EmbroiderySelection from "./CustomSelection";
 
 export default function VariantSelectionModalContent({ handleClose, context }) {
   const {
@@ -130,8 +133,8 @@ function CustomizationContainer({ customProductId, setCustomProductId }) {
             <View className="h-6 w-[1px] bg-neutral-500 mx-2"></View>
             <TouchableOpacity
               onPress={() => {
-                setCustomProductId(null)
-                setModalVisible(null)
+                setCustomProductId(null);
+                setModalVisible(null);
               }}
               className=" self-stretch justify-center px-2"
             >

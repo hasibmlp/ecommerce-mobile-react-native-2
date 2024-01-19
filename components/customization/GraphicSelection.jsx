@@ -27,6 +27,8 @@ const GraphicSelection = ({
   const initialValue = value;
   const [activeTab, setActiveTab] = useState(logoCollection[0]);
 
+  console.log("LOGO COLLECTION: ",logoCollection)
+
   const [selfUploadedFile, setSeflUploadedFile] = useState([]);
 
   const handleFileUpload = async () => {
@@ -46,7 +48,7 @@ const GraphicSelection = ({
               mimeType: "image/jpeg",
               name: "pexels-pixabay-60597.jpg",
               size: 322014,
-              uri: item.url,
+              uri: item.imageUrl,
             },
           ],
           canceled: false,
@@ -83,40 +85,48 @@ const GraphicSelection = ({
           >
             <Text
               className={`text-[14px] ${
-                item.id === activeTab.id ? "text-[#89c157]" : "text-black"
+                item?.id === activeTab?.id ? "text-[#89c157]" : "text-black"
               } font-normal`}
             >
-              {item.title}
+              {item.name}
             </Text>
           </Pressable>
         ))}
       </View>
 
       <View className="mt-3">
-        <FlatList
-          key={activeTab.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={activeTab.images}
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item }) => (
-            <View className={`w-[120] h-[120] border-2 ${value === item.url ? 'border-black' : 'border-transparent'} mr-2`}>
-              <Pressable
-                onPress={() => handleLogoPress(item)}
-                className="h-full w-full border-4 border-transparent"
+        { (
+          <FlatList
+            key={activeTab?.id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={activeTab?.values}
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View
+                className={`w-[120] h-[120] border-2 ${
+                  value === item.imageUrl
+                    ? "border-black"
+                    : "border-transparent"
+                } mr-2`}
               >
-                <Image
-                  style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-                  // className="flex-1 w-full bg-neutral-200"
-                  source={item.url}
-                  placeholder={blurhash}
-                  contentFit="cover"
-                  transition={100}
-                />
-              </Pressable>
-            </View>
-          )}
-        />
+                <Pressable
+                  onPress={() => handleLogoPress(item)}
+                  className="h-full w-full border-4 border-transparent"
+                >
+                  <Image
+                    style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
+                    // className="flex-1 w-full bg-neutral-200"
+                    source={item.imageUrl}
+                    placeholder={blurhash}
+                    contentFit="cover"
+                    transition={100}
+                  />
+                </Pressable>
+              </View>
+            )}
+          />
+        )}
       </View>
 
       <Text
