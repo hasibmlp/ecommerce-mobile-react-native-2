@@ -27,8 +27,6 @@ import {
 } from "../graphql/mutations";
 import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import { cartVar, isLoggedinFrstTimeVar, userVar } from "../makeVars/MakeVars";
-import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
-import RadioButton from "../components/buttons/RadioButton";
 import CheckBox from "../components/Sidebar/Buttons/Checkbox";
 import MyModal from "../components/Modal/MyModal";
 import { XMarkIcon } from "react-native-heroicons/outline";
@@ -84,11 +82,15 @@ const AuthScreen = () => {
       loading: customerDetailsLoading,
       error: customerDetailsError,
     },
-  ] = useLazyQuery(GET_CUSTOMER);
+  ] = useLazyQuery(GET_CUSTOMER, {
+    fetchPolicy: 'no-cache'
+  });
 
   const [createCart] = useMutation(CREATE_CART);
   const [getCartDetails, { data: cartDetailData }] =
-    useLazyQuery(GET_CART_DETAILS_V2);
+    useLazyQuery(GET_CART_DETAILS_V2, {
+      fetchPolicy: 'no-cache'
+    });
 
   // console.log("USER ACCESS TOKEN CREATED: ", data?.customerAccessTokenCreate?.customerAccessToken?.accessToken)
 
@@ -237,8 +239,6 @@ const AuthScreen = () => {
     }
   };
 
-  console.log("CART GETTING DETAILS :", cartDetailData);
-
   const handleRegister = (values) => {
     console.log("REGISTER VALUES: ", values);
     const loginValues = { email: values?.email, password: values?.password };
@@ -370,9 +370,6 @@ const AuthScreen = () => {
   //   }
   // }, [customrDetailsData]);
 
-  console.log("RECOVER DATA: ", customerRecoverData);
-  console.log("RECOVER ERROR: ", customerRecoverError);
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* {loading && <LoadingFullScreen />} */}
@@ -415,8 +412,6 @@ const AuthScreen = () => {
     </SafeAreaView>
   );
 };
-
-export default AuthScreen;
 
 const TabHeader = ({ activeTab, setActiveTab }) => {
   return (
@@ -958,3 +953,5 @@ const StatusMessage = ({ status, completed }) => {
     </Animated.View>
   );
 };
+
+export default AuthScreen;

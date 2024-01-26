@@ -10,7 +10,7 @@ export default function BackIconButton({style, color='black'}) {
         onPress={() => navigation.goBack()}
         className="p-1 items-center justify-center"
         >
-          <ChevronLeftIcon size={28} color={color} strokeWidth={1}/>
+          <ChevronLeftIcon size={28} color={color} strokeWidth={2}/>
         </TouchableOpacity>
     )
 }

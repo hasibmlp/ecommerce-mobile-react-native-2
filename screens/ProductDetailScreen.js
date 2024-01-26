@@ -60,11 +60,14 @@ import ImageSelection from "../components/customization/ImageSelection";
 import Selection from "../components/customization/Selection";
 import ColorSelection from "../components/customization/ColorSelection";
 import { userVar } from "../makeVars/MakeVars";
-import { useReactiveVar } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import EmbroiderySelection from "../components/Modal/CustomSelection";
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
 import CustomSelection from "../components/Modal/CustomSelection";
+import { GET_CUSTOMIZATIN_COLLECTION } from "../graphql/queries";
+import Skeleton from "../components/skeletons/Skeleton";
+import { FONT_FAMILY } from "../theme";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -138,14 +141,14 @@ const Header = ({ scrollY }) => {
     >
       <View className="flex-1 w-full items-center justify-center">
         <Text
-          style={{ fontFamily: "Nexa-Regular" }}
-          className="text-lg text-black"
+          style={FONT_FAMILY.secondary}
+          className="text-2xl text-black"
         >
           {data?.product?.vendor}
         </Text>
         <Text
-          style={{ fontFamily: "Nexa-Regular" }}
-          className="text-sm text-neutral-800 "
+          style={FONT_FAMILY.secondary}
+          className="text-[13px] text-neutral-800 "
         >
           {title}
         </Text>
@@ -193,14 +196,14 @@ const BottomPopup = ({ visible }) => {
       className="absolute bottom-14 h-12 w-full bg-green-200 flex-row items-center justify-center"
     >
       <Text
-        style={{ fontFamily: "Nexa-Regular" }}
+        style={FONT_FAMILY.secondary}
         className="text-base text-black"
       >
         Product has been added,{" "}
       </Text>
       <TouchableOpacity className="self-stretch justify-center px-2">
         <Text
-          style={{ fontFamily: "Nexa-Regular" }}
+          style={FONT_FAMILY.secondary}
           className="text-base text-black underline"
         >
           Click to View Cart
@@ -252,14 +255,14 @@ function ProductInfo({ data }) {
   return (
     <View className="w-full items-center">
       <TagContainer label={data.product.vendor} />
-      <View className="py-3 w-[90%]">
+      <View className="py-1 w-[90%]">
         <Text
-          style={{ fontFamily: "Nexa-Regular" }}
-          className="text-[20px] font-normal text-black text-center pb-2"
+          style={FONT_FAMILY.secondary}
+          className="text-base font-bold text-black text-center pb-2"
         >
           {data.product.title}
         </Text>
-        <PriceContainer amount={amount} />
+        <PriceContainer amount={amount} size="xl" />
       </View>
     </View>
   );
@@ -270,11 +273,39 @@ const PersonalizeSetting = () => {
   const { customProductId, setCustomProductId, data } = useContext(
     VariantSelectionContext
   );
+  const {
+    data: customizationCollectionData,
+    loading: customizationCollectionLoading,
+    error: customizationCollectionError,
+  } = useQuery(GET_CUSTOMIZATIN_COLLECTION, {
+    variables: {
+      collectionId: "gid://shopify/Collection/469659812119",
+      metaIdentifiers: [
+        {
+          key: "embroidery_graphics",
+          namespace: "mobile",
+        },
+      ],
+    },
+    fetchPolicy: 'no-cache'
+  });
 
   const title =
     data?.product?.productType === "STETHOSCOPES"
       ? "Personalize"
       : "Add Embroidery";
+
+  console.log("CUSTOM PRODUCT ID STATE : ", customProductId?.id);
+
+  const fromPrice =
+    data?.product?.productType === "STETHOSCOPES"
+      ? customizationCollectionData?.collection?.products?.edges.find(
+          (productEdge) => productEdge.node.handle === "stethoscope-customization-mobile-app"
+        ).node?.priceRange?.minVariantPrice?.amount
+      : customizationCollectionData?.collection?.products?.edges.filter(
+          (productEdge) =>
+            productEdge.node.handle !== "stethoscope-customization-mobile-app"
+        )[0]?.node?.priceRange?.minVariantPrice?.amount
 
   return (
     <View className="bg-white px-5 pb-3">
@@ -283,9 +314,19 @@ const PersonalizeSetting = () => {
           onPress={() => setModalVisible(true)}
           className="flex-row items-center justify-between h-12 px-3 border border-neutral-300 rounded-md"
         >
-          <Text className="text-sm text-black ">{title}</Text>
+          <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">{title}</Text>
           <View className="flex-row items-center">
-            <Text className="text-sm text-black mr-1">from AED 58</Text>
+            {!customizationCollectionLoading && (
+              <Text style={FONT_FAMILY.secondary} className="text-sm text-black mr-1">from  {fromPrice} AED </Text>
+            )}
+            {customizationCollectionLoading && (
+              <Skeleton
+                width={80}
+                height={18}
+                style={{ marginRight: 4 }}
+                rounded
+              />
+            )}
             <ChevronRightIcon size={20} color="black" />
           </View>
         </TouchableOpacity>
@@ -294,16 +335,16 @@ const PersonalizeSetting = () => {
       {customProductId && (
         <View className="border-t border-neutral-200">
           <View className="flex-row items-center justify-between h-10 ">
-            <Text>{title}</Text>
+            <Text style={FONT_FAMILY.secondary}>{title}</Text>
             <View className="flex-row items-center self-stretch">
-              <Text className="text-sm text-black px-2">
+              <Text style={FONT_FAMILY.secondary} className="text-sm text-black px-2">
                 AED {customProductId.price}
               </Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
                 className=" self-stretch justify-center px-2"
               >
-                <Text className="text-sm text-black">Edit</Text>
+                <Text style={FONT_FAMILY.secondary} className="text-sm text-black">Edit</Text>
               </TouchableOpacity>
               <View className="h-6 w-[1px] bg-neutral-500 mx-2"></View>
               <TouchableOpacity
@@ -325,12 +366,12 @@ const PersonalizeSetting = () => {
                   customProductId.selections[0]?.secondLine) && (
                   <View>
                     {customProductId.selections[0]?.firstLine && (
-                      <Text className="text-xs text-balck font-normal">
+                      <Text style={FONT_FAMILY.secondary} className="text-xs text-balck font-normal">
                         {customProductId.selections[0]?.firstLine}
                       </Text>
                     )}
                     {customProductId.selections[0]?.secondLine && (
-                      <Text className="text-xs text-balck font-normal">
+                      <Text style={FONT_FAMILY.secondary} className="text-xs text-balck font-normal">
                         {customProductId.selections[0]?.secondLine}
                       </Text>
                     )}
@@ -339,13 +380,13 @@ const PersonalizeSetting = () => {
               </View>
 
               <View className="flex-1">
-                <Text className="text-sm text-balck font-medium">Text</Text>
+                <Text style={FONT_FAMILY.secondary} className="text-sm text-balck font-medium">Text</Text>
 
                 {customProductId.selections[0]?.firstLine && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">First Line: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">First Line: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.firstLine}
                       </Text>
                     </View>
@@ -354,9 +395,9 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.secondLine && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">Second Line: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Second Line: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.secondLine}
                       </Text>
                     </View>
@@ -365,9 +406,9 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.color && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">Color: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Color: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.color}
                       </Text>
                     </View>
@@ -376,9 +417,9 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.fontStyle && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">Font: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Font: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.fontStyle}
                       </Text>
                     </View>
@@ -387,9 +428,9 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.position && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">Placement: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Placement: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.position}
                       </Text>
                     </View>
@@ -412,13 +453,13 @@ const PersonalizeSetting = () => {
               </View>
 
               <View className="flex-1">
-                <Text className="text-sm text-balck font-medium">Icon</Text>
+                <Text style={FONT_FAMILY.secondary} className="text-sm text-balck font-medium">Icon</Text>
 
                 {customProductId.selections[0]?.position && (
                   <View className="flex-row">
-                    <Text className="text-sm text-black ">Placement: </Text>
+                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Placement: </Text>
                     <View className=" flex-1">
-                      <Text className="text-sm text-black ">
+                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
                         {customProductId.selections[0]?.position}
                       </Text>
                     </View>
@@ -431,27 +472,11 @@ const PersonalizeSetting = () => {
           {(customProductId.type === "laser-printing" ||
             customProductId.type === "laser-with-tube-printing") && (
             <View className="flex-row mb-3 items-center">
-              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
-                {(customProductId.selections[0]?.laserFirstLine ||
-                  customProductId.selections[0]?.laserSecondLine) && (
-                  <View>
-                    {customProductId.selections[0]?.laserFirstLine && (
-                      <Text className="text-xs text-balck font-normal">
-                        {customProductId.selections[0]?.laserFirstLine}
-                      </Text>
-                    )}
-                    {customProductId.selections[0]?.laserSecondLine && (
-                      <Text className="text-xs text-balck font-normal">
-                        {customProductId.selections[0]?.laserSecondLine}
-                      </Text>
-                    )}
-                  </View>
-                )}
-              </View>
-
               <View className="flex-1">
                 <Text className="text-sm text-balck font-medium">
-                  {customProductId.title}
+                  {customProductId.type === "laser-with-tube-printing"
+                    ? "Laser Engraving"
+                    : customProductId.title}
                 </Text>
 
                 {customProductId.selections[0]?.laserFirstLine && (
@@ -493,27 +518,11 @@ const PersonalizeSetting = () => {
           {(customProductId.type === "tube-printing" ||
             customProductId.type === "laser-with-tube-printing") && (
             <View className="flex-row mb-3 items-center">
-              <View className="bg-gray-300 w-24 h-24 mr-5 items-center justify-center">
-                {(customProductId.selections[0]?.firstLine ||
-                  customProductId.selections[0]?.secondLine) && (
-                  <View>
-                    {customProductId.selections[0]?.firstLine && (
-                      <Text className="text-xs text-balck font-normal">
-                        {customProductId.selections[0]?.firstLine}
-                      </Text>
-                    )}
-                    {customProductId.selections[0]?.secondLine && (
-                      <Text className="text-xs text-balck font-normal">
-                        {customProductId.selections[0]?.secondLine}
-                      </Text>
-                    )}
-                  </View>
-                )}
-              </View>
-
               <View className="flex-1">
                 <Text className="text-sm text-balck font-medium">
-                  {customProductId.title}
+                  {customProductId.type === "laser-with-tube-printing"
+                    ? "Tube Printing"
+                    : customProductId.title}
                 </Text>
 
                 {customProductId.selections[0]?.firstLine && (
@@ -604,6 +613,8 @@ const PersonalizeSetting = () => {
                 : "embroidery"
             }
             onClose={() => setModalVisible(false)}
+            customizationCollectionData={customizationCollectionData}
+            customizationCollectionLoading={customizationCollectionLoading}
             customProductId={customProductId}
             setCustomProductId={setCustomProductId}
           />
@@ -706,10 +717,10 @@ function SupportContainer() {
       >
         <View className="flex-row gap-x-1 items-center">
           <View className="flex-row gap-x-1">
-            <Text className="text-[13px] text-black font-medium ">
+            <Text style={FONT_FAMILY.secondary} className="text-[13px] text-black font-medium ">
               Need help?
             </Text>
-            <Text className="text-[13px] text-black font-light ">
+            <Text style={FONT_FAMILY.secondary} className="text-[13px] text-black font-light ">
               Call, Whatsapp , or email us
             </Text>
           </View>
@@ -724,7 +735,7 @@ function SupportContainer() {
         <View className="pb-14">
           <View className="pb-8">
             <View className=" w-[90%] mx-auto pb-3">
-              <Text className="text-[14px] text-gray-800 font-light leading-5">
+              <Text style={FONT_FAMILY.secondary} className="text-[14px] text-gray-800 font-light leading-5">
                 If you need to speak with one of our customer case
                 representative you can react us here, We are avilable between
                 10am - 10pm
@@ -779,7 +790,7 @@ function InstallmentContainer() {
     <View className="w-full bg-white py-3 mb-3">
       <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch">
         <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
-          <Text className="text-[14px] font-normal text-black ">
+          <Text style={FONT_FAMILY.secondary} className="text-[14px] font-normal text-black ">
             Want to pay in instalments?
           </Text>
         </View>
@@ -819,10 +830,10 @@ function SmilePointsContainer() {
       >
         <View className="flex-row">
           <SmileIcon />
-          <Text className="text-[14px] font-light text-gray-800 ml-2 mr-1">
+          <Text style={FONT_FAMILY.secondary} className="text-[14px] font-light text-gray-800 ml-2 mr-1">
             We reward with Smile.
           </Text>
-          <Text className={`text-[14px] font-normal ${textColor} underline`}>
+          <Text style={FONT_FAMILY.secondary} className={`text-[14px] font-normal ${textColor} underline`}>
             Learn how.
           </Text>
         </View>
@@ -862,7 +873,7 @@ function InstagramContainer() {
             source={require("../assets/instalogo.png")}
           />
         </View>
-        <Text className="text-[15px] w-[250] text-white font-bold ml-2">
+        <Text style={FONT_FAMILY.secondary} className="text-[15px] w-[250] text-white font-bold ml-2">
           Follow us on instagram for excited offers
         </Text>
       </View>
@@ -889,10 +900,10 @@ function InstagramImageCard() {
 
 function TagContainer({ label }) {
   return (
-    <View className="p-1 bg-gray-200 rounded-[2px] items-center">
+    <View className="items-center">
       <Text
-        style={{ fontFamily: "Nexa-Regular" }}
-        className="text-[10px] text-black uppercase"
+        style={FONT_FAMILY.primary}
+        className="text-2xl text-black capitalize"
       >
         {label}
       </Text>
@@ -907,7 +918,7 @@ function InformationIconTile({ label, icon, onClick }) {
       className="w-28 h-20 border border-gray-500 rounded-[5px] items-center justify-center"
     >
       {icon}
-      <Text className="text-[12px] text-black font-normal uppercase mt-2">
+      <Text style={FONT_FAMILY.secondary} className="text-[12px] text-black font-normal uppercase mt-2">
         {label}
       </Text>
     </Pressable>
@@ -947,8 +958,8 @@ function SelectionButton({ option, style }) {
   return (
     <View style={style} className={` w-5 h-10 flex-1`}>
       <Text
-        style={{ fontFamily: "Nexa-Regular" }}
-        className="text-[12px] text-black font-medium uppercase text-center "
+        style={FONT_FAMILY.secondary}
+        className="text-[12px] text-black font-normal uppercase text-center "
       >
         {label}
       </Text>
@@ -959,7 +970,7 @@ function SelectionButton({ option, style }) {
           />
         )}
         <Text
-          style={{ fontFamily: "Nexa-Regular" }}
+          style={FONT_FAMILY.secondary}
           className="text-[14px] text-black font-light uppercase mr-[2px] ml-2"
         >
           {optionValue

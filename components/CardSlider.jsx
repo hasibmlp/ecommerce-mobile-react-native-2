@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { useQuery } from "@apollo/client";
 import { useNavigation } from "@react-navigation/native";
-import { Card } from "./Card";
 import { GET_COLLECTION } from "../graphql/queries";
 import ProductCard from "./cms/ProductCard";
+import { FONT_FAMILY } from "../theme";
 
 export default function CardSlider({ id, products, mt }) {
   const navigation = useNavigation();
@@ -20,6 +20,7 @@ export default function CardSlider({ id, products, mt }) {
     variables: {
       collectionId: id,
     },
+    fetchPolicy: 'no-cache'
   });
 
   if (loading) return <Text>loading..</Text>;
@@ -28,7 +29,7 @@ export default function CardSlider({ id, products, mt }) {
   return (
     <View className={`bg-white py-[15px] pb-[40px] flex-col mb-3`}>
       <View className="flex-row justify-between py-[10px] px-[15px]">
-        <Text className="text-[18px] font-light text-black capitalize">
+        <Text style={FONT_FAMILY.primary} className="text-[18px] font-light text-black capitalize">
           {data.collection.title}
         </Text>
         <Pressable
@@ -36,7 +37,7 @@ export default function CardSlider({ id, products, mt }) {
             navigation.navigate("Collection", { collectionId: id })
           }
         >
-          <Text className="text-[11px] text-red-900 font-normal uppercase underline">
+          <Text style={FONT_FAMILY.primary} className="text-[11px] text-red-900 font-normal uppercase underline">
             View all
           </Text>
         </Pressable>

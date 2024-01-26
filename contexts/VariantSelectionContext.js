@@ -29,7 +29,7 @@ function VariantSelectionProvider({
 
   const { data, loading, error } = useQuery(GET_PRODUCT, {
     variables: { productId },
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
 
   const [

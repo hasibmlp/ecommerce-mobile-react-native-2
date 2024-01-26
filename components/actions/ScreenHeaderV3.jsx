@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import BackIconButton from "../buttons/BackIconButton";
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated";
+import { FONT_FAMILY } from "../../theme";
 
 const ScreenHeaderV3 = ({
   left = <BackIconButton />,
@@ -46,7 +47,7 @@ const ScreenHeaderV3 = ({
             </View>
           )}
           {label && !children && (
-            <Text className={`text-[13px] text-black font-light`}>{label}</Text>
+            <Text style={FONT_FAMILY.primary} className={`text-[13px] text-black font-light`}>{label}</Text>
           )}
         </View>
         {right && (

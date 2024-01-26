@@ -1,6 +1,6 @@
-import { Dimensions, FlatList, Pressable, Text, View } from "react-native";
+import { Dimensions, FlatList, Pressable, Text, View, Image } from "react-native";
 import Skeleton from "../skeletons/Skeleton";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { useContext, useEffect, useRef, useState } from "react";
 import { VariantSelectionContext } from "../../contexts/VariantSelectionContext";
 import { getVariantImages } from "../utils/UtilsFunctions";
@@ -75,13 +75,14 @@ export default function ImageCarousel({
                     style={{ width: width, height: height }}
                     src={item.url}
                   /> */}
-                  <Image
+                  {/* <Image
                     style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
                     source={item.url}
                     placeholder={blurhash}
                     contentFit="cover"
                     transition={100}
-                  />
+                    cachePolicy="none"
+                  /> */}
               </View>
             </Pressable>
           );

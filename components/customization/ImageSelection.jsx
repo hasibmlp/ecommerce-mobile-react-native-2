@@ -1,6 +1,7 @@
 import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import RadioButton from "../buttons/RadioButton";
 import { useEffect, useState } from "react";
+import { FONT_FAMILY } from "../../theme";
 
 const ImageSelection = ({
   style,
@@ -24,7 +25,7 @@ const ImageSelection = ({
 
   return (
     <View style={style} className="w-full">
-      <Text className="text-base text-black font-normal mb-3">{title}</Text>
+      <Text style={FONT_FAMILY.primary} className="text-base text-black font-normal mb-3">{title}</Text>
       <View className="w-full flex-row justify-center">
         <ImageSelectionCard
           imageUrl={images[0]?.url}
@@ -52,7 +53,7 @@ const ImageSelectionCard = ({ style, label, active, onPress, imageUrl }) => {
       </View>
       <View className="flex-row mt-2 items-center ">
         {label && (
-          <Text className="text-[14px] text-black font-normal uppercase mr-2">
+          <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal uppercase mr-2">
             {label}
           </Text>
         )}

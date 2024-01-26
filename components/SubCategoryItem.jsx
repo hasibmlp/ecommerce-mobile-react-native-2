@@ -1,5 +1,6 @@
 import { View, Text } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -20,7 +21,7 @@ export default function SubCategoryItem({ title, imgUrl }) {
         />
       </View>
       <View className="w-full">
-        <Text className=" text-center text-[16px] text-black bg-white font-light py-4">
+        <Text style={FONT_FAMILY.primary} className=" text-center text-[16px] text-black bg-white font-light py-4">
           {title}
         </Text>
       </View>

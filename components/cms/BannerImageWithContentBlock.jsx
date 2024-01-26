@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -23,23 +24,23 @@ export default function BannerImageWithContentBlock({ content }) {
         </View>
         <View className="items-center py-4">
           {content.data.subTitle && (
-            <Text className="text-[18px] text-black font-normal mb-2">
+            <Text style={FONT_FAMILY.primary} className="text-[18px] text-black font-normal mb-2">
               {content.data.subTitle}
             </Text>
           )}
 
           {content.data.title && (
-            <Text className="text-[28px] text-black font-medium mb-2">
+            <Text style={FONT_FAMILY.primary} className="text-[28px] text-black font-normal mb-2">
               {content.data.title}
             </Text>
           )}
           {content.data.desc && (
-            <Text className="text-[14px] text-black font-light w-[350px] text-center mb-2">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-light w-[350px] text-center mb-2">
               {content.data.desc}
             </Text>
           )}
           {content.data.cta && (
-            <Text className="text-[14px] text-black font-medium uppercase underline">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal uppercase underline">
               {content.data.cta}
             </Text>
           )}
@@ -51,7 +52,7 @@ export default function BannerImageWithContentBlock({ content }) {
     return (
       <View className="mb-3 items-center bg-white">
         {content.data.title && (
-          <Text className="text-[22px] text-black font-light py-[15px]">
+          <Text style={FONT_FAMILY.primary} className="text-[22px] text-black font-light py-[15px]">
             {content.data.title}
           </Text>
         )}
@@ -73,18 +74,18 @@ export default function BannerImageWithContentBlock({ content }) {
         </View>
         <View className="items-center py-4 gap-3">
           {content.data.subTitle && (
-            <Text className="text-[18px] text-black font-normal">
+            <Text style={FONT_FAMILY.primary} className="text-[18px] text-black font-normal">
               {content.data.subTitle}
             </Text>
           )}
 
           {content.data.desc && (
-            <Text className="text-[14px] text-black font-light w-[350px] text-center">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-light w-[350px] text-center">
               {content.data.desc}
             </Text>
           )}
           {content.data.cta && (
-            <Text className="text-[14px] text-black font-medium uppercase underline">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal uppercase underline">
               {content.data.cta}
             </Text>
           )}

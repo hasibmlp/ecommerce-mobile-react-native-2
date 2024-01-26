@@ -6,6 +6,7 @@ import CustomSelection from "./CustomSelection";
 import Button from "../buttons/Button";
 import { useNavigation } from "@react-navigation/native";
 import CustomSelectionOptions from "./CustomSelectionOptions";
+import { FONT_FAMILY } from "../../theme";
 
 
 const logoCollection = [
@@ -261,8 +262,8 @@ const CustomSelectionInterface = ({totalCustom, setTotalCustom, onClose, customP
                     </View>
 
                     <View className="py-5">
-                        <Text className="text-[16px] text-black font-medium px-5 uppercase pb-5">Embriodery</Text>
-                        <Text className="text-[16px] text-black font-medium text-center pb-10">Choose an embroidery option</Text>
+                        <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-medium px-5 uppercase pb-5">Embriodery</Text>
+                        <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-medium text-center pb-10">Choose an embroidery option</Text>
                         <View className="w-[90%] mx-auto h-full items-center">
                             <View className="ml-auto mb-3">
                                 <Button onPress={handleReset} label="reset" type="action"/>

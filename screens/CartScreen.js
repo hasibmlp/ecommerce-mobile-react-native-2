@@ -17,7 +17,6 @@ import {
 import {
   useLazyQuery,
   useMutation,
-  useQuery,
   useReactiveVar,
 } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,6 +45,8 @@ import CartCard from "../components/CartCard";
 import GiftToggleContainer from "../components/GiftToggleContainer";
 import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
+import { FONT_FAMILY } from "../theme";
+import Button from "../components/buttons/Button";
 
 export default function CartScreen() {
   const navigation = useNavigation();
@@ -66,7 +67,7 @@ export default function CartScreen() {
     },
   ] = useLazyQuery(GET_CART_DETAILS_V2, {
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
   });
 
   console.log(
@@ -262,7 +263,7 @@ export default function CartScreen() {
             >
               <View className="flex flex-row gap-2 items-center">
                 <UserIcon size={24} color="black" />
-                <Text className="text-[14px] text-black font-medium">
+                <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal">
                   Log in or create an account for faster checkout
                 </Text>
               </View>
@@ -303,43 +304,60 @@ export default function CartScreen() {
 
           <View className="px-3 bg-white py-3 mt-3">
             <View className="flex-row justify-between items-center py-2">
-              <Text className="text-[16px] text-black font-normal">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-[16px] text-black font-normal"
+              >
                 Subtotal
               </Text>
-              <Text className="text-[16px] text-red-800 font-normal">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-[16px] text-red-800 font-normal"
+              >
                 {cartDetailsData?.cart?.cost?.subtotalAmount?.amount}{" "}
                 {cartDetailsData?.cart?.cost?.subtotalAmount?.currencyCode}
               </Text>
             </View>
             <View className="flex-row justify-between items-center py-2">
-              <Text className="text-[16px] text-black font-normal">Tax</Text>
-              <Text className="text-[16px] text-black font-normal">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-[16px] text-black font-normal"
+              >
+                Tax
+              </Text>
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-[16px] text-black font-normal"
+              >
                 {cartDetailsData?.cart?.cost?.totalTaxAmount?.amount}{" "}
                 {cartDetailsData?.cart?.cost?.totalTaxAmount?.currencyCode}
               </Text>
             </View>
-            <View className="flex-row justify-between items-center py-2">
+            <View className="flex-row justify-between items-center py-2 mb-3">
               <View className="flex-row items-end">
-                <Text className="text-[20px] text-black font-normal">
+                <Text
+                  style={FONT_FAMILY.primary}
+                  className="text-[20px] text-black font-normal"
+                >
                   Grand Total
                 </Text>
-                <Text className="text-[13px] text-black font-light ml-2">
+                <Text
+                  style={FONT_FAMILY.primary}
+                  className="text-[13px] text-black font-light ml-2"
+                >
                   VAT Inclusive
                 </Text>
               </View>
-              <Text className="text-[20px] text-black font-medium">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-[20px] text-black font-medium"
+              >
                 {cartDetailsData?.cart?.cost?.totalAmount?.amount}{" "}
                 {cartDetailsData?.cart?.cost?.totalAmount?.currencyCode}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={handleCheckoutV2}
-              className="items-center justify-center bg-blue-400 py-4 rounded-[5px] mt-2"
-            >
-              <Text className="text-[15px] font-medium uppercase text-white">
-                secure checkout
-              </Text>
-            </TouchableOpacity>
+
+            <Button label="secure checkout" onPress={handleCheckoutV2} />
           </View>
         </Animated.ScrollView>
       )}

@@ -1,0 +1,40 @@
+[
+  {
+    "category": "color-codes",
+    "values": [
+      {
+        "value": "#722F37",
+        "name": "wine"
+      },
+      {
+        "value": "#00FFFF",
+        "name": "aqua"
+      },
+      {
+        "value": "#000000",
+        "name": "black"
+      },
+      {
+        "value": "#FFFFFF",
+        "name": "white"
+      }
+    ]
+  },
+  {
+    "category": "color-images",
+    "values": [
+      {
+        "value": "https://cdn.shopify.com/s/files/1/2610/4676/files/apple.jpg?v=1701197178",
+        "name": "apple"
+      },
+      {
+        "value": "https://cdn.shopify.com/s/files/1/2610/4676/files/aqua.jpg?v=1701197177",
+        "name": "aqua"
+      },
+      {
+        "value": "https://cdn.shopify.com/s/files/1/2610/4676/files/aquamarine.jpg?v=1701197177",
+        "name": "aquama_rine"
+      }
+    ]
+  }
+]

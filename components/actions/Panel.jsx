@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from "react-native"
+import { FONT_FAMILY } from "../../theme"
 
 export default function Panel({children, label, leftIcon, rightIcon, style, alignment="left", onPress}) {
     let alignmentStyle
@@ -19,7 +20,7 @@ export default function Panel({children, label, leftIcon, rightIcon, style, alig
         {leftIcon && (<View className="min-w-[50px] max-w-[100px] items-center justify-center p-2">{leftIcon}</View>)}
         <View className={`flex-1 justify-center ${alignmentStyle}`}>
           {children && (<View className={`flex-1 justify-center ${alignmentStyle}`}>{children}</View>)}
-          {label && !children && (<Text className={`text-[13px] text-black font-light`}>{label}</Text>)}
+          {label && !children && (<Text style={FONT_FAMILY.primary} className={`text-[13px] text-black font-light`}>{label}</Text>)}
         </View>
         {rightIcon && (<View className="min-w-[50px] items-center justify-center p-2">
           {rightIcon}

@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -34,7 +35,7 @@ export default function ImageCard({
         </View>
       </View>
       {title && (
-        <Text className="text-[14px] font-normal text-black text-center uppercase mt-2">
+        <Text style={FONT_FAMILY.primary} className="text-[14px] font-normal text-black text-center uppercase mt-2">
           {title}
         </Text>
       )}

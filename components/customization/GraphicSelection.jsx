@@ -12,6 +12,7 @@ import { PlusCircleIcon, XMarkIcon } from "react-native-heroicons/outline";
 import * as DocumentPicker from "expo-document-picker";
 
 import LoadingFullScreen from "../Sidebar/LoadingFullScreen";
+import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -26,8 +27,6 @@ const GraphicSelection = ({
 }) => {
   const initialValue = value;
   const [activeTab, setActiveTab] = useState(logoCollection[0]);
-
-  console.log("LOGO COLLECTION: ",logoCollection)
 
   const [selfUploadedFile, setSeflUploadedFile] = useState([]);
 
@@ -84,6 +83,7 @@ const GraphicSelection = ({
             className="flex-1 items-center py-4"
           >
             <Text
+            style={FONT_FAMILY.primary}
               className={`text-[14px] ${
                 item?.id === activeTab?.id ? "text-[#89c157]" : "text-black"
               } font-normal`}
@@ -130,7 +130,7 @@ const GraphicSelection = ({
       </View>
 
       <Text
-        style={{ fontFamily: "Nexa-Regular" }}
+      style={FONT_FAMILY.primary}
         className="text-[13px] text-neutral-500 font-light text-center mt-4 "
       >
         If you want to add your own file please contact us +971055050505

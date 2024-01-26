@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "react-native-heroicons/outline";
 import CategorySubMenuCard from "./CategorySubMenuCard";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { Layout } from "react-native-reanimated";
+import { FONT_FAMILY } from "../theme";
 
 
 export default function CategoryCard({ content, setActiveSubMenuIndex, index }) {
@@ -38,7 +39,7 @@ export default function CategoryCard({ content, setActiveSubMenuIndex, index }) 
         } `}
       >
         <View className="flex-1 flex-row gap-3 items-center pl-5">
-          <Text className="text-black text-[20px] font-normal capitalize">{content?.name}</Text>
+          <Text style={FONT_FAMILY.primary} className="text-black text-lg font-normal capitalize">{content?.name}</Text>
           {content?.values?.length > 0 && (<ChevronDownIcon size={15} color="black" />)}
         </View>
         <View className="h-[110px] w-[180px] bg-gray-400">

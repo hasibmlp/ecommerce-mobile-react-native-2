@@ -26,7 +26,7 @@ function PreVariantSelectionProvider({ children, productId, handleClose }) {
     GET_PRODUCT_VARIANTS_AND_IMAGES_AND_OPTIONS,
     {
       variables: { productId },
-      fetchPolicy: "network-only",
+      fetchPolicy: "no-cache",
     }
   );
 

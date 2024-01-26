@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -16,15 +17,16 @@ export default function BrandCard({
       {first && (
         <View className="w-[160px] items-center justify-center">
           <Text
+            style={FONT_FAMILY.primary}
             numberOfLines={1}
             className="text-[22px] font-light text-black w-[70%] mb-2 text-center"
           >
             {collectionTitle}
           </Text>
-          <Text className="text-[14px] w-[70%] font-normal text-black mb-4 text-center">
+          <Text style={FONT_FAMILY.primary} className="text-[14px] w-[70%] font-normal text-black mb-4 text-center">
             {collectionDesc}
           </Text>
-          <Text className="text-[14px] font-normal text-red-800 text-center underline">
+          <Text style={FONT_FAMILY.primary} className="text-[14px] font-normal text-red-800 text-center underline">
             {collectionCta}
           </Text>
         </View>

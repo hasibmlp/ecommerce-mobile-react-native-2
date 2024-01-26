@@ -17,8 +17,9 @@ import Button from "./buttons/Button";
 import FormErrorBlock from "./FormErrorBlock";
 import GraphicSelection from "./customization/GraphicSelection";
 import Skeleton from "./skeletons/Skeleton";
+import { FONT_FAMILY } from "../theme";
 
-const SCREEN_WIDTH = Dimensions.get('screen').width
+const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 const validationSchemaTextOnly = Yup.object({
   position: Yup.string().required(),
@@ -151,6 +152,7 @@ const validationSchemaStethoscopeBoth = Yup.object({
 const AccordianItem = ({
   context,
   active,
+  data,
   customProductId,
   setCustomProductId,
   languageOptions,
@@ -167,7 +169,8 @@ const AccordianItem = ({
   setActiveScreen,
   logoGraphics,
   graphicsCollection,
-  loading
+  loading,
+  activeSelect,
 }) => {
   const heightOffset = useSharedValue(active ? 1 : 0);
   const [activeScreenHeight, setActiveScreenHeight] = useState(0);
@@ -180,14 +183,12 @@ const AccordianItem = ({
     logoCollection = JSON.parse(graphicsCollection);
   }
 
-  console.log("LOGOG COLLECTIN FINAILIZED 2: ", graphicsCollection);
-
   const animateStyle = useAnimatedStyle(() => ({
     height: interpolate(heightOffset.value, [0, 1], [0, activeScreenHeight]),
   }));
 
-  const handleToggle = (value) => {
-    setActiveScreen((prev) => (prev === value ? null : value));
+  const handleToggle = (data) => {
+    setActiveScreen((prev) => (prev?.id === data.id ? null : data));
     // if (heightOffset.value === 0) {
     //   heightOffset.value = withTiming(1, {
     //     duration: 400,
@@ -199,6 +200,19 @@ const AccordianItem = ({
     //     easing: Easing.bezier(0.4, 0.0, 0.2, 1),
     //   });
     // }
+  };
+
+  const handleReset = (setValues) => {
+    setValues({
+      position: "left",
+      language: "defaultLanguage",
+      fontStyle: "defaultFontStyle",
+      color: "defaultColor",
+      firstLine: "",
+      secondLine: "",
+      // Add other fields as needed
+    });
+    setCustomProductId(null);
   };
 
   useEffect(() => {
@@ -215,32 +229,53 @@ const AccordianItem = ({
     }
   }, [active]);
 
-  if(loading) return (
-    <View>
-      <Skeleton width={SCREEN_WIDTH} height={60} style={{marginBottom: 8}} />
-    </View>
-  )
+  if (loading)
+    return (
+      <View>
+        <Skeleton
+          width={SCREEN_WIDTH}
+          height={60}
+          style={{ marginBottom: 8 }}
+        />
+      </View>
+    );
+
+  const price = {
+    amount: data?.price?.amount,
+    currencyCode: data?.price?.currencyCode,
+  };
+
+  useEffect(() => {}, [customProductId]);
+
+  const initialValue = {
+    position: customProductId?.id && customProductId?.selections[0]?.position ? customProductId?.selections[0]?.position : 'left',
+    language: customProductId?.id && customProductId?.selections[0]?.language ? customProductId?.selections[0]?.language : '',
+    fontStyle: customProductId?.id && customProductId?.selections[0]?.fontStyle ? customProductId?.selections[0]?.fontStyle : '',
+    color: customProductId?.id && customProductId?.selections[0]?.color ? customProductId?.selections[0]?.color : '',
+    firstLine: customProductId?.id && customProductId?.selections[0]?.firstLine ? customProductId?.selections[0]?.firstLine : '',
+    secondLine: customProductId?.id && customProductId?.selections[0]?.secondLine ? customProductId?.selections[0]?.secondLine : '',
+  };
 
   if (context === "text-only") {
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("text-only")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black uppercase"
             >
-              Add my name
+              {data.title}
             </Text>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +35 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -253,46 +288,15 @@ const AccordianItem = ({
             }}
           >
             <Formik
-              initialValues={{
-                position: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].position
-                    : ""
-                  : "left",
-                language: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].language
-                    : ""
-                  : languageOptions[0].value,
-                fontStyle: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].fontStyle
-                    : ""
-                  : fontOptions[0].value,
-                color: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].color
-                    : ""
-                  : colorValues[0].name,
-                firstLine: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].firstLine
-                    : ""
-                  : "",
-                secondLine: customProductId
-                  ? customProductId.type === "text-only"
-                    ? customProductId.selections[0].secondLine
-                    : ""
-                  : "",
-              }}
+              initialValues={initialValue}
               validationSchema={validationSchemaTextOnly}
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927047797",
+                    id: data?.id,
                     type: "text-only",
                     title: "Text",
-                    price: "50",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
                 } else {
@@ -303,148 +307,149 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={(values, { setValues }) => {
+                // Manually set the values you want the form to reset to
+                setValues({
+                  position: "left",
+                  language: "english",
+                  fontStyle: "d",
+                  color: "navy",
+                  firstLine: "sfsf",
+                  secondLine: "sdf",
+                  // Add other fields as needed
+                });
+                setCustomProductId({}); // Reset any other state values if needed
+              }}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
-              }) => (
-                <>
-                  <FormErrorBlock errors={errors} touched={touched} />
-                  {/* <ImageSelection
-                    title="Select Position"
-                    style={{ marginBottom: 12 }}
-                    defaultValue={values.position}
-                    handleChange={handleChange("position")}
-                    images={[
-                      {
-                        url: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-                        title: "Left",
-                      },
-                      {
-                        url: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-                        title: "Right",
-                      },
-                    ]}
-                  /> */}
-
-                  <Selection
-                    context="box"
-                    name="position-selection"
-                    field="position"
-                    label={"Position"}
-                    options={[
-                      { name: "left", value: "left" },
-                      { name: "right", value: "right" },
-                    ]}
-                    handleChange={handleChange("position")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.position}
-                    fontsLoaded={fontsLoaded}
-                  />
-
-                  <Selection
-                    name="language-selection"
-                    field="language"
-                    onChange={(item) => handleTextStyle(item)}
-                    label={"Language"}
-                    options={languageOptions}
-                    handleChange={handleChange("language")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.language}
-                    fontsLoaded={fontsLoaded}
-                  />
-
-                  <Selection
-                    context="box"
-                    name="font-selection"
-                    field="fontStyle"
-                    label={"Font"}
-                    onChange={(item) => handleTextStyle(item)}
-                    options={fontOptions}
-                    handleChange={handleChange("fontStyle")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.fontStyle}
-                    fontsLoaded={fontsLoaded}
-                  />
-
-                  <Selection
-                    context="color"
-                    name="color-selection"
-                    field="color"
-                    onChange={(item) => handleTextStyle(item)}
-                    label={"Color"}
-                    handleChange={handleChange("color")}
-                    handleBlur={handleBlur("color")}
-                    errors={errors}
-                    touched={touched}
-                    value={values.color}
-                    colorValues={colorValues}
-                    fontsLoaded={fontsLoaded}
-                  />
-
-                  <View className="mb-3">
-                    <Text className="text-base text-black font-medium mb-3">
-                      First Line
-                    </Text>
-                    <TextInput
-                      style={{
-                        color: activeColorCode,
-                        fontFamily: activeFont,
-                      }}
-                      maxLength={16}
-                      className={`h-12 text-[18px] items-cetner border border-neutral-300 px-2 rounded-md`}
-                      onChangeText={handleChange("firstLine")}
-                      handleBlur={handleBlur("firstLine")}
-                      value={values.firstLine}
+              }) => {
+                console.log("BBBBBBBBBB", values);
+                return (
+                  <>
+                    <FormErrorBlock errors={errors} touched={touched} />
+                    <Selection
+                      context="box"
+                      name="position-selection"
+                      field="position"
+                      label={"Position"}
+                      options={[
+                        { name: "left", value: "left" },
+                        { name: "right", value: "right" },
+                      ]}
+                      handleChange={handleChange("position")}
+                      errors={errors}
+                      touched={touched}
+                      value={values.position}
+                      fontsLoaded={fontsLoaded}
                     />
-                  </View>
 
-                  <View className="mb-3">
-                    <Text className="text-base text-black font-medium mb-3">
-                      Second Line
-                    </Text>
-                    <TextInput
-                      style={{
-                        color: activeColorCode,
-                        fontFamily: activeFont,
-                      }}
-                      maxLength={16}
-                      className={`h-12 text-[18px] items-cetner border border-neutral-300 px-2 rounded-md`}
-                      onChangeText={handleChange("secondLine")}
-                      handleBlur={handleBlur("secondLine")}
-                      value={values.secondLine}
+                    <Selection
+                      name="language-selection"
+                      field="language"
+                      onChange={(item) => handleTextStyle(item)}
+                      label={"Language"}
+                      options={languageOptions}
+                      handleChange={handleChange("language")}
+                      errors={errors}
+                      touched={touched}
+                      value={values.language}
+                      fontsLoaded={fontsLoaded}
+                      initialValue1={""}
                     />
-                  </View>
 
-                  <View className="footer w-full justify-center pb-5">
-                    <View className="flex-row w-full ">
-                      <View className="flex-1">
-                        <Button
-                          style={{ marginRight: 12 }}
-                          type="secondary"
-                          label="reset"
-                          flex={true}
-                          onPress={handleSubmit}
-                        />
-                      </View>
-                      <View className="flex-1">
-                        <Button
-                          label="Apply"
-                          flex={true}
-                          onPress={handleSubmit}
-                        />
+                    <Selection
+                      context="box"
+                      name="font-selection"
+                      field="fontStyle"
+                      label={"Font"}
+                      onChange={(item) => handleTextStyle(item)}
+                      options={fontOptions}
+                      handleChange={handleChange("fontStyle")}
+                      errors={errors}
+                      touched={touched}
+                      value={values.fontStyle}
+                      fontsLoaded={fontsLoaded}
+                    />
+
+                    <Selection
+                      context="color"
+                      name="color-selection"
+                      field="color"
+                      onChange={(item) => handleTextStyle(item)}
+                      label={"Color"}
+                      handleChange={handleChange("color")}
+                      handleBlur={handleBlur("color")}
+                      errors={errors}
+                      touched={touched}
+                      value={values.color}
+                      colorValues={colorValues}
+                      fontsLoaded={fontsLoaded}
+                    />
+
+                    <View className="mb-3">
+                      <Text className="text-base text-black font-medium mb-3">
+                        First Line
+                      </Text>
+                      <TextInput
+                        style={{
+                          color: activeColorCode,
+                          fontFamily: activeFont,
+                        }}
+                        maxLength={16}
+                        className={`h-12 text-[18px] items-cetner border border-neutral-300 px-2 rounded-md`}
+                        onChangeText={handleChange("firstLine")}
+                        handleBlur={handleBlur("firstLine")}
+                        value={values.firstLine}
+                      />
+                    </View>
+
+                    <View className="mb-3">
+                      <Text className="text-base text-black font-medium mb-3">
+                        Second Line
+                      </Text>
+                      <TextInput
+                        style={{
+                          color: activeColorCode,
+                          fontFamily: activeFont,
+                        }}
+                        maxLength={16}
+                        className={`h-12 text-[18px] items-cetner border border-neutral-300 px-2 rounded-md`}
+                        onChangeText={handleChange("secondLine")}
+                        handleBlur={handleBlur("secondLine")}
+                        value={values.secondLine}
+                      />
+                    </View>
+
+                    <View className="footer w-full justify-center pb-5">
+                      <View className="flex-row w-full ">
+                        <View className="flex-1">
+                          <Button
+                            style={{ marginRight: 12 }}
+                            type="secondary"
+                            label="reset"
+                            flex={true}
+                            onPress={handleReset}
+                          />
+                        </View>
+                        <View className="flex-1">
+                          <Button
+                            label="Apply"
+                            flex={true}
+                            onPress={handleSubmit}
+                          />
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </>
-              )}
+                  </>
+                );
+              }}
             </Formik>
           </View>
         </Animated.View>
@@ -455,22 +460,22 @@ const AccordianItem = ({
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("graphics-only")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black uppercase"
             >
               Add icon
             </Text>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +35 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -484,12 +489,12 @@ const AccordianItem = ({
           >
             <Formik
               initialValues={{
-                position: customProductId
+                position: customProductId?.id
                   ? customProductId.type === "graphics-only"
                     ? customProductId.selections[0].position
-                    : ""
+                    : "left"
                   : "left",
-                imageUrl: customProductId
+                imageUrl: customProductId?.id
                   ? customProductId.type === "graphics-only"
                     ? customProductId.selections[0].imageUrl
                     : ""
@@ -499,10 +504,10 @@ const AccordianItem = ({
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927080565",
+                    id: data?.id,
                     type: "graphics-only",
                     title: "Graphics",
-                    price: "100",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
 
@@ -515,11 +520,13 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
@@ -545,7 +552,7 @@ const AccordianItem = ({
 
                   <View className="graphics-form items-center">
                     <Text
-                      style={{ fontFamily: "Nexa-Regular" }}
+                      style={FONT_FAMILY.primary}
                       className="mb-4 text-center text-neutral-500"
                     >
                       You can upload your own graphic or logo or you can choose
@@ -568,7 +575,7 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleSubmit}
+                          onPress={handleReset}
                         />
                       </View>
                       <View className="flex-1">
@@ -592,22 +599,22 @@ const AccordianItem = ({
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("text-with-graphics")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black uppercase"
             >
               Add Both
             </Text>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +100 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -621,37 +628,37 @@ const AccordianItem = ({
           >
             <Formik
               initialValues={{
-                position: customProductId
+                position: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].position
-                    : ""
+                    : "left"
                   : "left",
-                language: customProductId
+                language: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].language
-                    : ""
+                    : languageOptions[0].value
                   : languageOptions[0].value,
-                fontStyle: customProductId
+                fontStyle: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].fontStyle
-                    : ""
+                    : fontOptions[0].value
                   : fontOptions[0].value,
-                color: customProductId
+                color: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].color
-                    : ""
+                    : colorValues[0].value
                   : colorValues[0].value,
-                firstLine: customProductId
+                firstLine: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].firstLine
                     : ""
                   : "",
-                secondLine: customProductId
+                secondLine: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].secondLine
                     : ""
                   : "",
-                imageUrl: customProductId
+                imageUrl: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
                     ? customProductId.selections[0].imageUrl
                     : ""
@@ -661,10 +668,10 @@ const AccordianItem = ({
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927080565",
+                    id: data?.id,
                     type: "text-with-graphics",
                     title: "Graphics",
-                    price: "100",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
 
@@ -677,11 +684,13 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
@@ -792,24 +801,24 @@ const AccordianItem = ({
                   <View className="w-full h-[1px] border-b border-neutral-500 my-4"></View>
 
                   <Text className="text-lg text-black font-medium mb-3">
-                    Laser Engraving
+                    Add Icon
                   </Text>
 
                   <View className="graphics-form items-center pt-3">
                     <Text
-                      style={{ fontFamily: "Nexa-Regular" }}
+                      style={FONT_FAMILY.primary}
                       className="mb-4 text-center text-neutral-500"
                     >
                       You can upload your own graphic or logo or you can choose
                       from our university, hospital logo & icon we have
                     </Text>
-                    {/* <GraphicSelection
+                    <GraphicSelection
                       logoCollection={logoCollection ?? []}
                       value={values.imageUrl}
                       handleChange={handleChange("imageUrl")}
                       activeFile={activeFile}
                       setActiveFile={setActiveFile}
-                    /> */}
+                    />
                   </View>
 
                   <View className="footer w-full justify-center pb-5 pt-4">
@@ -820,7 +829,7 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleSubmit}
+                          onPress={handleReset}
                         />
                       </View>
                       <View className="flex-1">
@@ -844,22 +853,22 @@ const AccordianItem = ({
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("laser-printing")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black uppercase"
             >
               laser engraving
             </Text>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +35 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -873,18 +882,18 @@ const AccordianItem = ({
           >
             <Formik
               initialValues={{
-                laserFontStyle: customProductId
+                laserFontStyle: customProductId?.id
                   ? customProductId.type === "laser-printing"
                     ? customProductId.selections[0].fontStyle
-                    : ""
+                    : fontOptions[0].value
                   : fontOptions[0].value,
 
-                laserFirstLine: customProductId
+                laserFirstLine: customProductId?.id
                   ? customProductId.type === "laser-printing"
                     ? customProductId.selections[0].firstLine
                     : ""
                   : "",
-                laserSecondLine: customProductId
+                laserSecondLine: customProductId?.id
                   ? customProductId.type === "laser-printing"
                     ? customProductId.selections[0].secondLine
                     : ""
@@ -894,10 +903,10 @@ const AccordianItem = ({
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927047797",
+                    id: data?.id,
                     type: "laser-printing",
                     title: "Laser engraving",
-                    price: "50",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
                 } else {
@@ -908,11 +917,13 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
@@ -990,7 +1001,7 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleSubmit}
+                          onPress={handleReset}
                         />
                       </View>
                       <View className="flex-1">
@@ -1014,22 +1025,22 @@ const AccordianItem = ({
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("tube-printing")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black uppercase"
             >
               tube printing
             </Text>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +35 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -1043,32 +1054,32 @@ const AccordianItem = ({
           >
             <Formik
               initialValues={{
-                position: customProductId
+                position: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].position
-                    : ""
+                    : "left"
                   : "left",
-                language: customProductId
+                language: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].language
-                    : ""
+                    : languageOptions[0].value
                   : languageOptions[0].value,
-                fontStyle: customProductId
+                fontStyle: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].fontStyle
-                    : ""
+                    : fontOptions[0].value
                   : fontOptions[0].value,
-                color: customProductId
+                color: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].color
-                    : ""
+                    : colorValues[0].name
                   : colorValues[0].name,
-                firstLine: customProductId
+                firstLine: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].firstLine
                     : ""
                   : "",
-                secondLine: customProductId
+                secondLine: customProductId?.id
                   ? customProductId.type === "tube-printing"
                     ? customProductId.selections[0].secondLine
                     : ""
@@ -1078,10 +1089,10 @@ const AccordianItem = ({
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927047797",
+                    id: data?.id,
                     type: "tube-printing",
                     title: "Tube printing",
-                    price: "50",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
                 } else {
@@ -1092,11 +1103,13 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
@@ -1220,7 +1233,7 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleSubmit}
+                          onPress={handleReset}
                         />
                       </View>
                       <View className="flex-1">
@@ -1244,24 +1257,24 @@ const AccordianItem = ({
     return (
       <View className="">
         <Panel
-          onPress={() => handleToggle("laser-with-tube-printing")}
+          onPress={() => handleToggle(data)}
           leftIcon={<RadioButton checked={active} />}
           rightIcon={<ChevronDownIcon size={20} color="black" />}
         >
           <View className="flex-1 w-full flex-row justify-between items-center ">
             <View className="flex-1">
               <Text
-                style={{ fontFamily: "Nexa-Regular" }}
+                style={FONT_FAMILY.primary}
                 className="text-base text-black uppercase"
               >
                 add both
               </Text>
             </View>
             <Text
-              style={{ fontFamily: "Nexa-Regular" }}
+              style={FONT_FAMILY.primary}
               className="text-base text-black font-normal"
             >
-              +35 AED{" "}
+              +{price.amount} {price.currencyCode}
             </Text>
           </View>
         </Panel>
@@ -1275,47 +1288,47 @@ const AccordianItem = ({
           >
             <Formik
               initialValues={{
-                laserFontStyle: customProductId
+                laserFontStyle: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].laserFontStyle
-                    : ""
+                    : fontOptions[0].value
                   : fontOptions[0].value,
-                laserFirstLine: customProductId
+                laserFirstLine: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].laserFirstLine
                     : ""
                   : "",
-                laserSecondLine: customProductId
+                laserSecondLine: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].laserSecondLine
                     : ""
                   : "",
-                position: customProductId
+                position: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].position
-                    : ""
+                    : "left"
                   : "left",
-                language: customProductId
+                language: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].language
-                    : ""
+                    : languageOptions[0].value
                   : languageOptions[0].value,
-                fontStyle: customProductId
+                fontStyle: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].fontStyle
-                    : ""
+                    : fontOptions[0].value
                   : fontOptions[0].value,
-                color: customProductId
+                color: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].color
-                    : ""
+                    : colorValues[0].name
                   : colorValues[0].name,
-                firstLine: customProductId
+                firstLine: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].firstLine
                     : ""
                   : "",
-                secondLine: customProductId
+                secondLine: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
                     ? customProductId.selections[0].secondLine
                     : ""
@@ -1325,10 +1338,10 @@ const AccordianItem = ({
               onSubmit={(values) => {
                 if (values) {
                   setCustomProductId({
-                    id: "gid://shopify/ProductVariant/12528927047797",
+                    id: data?.id,
                     type: "laser-with-tube-printing",
-                    title: "Tube printing",
-                    price: "50",
+                    title: "Laser & Tube printing",
+                    price: data?.price?.amount,
                     selections: [{ ...values }],
                   });
                 } else {
@@ -1339,11 +1352,13 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
+              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
+                handleReset,
                 errors,
                 touched,
                 values,
@@ -1523,7 +1538,7 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleSubmit}
+                          onPress={handleReset}
                         />
                       </View>
                       <View className="flex-1">

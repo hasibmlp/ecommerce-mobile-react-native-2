@@ -2,14 +2,13 @@ import { Dimensions, ScrollView, View } from "react-native";
 import { useEffect, useState } from "react";
 import AccordianItem from "../AccordianItem";
 import { useFonts } from "expo-font";
-import { useLazyQuery, useQuery } from "@apollo/client";
 import {
   GET_CUSTOMIZATIN_COLLECTION,
   GET_PRODUCT,
 } from "../../graphql/queries";
 import Skeleton from "../skeletons/Skeleton";
 
-const SCREEN_WIDTH = Dimensions.get('screen').width
+const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 const languageOptions = [
   { name: "en", value: "English" },
@@ -47,9 +46,11 @@ const CustomSelection = ({
   onClose,
   customProductId,
   setCustomProductId,
+  customizationCollectionData,
+  customizationCollectionLoading,
 }) => {
   const [activeScreen, setActiveScreen] = useState(
-    customProductId?.type ?? null
+    customProductId ?? null
   );
   const [activeSelectionsForTextDisplay, setActiveSelectionsForTextDisplay] =
     useState({ postion: "", selections: [] });
@@ -63,28 +64,6 @@ const CustomSelection = ({
     Kalnia: require("../../assets/fonts/Kalnia-SemiBold.ttf"),
     Ubuntu: require("../../assets/fonts/Ubuntu-Bold.ttf"),
   });
-
-  const {
-    data: customizationCollectionData,
-    loading: customizationCollectionLoading,
-    error: customizationCollectionError,
-  } = useQuery(GET_CUSTOMIZATIN_COLLECTION, {
-    variables: {
-      collectionId: "gid://shopify/Collection/469659812119",
-      metaIdentifiers: [
-        {
-          key: "embroidery_graphics",
-          namespace: "mobile",
-        },
-      ],
-    },
-  });
-
-  console.log(
-    "CUSOTM SERVICE PRODUCT ERROR  4: ",
-    customizationCollectionError
-  );
-  console.log("CUSOTM SERVICE PRODUCT  3: ", customizationCollectionData);
 
   const activeColorCode = activeSelectionsForTextDisplay.selections.find(
     (i) => i?.type === "color-selection"
@@ -151,165 +130,252 @@ const CustomSelection = ({
 
   useEffect(() => {}, [fontsLoaded]);
 
+  const servicesProducts =
+    customizationCollectionData?.collection?.products.edges;
+
   if (!fontsLoaded) return null;
 
-  if (context === "embroidery")
-    return (
-      <ScrollView className="h-full" automaticallyAdjustKeyboardInsets>
-        <View className="bg-neutral-300 w-full h-[200] mb-2">
-          {customizationCollectionLoading && (
-            <View>
-              <Skeleton
-                width={SCREEN_WIDTH}
-                height={200}
-                style={{ marginBottom: 8 }}
-              />
-            </View>
-          )}
-        </View>
 
-        <View className="pb-20">
-          <AccordianItem
-            context="text-only"
-            active={activeScreen === "text-only"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            activeColorCode={activeColorCode}
-            activeFont={activeFont}
-            handleTextStyle={handleTextStyle}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-          />
+  return (
+    <ScrollView className="h-full" automaticallyAdjustKeyboardInsets>
+      <View className="bg-neutral-300 w-full h-[200] mb-2">
+        {customizationCollectionLoading && (
+          <View>
+            <Skeleton
+              width={SCREEN_WIDTH}
+              height={200}
+              style={{ marginBottom: 8 }}
+            />
+          </View>
+        )}
+      </View>
 
-          <AccordianItem
-            context="graphics-only"
-            active={activeScreen === "graphics-only"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-            graphicsCollection={
-              customizationCollectionData?.collection
-                ? customizationCollectionData.collection?.metafields.find(
-                    (item) => item.key === "embroidery_graphics"
-                  )?.value
-                : []
-            }
-          />
-
-          <AccordianItem
-            context="text-with-graphics"
-            active={activeScreen === "text-with-graphics"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            activeColorCode={activeColorCode}
-            activeFont={activeFont}
-            handleTextStyle={handleTextStyle}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-            graphicsCollection={
-              customizationCollectionData?.collection
-                ? customizationCollectionData.collection?.metafields.find(
-                    (item) => item.key === "embroidery_graphics"
-                  )?.value
-                : []
-            }
-          />
-        </View>
-      </ScrollView>
-    );
-
-  if (context === "stethoscope")
-    return (
-      <ScrollView className="h-full" automaticallyAdjustKeyboardInsets>
-        <View className="bg-neutral-300 w-full h-[200]"></View>
-
-        <View className="pb-20">
-          <AccordianItem
-            context="laser-printing"
-            active={activeScreen === "laser-printing"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            activeColorCode={activeColorCode}
-            activeFont={activeFont}
-            handleTextStyle={handleTextStyle}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-            
-          />
-          <AccordianItem
-            context="tube-printing"
-            active={activeScreen === "tube-printing"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            activeColorCode={activeColorCode}
-            activeFont={activeFont}
-            handleTextStyle={handleTextStyle}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-          />
-          <AccordianItem
-            context="laser-with-tube-printing"
-            active={activeScreen === "laser-with-tube-printing"}
-            customProductId={customProductId}
-            setCustomProductId={setCustomProductId}
-            languageOptions={languageOptions}
-            fontOptions={fontOptions}
-            colorValues={colorValues}
-            activeFile={activeFile}
-            handleUploadFile={handleUploadFile}
-            setActiveFile={setActiveFile}
-            onClose={onClose}
-            activeColorCode={activeColorCode}
-            activeFont={activeFont}
-            handleTextStyle={handleTextStyle}
-            fontsLoaded={fontsLoaded}
-            setActiveScreen={setActiveScreen}
-            loading={customizationCollectionLoading}
-          />
-        </View>
-      </ScrollView>
-    );
+      <View className="pb-20">
+        {servicesProducts?.map((serviceProduct) => {
+          if (
+            serviceProduct?.node?.handle === "embroidery-service-mobile-app" &&
+            context === "embroidery"
+          )
+            return (
+              <View key={serviceProduct.node.id}>
+                {serviceProduct.node.variants?.edges.map((item) => {
+                  
+                  if (item.node.selectedOptions[0].value === "Text")
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="text-only"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        activeSelect={customProductId?.type === "text-only" ? customProductId.selections[0] : ''}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else if (
+                    item.node.selectedOptions[0].value === "Graphic Only"
+                  )
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="graphics-only"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else if (
+                    item.node.selectedOptions[0].value === "Text & Graphic"
+                  )
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="text-with-graphics"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else return null;
+                })}
+              </View>
+            );
+          else if (
+            serviceProduct?.node?.handle ===
+              "stethoscope-customization-mobile-app" &&
+            context === "stethoscope"
+          )
+            return (
+              <View key={serviceProduct.node.id}>
+                {serviceProduct.node.variants?.edges.map((item) => {
+                  if (item.node.selectedOptions[0].value === "Laser Engraving")
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="laser-printing"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else if (
+                    item.node.selectedOptions[0].value === "Tube Printing"
+                  )
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="tube-printing"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else if (
+                    item.node.selectedOptions[0].value ===
+                    "Engraving & Tube printing"
+                  )
+                    return (
+                      <AccordianItem
+                        key={item.node.id}
+                        context="laser-with-tube-printing"
+                        data={item.node}
+                        active={activeScreen?.id === item.node.id}
+                        customProductId={customProductId}
+                        setCustomProductId={setCustomProductId}
+                        languageOptions={languageOptions}
+                        fontOptions={fontOptions}
+                        colorValues={colorValues}
+                        activeFile={activeFile}
+                        handleUploadFile={handleUploadFile}
+                        setActiveFile={setActiveFile}
+                        onClose={onClose}
+                        activeColorCode={activeColorCode}
+                        activeFont={activeFont}
+                        handleTextStyle={handleTextStyle}
+                        fontsLoaded={fontsLoaded}
+                        setActiveScreen={setActiveScreen}
+                        loading={customizationCollectionLoading}
+                        graphicsCollection={
+                          customizationCollectionData?.collection
+                            ? customizationCollectionData.collection?.metafields.find(
+                                (item) => item.key === "embroidery_graphics"
+                              )?.value
+                            : []
+                        }
+                      />
+                    );
+                  else return null;
+                })}
+              </View>
+            );
+        })}
+      </View>
+    </ScrollView>
+  );
 };
 
 export default CustomSelection;

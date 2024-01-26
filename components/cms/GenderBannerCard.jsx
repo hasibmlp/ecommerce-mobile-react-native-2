@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -33,7 +34,7 @@ export default function GenderBannerCard({
         colors={["transparent", "rgba(0, 0, 0, 0.20)", "rgba(0, 0, 0, 0.41)"]}
         className="w-full h-[70px] items-center justify-end"
       >
-        <Text className="text-center text-[16px] text-white font-medium pb-[20px]">
+        <Text style={FONT_FAMILY.primary} className="text-center text-[16px] text-white font-normal pb-[20px]">
           Shop {gender}
         </Text>
       </LinearGradient>

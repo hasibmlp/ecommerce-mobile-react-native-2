@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 
 import PriceContainer from "../PriceContainer";
 import ColorSwatchImage from "../buttons/ColorSwatchImage";
+import { FONT_FAMILY } from "../../theme";
 
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -57,6 +58,7 @@ export default function ProductCard({
       <View className="bg-white items-center justify-center py-3">
         {product.title && (
           <Text
+          style={FONT_FAMILY.primary}
             numberOfLines={1}
             className="text-[13px] font-normal text-black w-[90%] mb-2 text-center"
           >
@@ -80,10 +82,10 @@ export default function ProductCard({
                   size="xs"
                   value={item}
                   style={{ marginRight: 2 }}
-                  disableWhenUnavailable={true}
+                  disableWhenUnavailable={false}
                 />
               ))}
-            <Text className="ml-1 text-[13px] text-black font-light">
+            <Text style={FONT_FAMILY.primary} className="ml-1 text-[13px] text-black font-light">
               {totalNumberOfReminingColor > 0 &&
                 "+" + totalNumberOfReminingColor}
             </Text>

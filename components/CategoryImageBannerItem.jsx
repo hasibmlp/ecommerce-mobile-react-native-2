@@ -1,4 +1,5 @@
 import { View, Image, Text } from "react-native";
+import { FONT_FAMILY } from "../theme";
 
 export default function CategoryImageBannerItem({title, image}) {
   return (
@@ -9,7 +10,7 @@ export default function CategoryImageBannerItem({title, image}) {
           />
           <View className='w-full h-[150px] items-center justify-end'>
             <Image className='absolute w-full h-full ' source={require("../assets/transBlack.png")} />
-            <Text className='text-[16px] font-medium text-white pb-[20px] uppercase'>{title}</Text>
+            <Text style={FONT_FAMILY.primary} className='text-[16px] font-medium text-white pb-[20px] uppercase'>{title}</Text>
           </View>
         </View>
   );

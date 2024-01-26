@@ -21,6 +21,7 @@ import { UPDATE_CART_DISCOUT_CODE } from "../graphql/mutations";
 import { cartVar } from "../makeVars/MakeVars";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
+import { FONT_FAMILY } from "../theme";
 
 const coupenCodeValidationSchema = yup.object({
   coupenCode: yup.string().required("Please enter a promo code"),
@@ -85,7 +86,7 @@ export default function CoupenToggleContainer({discountCodes}) {
         }}
         className="flex-row justify-between items-center py-5 px-4"
       >
-        <Text className="text-[15px] text-black font-medium">
+        <Text style={FONT_FAMILY.primary} className="text-[15px] text-black font-normal">
           Add a Coupen Code
         </Text>
         <View>
@@ -126,7 +127,7 @@ export default function CoupenToggleContainer({discountCodes}) {
                   onPress={handleSubmit}
                   className="border border-gray-500 absolute right-8 rounded-[5px] py-2 px-3 self-end"
                 >
-                  <Text className="text-[14px] text-black font-normal uppercase">
+                  <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal uppercase">
                     Apply
                   </Text>
                 </TouchableOpacity>
@@ -139,7 +140,7 @@ export default function CoupenToggleContainer({discountCodes}) {
       {discountCodes[0]?.applicable && (<View className="flex-row px-4 pb-4">
         {discountCodes.map((item, index) => (
           <Pressable key={index.toString()} onPress={handleRemove} className="border border-neutral-500 px-2 py-2 rounded-md flex-row items-center">
-            <Text>{item.code}</Text>
+            <Text className="" style={FONT_FAMILY.primary}>{item.code}</Text>
             <XMarkIcon size={24} color="black" />
           </Pressable>
         ))}

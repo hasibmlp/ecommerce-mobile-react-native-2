@@ -100,7 +100,7 @@ export const GET_COLOR_SWATCH_IMAGES = gql`
 `;
 
 export const GET_COLLECTION = gql`
-  query collectionData($collectionId: ID!) {
+  query getCollectionShortDetails($collectionId: ID!) {
     collection(id: $collectionId) {
       id
       title
@@ -482,7 +482,7 @@ export const GET_CART_DETAILS_V2 = gql`
 `;
 
 export const GET_COLLECTION_BY_ID = gql`
-  query getCollectionById(
+  query getCollectionDetails(
     $collectionId: ID!
     $cursor: String
     $filterInput: [ProductFilter!]
@@ -521,6 +521,7 @@ export const GET_COLLECTION_BY_ID = gql`
             title
             vendor
             priceRange {
+              __typename
               maxVariantPrice {
                 amount
                 currencyCode
@@ -531,6 +532,7 @@ export const GET_COLLECTION_BY_ID = gql`
               }
             }
             compareAtPriceRange {
+              __typename
               minVariantPrice {
                 amount
                 currencyCode
@@ -545,24 +547,6 @@ export const GET_COLLECTION_BY_ID = gql`
               id
               name
               values
-            }
-            variants(first: 100) {
-              edges {
-                node {
-                  id
-                  quantityAvailable
-                  availableForSale
-                  currentlyNotInStock
-                  selectedOptions {
-                    name
-                    value
-                  }
-                  image {
-                    id
-                    url
-                  }
-                }
-              }
             }
           }
         }
@@ -579,7 +563,7 @@ export const GET_COLLECTION_BY_ID = gql`
 `;
 
 export const GET_ALL_PRODUCTS_ID_IN_COLLECTION = gql`
-  query getCollectionById(
+  query getCollectionTotalPageNumber(
     $collectionId: ID!
     $cursor: String
     $filterInput: [ProductFilter!]
@@ -808,18 +792,21 @@ export const SEARCH_PRODUCTS = gql`
 `;
 
 export const GET_CUSTOMIZATIN_COLLECTION = gql`
-  query getCustomizationCollection($collectionId: ID, $metaIdentifiers:[HasMetafieldsIdentifier!]!) {
-    collection(id:$collectionId) {
+  query getCustomizationCollection(
+    $collectionId: ID
+    $metaIdentifiers: [HasMetafieldsIdentifier!]!
+  ) {
+    collection(id: $collectionId) {
       id
       title
       description
       handle
-      metafields(identifiers: $metaIdentifiers){
-      id
-      namespace
-      key
-      value
-    }
+      metafields(identifiers: $metaIdentifiers) {
+        id
+        namespace
+        key
+        value
+      }
       products(first: 3) {
         edges {
           node {
@@ -828,6 +815,12 @@ export const GET_CUSTOMIZATIN_COLLECTION = gql`
             vendor
             productType
             handle
+            priceRange {
+              minVariantPrice {
+                amount
+                currencyCode
+              }
+            }
             variants(first: 100) {
               edges {
                 node {
@@ -843,6 +836,32 @@ export const GET_CUSTOMIZATIN_COLLECTION = gql`
                   }
                 }
               }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_VARIANT_OF_PRODUCTS = gql`
+  query productVarinats($productId: ID!) {
+    product(id: $productId) {
+      id
+      variants(first: 100) {
+        edges {
+          node {
+            id
+            quantityAvailable
+            availableForSale
+            currentlyNotInStock
+            selectedOptions {
+              name
+              value
+            }
+            image {
+              id
+              url
             }
           }
         }

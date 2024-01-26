@@ -8,6 +8,7 @@ import {
 import BottomModal from "./Modal/BottomModal";
 import Button from "./buttons/Button";
 import ScreenModal from "./Modal/ScreenModal";
+import { FONT_FAMILY } from "../theme";
 
 export default function CartCard({
   lineItem,
@@ -109,12 +110,12 @@ export default function CartCard({
           />
         )}
         <View className="flex flex-col ml-4 w-[55%]">
-          <Text className="text-[16px] text-black font-medium mb-3">
+          <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-normal mb-3">
             {lineItem.merchandise.product.title}
           </Text>
           <View className="text-[13px] text-gray-600 font-light flex-row mb-2">
             {lineItem.merchandise.selectedOptions.map((option, index) => (
-              <Text key={index} className={`mr-5 `}>
+              <Text style={FONT_FAMILY.primary} key={index} className={`mr-5 `}>
                 {option.value}
               </Text>
             ))}
@@ -129,7 +130,7 @@ export default function CartCard({
           {lineItem.discountAllocations.length > 0 && (
             <View className="flex-row items-center mb-2">
               <TagIcon size={18} color="black" />
-              <Text className="text-[14px] text-black text-normal ml-1">
+              <Text style={FONT_FAMILY.primary} className="text-[14px] text-black text-normal ml-1">
                 {discountTitle}
               </Text>
             </View>
@@ -137,11 +138,11 @@ export default function CartCard({
 
           <View className="flex flex-row">
             {subTotalPriceOfLineitem > totalPriceOfLineitem && (
-              <Text className="text-[16px] text-neutral-700 font-normal mr-4 line-through">
+              <Text style={FONT_FAMILY.primary} className="text-[16px] text-neutral-700 font-normal mr-4 line-through">
                 {subTotalPriceOfLineitem} {costCurrencyCode}
               </Text>
             )}
-            <Text className="text-[16px] text-black font-medium">
+            <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-noraml">
               {totalPriceOfLineitem} {costCurrencyCode}
             </Text>
           </View>
@@ -158,12 +159,12 @@ export default function CartCard({
           <View className="w-full flex flex-col px-5">
             <View className="flex-row justify-between">
 
-              <Text className="text-[16px] text-black font-medium mb-3">
+              <Text style={FONT_FAMILY.primary}  className="text-[16px] text-black font-medium mb-3">
                 {assignedCustomProduct.node?.merchandise?.product?.title}
               </Text>
 
               <View className="flex flex-row">
-                <Text className="text-[16px] text-black font-medium">
+                <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-medium">
                   +{totalCustomProduct} {costCurrencyCode}
                 </Text>
               </View>
@@ -172,7 +173,7 @@ export default function CartCard({
             {customSelectionKeys.length > 0 && (
               <View className="mb-4">
                 <View className="w-full flex-row justify-between">
-                  <Text className="text-base text-black font-medium">
+                  <Text style={FONT_FAMILY.primary} className="text-base text-black font-medium">
                     Custom selection
                   </Text>
                   <View className="absolute right-0 top-1">
@@ -186,7 +187,7 @@ export default function CartCard({
                 </View>
                 <View className="">
                   {customSelectionKeys.map((item, index) => (
-                    <Text key={index.toString()}>
+                    <Text style={FONT_FAMILY.primary} key={index.toString()}>
                       {item} : {customSelectionsParse[item]},{" "}
                     </Text>
                   ))}
@@ -283,7 +284,7 @@ const QuanitySelection = ({
         className="flex-row items-center"
         onPress={() => setBottomModalVisible(true)}
       >
-        <Text className="">Qty {lineItem.quantity}</Text>
+        <Text style={FONT_FAMILY.primary} className="">Qty {lineItem.quantity}</Text>
         <ChevronUpDownIcon size={22} color="black" />
       </TouchableOpacity>
       <BottomModal
@@ -297,7 +298,7 @@ const QuanitySelection = ({
               onPress={() => handleNumberPress(item.value)}
               className="py-4 px-3 border-b border-gray-200 bg-white self-stretch items-center"
             >
-              <Text className="text-[16px] text-black font-medium">
+              <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-normal">
                 {item.label}
               </Text>
             </Pressable>

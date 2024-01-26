@@ -1,5 +1,5 @@
-import { useContext } from "react";
-import { Pressable, View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { Pressable, TouchableOpacity, View } from "react-native";
 
 import ColorSwatch from "../swatches/ColorSwatch";
 import CheckBox from "./Checkbox";
@@ -7,12 +7,19 @@ import OptionLabel from "../OptionLabel";
 import { SideBarContext } from "../../../makeVars/MakeVars";
 import { isFilterValueActive } from "../../utils/UtilsFunctions";
 import { FilterSelectionContext } from "../../utils/UtilsFunctions";
+import ColorSwatchImage from "../../buttons/ColorSwatchImage";
 
-export default function CheckList({ option, setLoading, setActiveFilterInput, activeFilterInput }) {
-  let isActive = isFilterValueActive(activeFilterInput, option);
+export default function CheckList({
+  option,
+  setLoading,
+  setActiveFilterInput,
+  activeFilterInput,
+  active,
+  loading,
+}) {
+  const isChecked = activeFilterInput.some((i) => i.id === option.id);
 
   const input = JSON.parse(option.input);
-  const filterValue = { id: option.id, input: input, label: option.label };
   const varinatType = input?.variantOption?.name;
   const color = varinatType === "color" && option.label;
 
@@ -27,24 +34,31 @@ export default function CheckList({ option, setLoading, setActiveFilterInput, ac
       if (inputIndex > -1) {
         preFilterInputs.splice(inputIndex, 1);
         // setLoading(false)
-        return preFilterInputs;
       } else {
         // setLoading(false)
-        return [...preFilterInputs, filterValue];
+        preFilterInputs.push({
+          id: option.id,
+          input: input,
+          label: option.label,
+          totalCount: option.count
+        });
       }
+      return preFilterInputs;
     });
   };
+  
 
   return (
-    <Pressable
+    <TouchableOpacity
+      disabled={loading}
       onPress={handlePress}
       className="flex-row justify-between items-center px-2 py-3"
     >
       <View className="flex-row items-center justify-between">
-        <CheckBox active={isActive} />
+        <CheckBox active={isChecked} />
         <OptionLabel label={option.label} count={option.count} />
       </View>
-      {color && <ColorSwatch color={color.toLowerCase()} />}
-    </Pressable>
+      {/* {color && <ColorSwatchImage value={color} size="lg" />} */}
+    </TouchableOpacity>
   );
 }

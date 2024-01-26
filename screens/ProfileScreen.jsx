@@ -25,7 +25,9 @@ const ProfileScreen = ({ route }) => {
 
   const [createCart, { data, loading, error }] = useMutation(CREATE_CART);
   const [getCartDetails, { data: cartDetailData, loading: cartDetailLoading }] =
-    useLazyQuery(GET_CART_DETAILS_V2);
+    useLazyQuery(GET_CART_DETAILS_V2, {
+      fetchPolicy: 'no-cache'
+    });
 
   const handleLogout = async () => {
     try {

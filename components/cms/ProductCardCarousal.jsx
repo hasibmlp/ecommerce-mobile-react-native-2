@@ -11,6 +11,7 @@ import { GET_COLLECTION } from "../../graphql/queries";
 
 import Skeleton from "../skeletons/Skeleton";
 import ProductCard from "./ProductCard";
+import { FONT_FAMILY } from "../../theme";
 
 export default function ProductCardCarousal({ content }) {
   const navigation = useNavigation();
@@ -18,6 +19,7 @@ export default function ProductCardCarousal({ content }) {
     variables: {
       collectionId: content.data.collectionId,
     },
+    fetchPolicy: 'no-cache'
   });
 
   if (error) return <Text>error occured {error}</Text>;
@@ -27,28 +29,28 @@ export default function ProductCardCarousal({ content }) {
       <View className="flex-row justify-between py-[10px] px-[15px]">
         {!data && loading && <Skeleton width={100} height={12} rounded />}
         {data && (
-          <Text className="text-[18px] font-light text-black capitalize">
+          <Text style={FONT_FAMILY.primary} className="text-[18px] font-light text-black capitalize">
             {data.collection.title}
           </Text>
         )}
-        <Pressable
+        <TouchableOpacity
           onPress={() =>
             navigation.navigate("Collection", {
               collectionId: content.data.collectionId,
             })
           }
         >
-          <Text className="text-[11px] text-red-900 font-normal uppercase underline">
+          <Text style={FONT_FAMILY.primary} className="text-[11px] text-red-900 font-normal uppercase underline">
             View all
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row px-2">
           {data &&
             data.collection.products.edges?.map((product, index) => (
               <ProductCard
-              key={product.node.id}
+                key={product.node.id}
                 onpress={() => {
                   navigation.navigate("ProductDetailScreen", {
                     productId: product.node.id,

@@ -1,6 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
 import { Image } from "expo-image";
+import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -13,22 +14,22 @@ export default function ThreeCategoryBlock({ content }) {
         content.data.cta) && (
         <View className="items-center py-4 gap-1 bg-white">
           {content.data.subTitle && (
-            <Text style={{fontFamily: 'Nexa-Regular'}}  className="text-[18px] text-black font-normal">
+            <Text style={FONT_FAMILY.primary}  className="text-[18px] text-black font-normal">
               {content.data.subTitle}
             </Text>
           )}
           {content.data.title && (
-            <Text style={{fontFamily: 'Nexa-Regular'}} className="text-[28px] text-black font-medium">
+            <Text style={FONT_FAMILY.primary} className="text-[28px] text-black font-normal capitalize">
               {content.data.title}
             </Text>
           )}
           {content.data.desc && (
-            <Text style={{fontFamily: 'Nexa-Regular'}} className="text-[14px] text-black font-light w-[350px] text-center">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-light w-[350px] text-center">
               {content.data.desc}
             </Text>
           )}
           {content.data.cta && (
-            <Text style={{fontFamily: 'Nexa-Regular'}} className="text-[14px] text-black font-medium uppercase underline">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal uppercase underline">
               {content.data.cta}
             </Text>
           )}
@@ -58,7 +59,7 @@ export default function ThreeCategoryBlock({ content }) {
               ]}
               className="w-full h-[80px] items-center justify-end"
             >
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-[16px] font-medium text-white pb-[20px] uppercase text-center">
+              <Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-white pb-[20px] uppercase text-center">
                 {content.data.images[0].title}
               </Text>
             </LinearGradient>
@@ -86,7 +87,7 @@ export default function ThreeCategoryBlock({ content }) {
               ]}
               className="w-full h-[80px] items-center justify-end"
             >
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-[16px] font-medium text-white pb-[20px] uppercase text-center">
+              <Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-white pb-[20px] uppercase text-center">
                 {content.data.images[1].title}
               </Text>
             </LinearGradient>
@@ -114,7 +115,7 @@ export default function ThreeCategoryBlock({ content }) {
               ]}
               className="w-full h-[80px] items-center justify-end"
             >
-              <Text  style={{fontFamily: 'Nexa-Regular'}}className="text-[16px] font-medium text-white pb-[20px] uppercase text-center">
+              <Text  style={FONT_FAMILY.primary}className="text-[16px] font-normal text-white pb-[20px] uppercase text-center">
                 {content.data.images[2].title}
               </Text>
             </LinearGradient>

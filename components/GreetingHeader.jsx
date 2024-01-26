@@ -63,7 +63,7 @@ export default function GreetingHeader({ state, handleToggleMenu }) {
           {!user && <UserIcon size={24} color="black" />}
           {user && (
             <View>
-              <Text className="text-xl text-black font-medium">
+              <Text className="text-xl text-black font-normal">
                 {user.firstName.slice(0, 1)}
                 {user.lastName.slice(0, 1)}
               </Text>

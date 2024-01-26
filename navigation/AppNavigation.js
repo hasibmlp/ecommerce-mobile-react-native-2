@@ -180,12 +180,16 @@ export function HomeTabs() {
 
 export default function AppNavigation() {
   const user = useReactiveVar(userVar);
-  const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER);
+  const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER, {
+    fetchPolicy: 'no-cache'
+  });
   const [appInitialFlag, setAppInitialFlag] = useState(false);
 
   const [createCart] = useMutation(CREATE_CART);
   const [getCartDetails, { data: cartDetailData }] =
-    useLazyQuery(GET_CART_DETAILS_V2);
+    useLazyQuery(GET_CART_DETAILS_V2, {
+      fetchPolicy: 'no-cache'
+    });
 
   const [
     updateCartBuyer,
@@ -388,9 +392,9 @@ export default function AppNavigation() {
             headerShown: false,
           }}
         />
-        {!user && (
+        {(
           <Stack.Screen
-            // navigationKey={user ? "user" : "guest"}
+            navigationKey={user ? "user" : "guest"}
             name="AuthScreen"
             component={AuthScreen}
           />

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Text, View, Pressable } from "react-native";
 import { ChevronDownIcon } from "react-native-heroicons/outline";
 import Animated, { FadeIn, FadeOut, Layout } from "react-native-reanimated";
+import { FONT_FAMILY } from "../theme";
 
 export default function CategorySubMenuCard({ subContent, subLists }) {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -23,6 +24,7 @@ export default function CategorySubMenuCard({ subContent, subLists }) {
         className="flex-row items-center justify-between px-5 py-5"
       >
         <Text
+        style={FONT_FAMILY.primary}
           className={`text-[14px] text-black font-light ${
             isSubMenuOpen && "font-medium"
           }`}

@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useTransition,
 } from "react";
-import { useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import {
   Dimensions,
   Image,
@@ -104,6 +104,7 @@ function CollectionData({ route, openSideBar }) {
       sortKey: sortKeys.sort_key,
       reverse: sortKeys.reverse,
     },
+    fetchPolicy: 'no-cache'
   });
 
   console.log("SEARCH RESULTS", data?.search?.productFilters);

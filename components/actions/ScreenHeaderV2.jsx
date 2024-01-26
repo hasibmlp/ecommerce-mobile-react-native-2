@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 import Animated, { interpolate, useAnimatedStyle } from "react-native-reanimated";
+import { FONT_FAMILY } from "../../theme";
 
 export default function ScreenHeaderV2({scrollRef, layout, title, left, right, children, fly=true}) {
 
@@ -27,7 +28,7 @@ export default function ScreenHeaderV2({scrollRef, layout, title, left, right, c
   
       <Animated.View style={scrollRef?.value ? {}: {}} className="h-12 w-full items-center bg-white justify-center absolute top-0">
           <View className="h-full absolute left-4 flex-row items-center">{left}</View>
-          {!children && (<Text className="text-[16px] font-normal text-black">
+          {!children && (<Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-black">
             {title?.length > 20 ? title.slice(0, 20) + '...' : title}
           </Text>)}
           {children && children}

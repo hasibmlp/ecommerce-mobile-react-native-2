@@ -1,4 +1,5 @@
 import { View, Image, Text } from "react-native";
+import { FONT_FAMILY } from "../theme";
 
 export default function CategoryImageBanner({ categories }) {
   return (
@@ -13,7 +14,7 @@ export default function CategoryImageBanner({ categories }) {
             className="absolute w-full h-full "
             source={require("../assets/transBlack.png")}
           />
-          <Text className="text-[16px] font-medium text-white pb-[20px] uppercase">
+          <Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-white pb-[20px] uppercase">
             {categories[0].title}
           </Text>
         </View>
@@ -28,7 +29,7 @@ export default function CategoryImageBanner({ categories }) {
             className="absolute w-full h-full "
             source={require("../assets/transBlack.png")}
           />
-          <Text className="text-[16px] font-medium text-white pb-[20px] uppercase">
+          <Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-white pb-[20px] uppercase">
             {categories[0].title}
           </Text>
         </View>
@@ -43,7 +44,7 @@ export default function CategoryImageBanner({ categories }) {
             className="absolute w-full h-full "
             source={require("../assets/transBlack.png")}
           />
-          <Text className="text-[16px] font-medium text-white pb-[20px] uppercase">
+          <Text style={FONT_FAMILY.primary} className="text-[16px] font-normal text-white pb-[20px] uppercase">
             {categories[0].title}
           </Text>
         </View>

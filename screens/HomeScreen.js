@@ -2,7 +2,6 @@ import {
   Dimensions,
   Pressable,
   SafeAreaView,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -10,16 +9,11 @@ import {
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { memo, useEffect, useLayoutEffect, useState } from "react";
 import {
-  CheckIcon,
   ChevronDownIcon,
-  MagnifyingGlassCircleIcon,
   MagnifyingGlassIcon,
   UserIcon,
 } from "react-native-heroicons/outline";
 import { CheckCircleIcon } from "react-native-heroicons/solid";
-
-import GenderSelector from "../components/GenderSelector";
-import GreetingHeader from "../components/GreetingHeader";
 import MainContentV2 from "../components/MainContentV2";
 import { userVar } from "../makeVars/MakeVars";
 import { useReactiveVar } from "@apollo/client";
@@ -33,6 +27,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { selectGender } from "../redux/features/gender/genderSlice";
+import { FONT_FAMILY } from "../theme";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -93,7 +88,7 @@ const HomeScreen = () => {
             onPress={() => setOpen(!open)}
             className="flex-row items-center justify-center px-5"
           >
-            <Text className="text-sm text-black font-normal mr-1 leading-4 uppercase">
+            <Text style={FONT_FAMILY.primary} className="text-sm text-black font-normal mr-1 leading-4 uppercase">
               Shop {gender}
             </Text>
             <ChevronDownIcon size={14} color="black" />
@@ -120,7 +115,7 @@ const HomeScreen = () => {
               <View className="bg-neutral-200 h-8 w-8 rounded-full items-center justify-center">
                 {!user && <UserIcon color="black" size={24} />}
                 {user && (
-                  <Text className="text-lg text-black text-medium">
+                  <Text style={FONT_FAMILY.primary} className="text-lg text-black text-normal">
                     {user.firstName.slice(0, 1)}
                     {user.lastName.slice(0, 1)}
                   </Text>
@@ -142,7 +137,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Women
               </Text>
               {gender === "women" && (
@@ -156,7 +151,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Men
               </Text>
               {gender === "men" && (
@@ -170,7 +165,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
-              <Text className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Kids
               </Text>
               {gender === "kids" && (
@@ -192,11 +187,11 @@ const HomeScreen = () => {
               className="absolute bottom-full w-full h-[250] bg-neutral-50 z-50"
             ></View>
             <Pressable onPress={() => setOpen(!open)} className="items-start h-full justify-center">
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-2xl text-black">
+              <Text style={FONT_FAMILY.primary} className="text-2xl text-black">
                 Good evening! {user?.firstName}
               </Text>
               <View className="flex-row items-center justify-center mt-2">
-                <Text style={{fontFamily: 'Nexa-Regular'}} className="text-sm text-black font-normal mr-1 leading-4 uppercase">
+                <Text style={FONT_FAMILY.primary} className="text-sm text-black font-normal mr-1 leading-4 uppercase">
                   Shop {gender}
                 </Text>
                 <ChevronDownIcon size={14} color="black" />
@@ -206,7 +201,7 @@ const HomeScreen = () => {
               <View className="bg-neutral-200 h-12 w-12 rounded-full items-center justify-center">
                 {!user && <UserIcon color="black" size={24} />}
                 {user && (
-                  <Text  className="text-xl text-black text-medium">
+                  <Text style={FONT_FAMILY.primary}  className="text-xl text-black text-normal">
                     {user.firstName.slice(0, 1)}
                     {user.lastName.slice(0, 1)}
                   </Text>
@@ -226,7 +221,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Women
               </Text>
               {gender === "women" && (
@@ -240,7 +235,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Men
               </Text>
               {gender === "men" && (
@@ -254,7 +249,7 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
-              <Text style={{fontFamily: 'Nexa-Regular'}} className="text-sm  text-black font-medium uppe">
+              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
                 Shop Kids
               </Text>
               {gender === "kids" && (
@@ -281,12 +276,12 @@ const HomeScreen = () => {
             className="h-[50px] flex flex-row bg-white items-center rounded-[10px] flex-1 pl-2 mx-3 mb-3"
           >
             <MagnifyingGlassIcon size={22} color="black" strokeWidth={1} />
-            <Text className="text-[14px] font-normal text-gray-500 ml-[15px]">
+            <Text style={FONT_FAMILY.primary} className="text-[14px] font-normal text-gray-500 ml-[15px]">
               Search
             </Text>
           </TouchableOpacity>
 
-          <MemorizeMainContentV2 />
+          <MainContentV2 />
         </Animated.ScrollView>
       </View>
     </View>
@@ -294,6 +289,6 @@ const HomeScreen = () => {
 };
 
 
-const MemorizeMainContentV2 = memo(MainContentV2);
+// const MemorizeMainContentV2 = memo(MainContentV2);
 
 export default HomeScreen;

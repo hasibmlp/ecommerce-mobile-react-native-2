@@ -1,124 +1,141 @@
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useState, useEffect } from "react";
+import {
+
+  FlatList,
+  Text,
+  View,
+} from "react-native";
+
 import LoadingFullScreen from "../Sidebar/LoadingFullScreen";
 import TabButton from "../Sidebar/Buttons/TabButton";
 import CheckList from "../Sidebar/Buttons/CheckList";
 import PriceRangeForm from "../Sidebar/PriceRangeForm";
 import ActiveFilter from "../Sidebar/ActiveFilter";
-import { useContext, useState, useEffect } from "react";
-import { SideBarContext } from "../../makeVars/MakeVars";
 import Button from "../buttons/Button";
-import { checkTabActive } from "../utils/UtilsFunctions";
-import { FilterSelectionContext } from "../../contexts/FilterSelectionContext";
+import { FONT_FAMILY } from "../../theme";
 
-export default function FilterBody({ onClose, loading, filters, activeFilterInput, setLoading, setActiveFilterInput }) {
-
+function FilterBody({
+  onClose,
+  loading,
+  filters,
+  activeFilterInput,
+  setLoading,
+  setActiveFilterInput,
+  maxFilterPriceRange,
+}) {
   return (
-    <SafeAreaView className="absolute top-0 left-0 bottom-0 right-0 z-40 bg-white">
-      <View className="flex-1">
-        {loading && <LoadingFullScreen />}
-        <Header activeFilterInput={activeFilterInput} />
-        <Content filters={filters} activeFilterInput={activeFilterInput} setLoading={setLoading} setActiveFilterInput={setActiveFilterInput}  />
-        <Footer onClose={onClose} activeFilterInput={activeFilterInput} loading={loading} />
-      </View>
-    </SafeAreaView>
+    <View className="flex-1">
+      {loading && <LoadingFullScreen />}
+      <Header
+        activeFilterInput={activeFilterInput}
+        setLoading={setLoading}
+        setActiveFilterInput={setActiveFilterInput}
+      />
+
+      <Content
+        filters={filters}
+        activeFilterInput={activeFilterInput}
+        setLoading={setLoading}
+        setActiveFilterInput={setActiveFilterInput}
+        loading={loading}
+        maxFilterPriceRange={maxFilterPriceRange}
+      />
+
+      <Footer onClose={onClose} />
+    </View>
   );
 }
 
-function Content({ openSideBar, filters, activeFilterInput, setLoading, setActiveFilterInput }) {
-
-  const [activeButton, setActiveButton] = useState(filters[0]?.label);
-  const [priceRange, setPriceRange] = useState(null);
-  const input = JSON.parse(
-    filters?.filter((filter) => filter?.type === "PRICE_RANGE")[0]?.values[0]?.input
-  );
+function Content({
+  filters,
+  activeFilterInput,
+  setLoading,
+  setActiveFilterInput,
+  loading,
+  maxFilterPriceRange,
+}) {
+  const [filterState, setFilterState] = useState(filters);
+  const [activeTabContent, setActiveTabContent] = useState(filterState[0]);
 
   useEffect(() => {
     if (!filters) setLoading(true);
-    if (filters) setLoading(false);
+    if (filters) {
+      setLoading(false);
+      setFilterState(filters);
+    }
   }, [filters]);
 
-  useEffect(() => {
-    // presist maximum and minimum value through re-renders
-    if (priceRange === null || priceRange.max === undefined) {
-      setPriceRange({ min: input.price.min, max: input.price.max });
-    }
-  }, [filters, setPriceRange, priceRange]);
+  const filteredArray = filterState.map((item) => {
+    return {
+      id: item.id,
+      input: item.input,
+      type: item.type,
+      label: item.label,
+      values:
+        item.type === "PRICE_RANGE"
+          ? item.values
+          : item.values?.filter((i) => i.count > 0),
+    };
+  });
+
+  const filteredValuesV1 = filteredArray.filter(
+    (item) => item.type === "PRICE_RANGE" || item.values.length > 0
+  );
 
   return (
     <View className="flex-1 flex-row">
       <View className="basis-[30%] bg-blue-50 h-full">
-        <ScrollView
-          className=""
-          showsVerticalScrollIndicator={false}
-          scrollEnabled={false}
-        >
-          {filters.map((filter) => {
-            const isTabActive = checkTabActive(filter);
-
-            if (filter.values.length === 0) return null;
-            let isFilterValuesSelected = false;
-            activeFilterInput.forEach((activeFilter) => {
-              filter.values.forEach((value) => {
-                if (value.id === activeFilter.id) isFilterValuesSelected = true;
-              });
-            });
-            if (filter.type === "PRICE_RANGE")
-              return (
-                <TabButton
-                  key={filter.id}
-                  title={filter.label}
-                  handlePress={() => {
-                    setActiveButton(filter.label);
-                  }}
-                  activeButton={activeButton}
-                  active={isFilterValuesSelected}
-                />
-              );
-            else
-              return (
-                isTabActive && (
-                  <TabButton
-                    key={filter.id}
-                    title={filter.label}
-                    handlePress={() => {
-                      setActiveButton(filter.label);
-                    }}
-                    activeButton={activeButton}
-                    active={isFilterValuesSelected}
-                  />
-                )
-              );
-          })}
-        </ScrollView>
+        <FlatList
+          data={filteredValuesV1}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            // if(item.values.reduce((sum, currentIndex) => sum + currentIndex.count, 0))
+            //   return null
+            return (
+              <TabButton
+                key={item.id}
+                title={item.label}
+                onPress={() => setActiveTabContent(item)}
+                active={item.id === activeTabContent?.id}
+              />
+            );
+          }}
+        />
       </View>
       <View className=" flex-1">
-        <ScrollView>
-          {filters.map((filter) => {
-            if (activeButton === filter.label) {
-              if (filter.type === "LIST") {
-                return filter.values.map((value, index) => {
-                  if (value.count === 0) return null;
-                  return <CheckList key={index.toString()} option={value} setLoading={setLoading} setActiveFilterInput={setActiveFilterInput} activeFilterInput={activeFilterInput} />;
-                });
-              }
-              if (filter.type === "PRICE_RANGE")
-                return (
-                  <PriceRangeForm
-                    key={filter.values[0].id}
-                    option={filter.values[0]}
-                    priceRangeFilter={priceRange}
-                  />
-                );
+        <FlatList
+          data={activeTabContent?.values}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            if (activeTabContent.type !== "PRICE_RANGE") {
+              return (
+                <CheckList
+                  key={item?.id}
+                  option={item}
+                  setLoading={setLoading}
+                  setActiveFilterInput={setActiveFilterInput}
+                  activeFilterInput={activeFilterInput}
+                  loading={loading}
+                />
+              );
+            } else {
+              return (
+                <PriceRangeForm
+                  option={item}
+                  setLoading={setLoading}
+                  setActiveFilterInput={setActiveFilterInput}
+                  maxFilterPriceRange={maxFilterPriceRange}
+                />
+              );
             }
-          })}
-        </ScrollView>
+          }}
+        />
       </View>
     </View>
   );
 }
 
-function Header({activeFilterInput}) {
+function Header({ activeFilterInput, setLoading, setActiveFilterInput }) {
   return (
     <View
       style={{
@@ -130,26 +147,25 @@ function Header({activeFilterInput}) {
       }}
       className={`w-full pt-3 pb-3 justify-center items-center z-10`}
     >
-      <Text className="text-[16px] text-black font-light">Apply Filters</Text>
-      {<ActiveFilter activeFilterInput2={activeFilterInput} style={{ paddingHorizontal: 8, paddingTop: 12 }} />}
+      <Text
+        style={FONT_FAMILY.primary}
+        className="text-[16px] text-black font-light"
+      >
+        Apply Filters
+      </Text>
+      {
+        <ActiveFilter
+          activeFilterInput={activeFilterInput}
+          style={{ paddingHorizontal: 8, paddingTop: 12 }}
+          setLoading={setLoading}
+          setActiveFilterInput={setActiveFilterInput}
+        />
+      }
     </View>
   );
 }
 
-function Footer({ onClose, activeFilterInput, loading }) {
-  const productTotalCount = 100;
-
-  let resutlError = null;
-  if (
-    activeFilterInput.length !== null &&
-    productTotalCount === 0 &&
-    !loading
-  ) {
-    resutlError = "The result is empty, Please select ohter value!!";
-  }
-  handleCloseButton = () => {
-    !resutlError && onClose;
-  };
+function Footer({ onClose }) {
   return (
     <View
       style={{
@@ -161,34 +177,21 @@ function Footer({ onClose, activeFilterInput, loading }) {
       }}
       className="w-full items-center py-3 mb-3"
     >
-      {resutlError && (
-        <View className="h-5 flex-row items-center ">
-          <Text className="text-[16px] text-red-500 text-normal">
-            {resutlError}
-          </Text>
+      <View className="w-full flex-row justify-between px-3 my-4">
+        <View className="flex-1">
+          <Button
+            type="secondary"
+            label="reset"
+            flex
+            style={{ marginRight: 16 }}
+          />
         </View>
-      )}
-      {!resutlError && (
-        <View className="h-5 flex-row items-center ">
-          {productTotalCount === 0 ? (
-            <ActivityIndicator size="small" />
-          ) : (
-            <Text className="text-[12px] text-black text-normal">
-              {productTotalCount}
-            </Text>
-          )}
-          <Text className="text-[12px] text-black text-normal"> results</Text>
+        <View className="flex-1">
+          <Button label="done" flex onPress={onClose} />
         </View>
-      )}
-      <View className="w-full flex-row justify-between px-3 mt-4">
-        <Button
-          type="secondary"
-          label="reset"
-          flex
-          style={{ marginRight: 16 }}
-        />
-        <Button label="done" flex onPress={onClose} />
       </View>
     </View>
   );
 }
+
+export default FilterBody

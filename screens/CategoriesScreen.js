@@ -17,6 +17,7 @@ import { useQuery, useReactiveVar } from "@apollo/client";
 import { GET_CATEGORIES_OF_COLLECTIONS } from "../graphql/queries";
 import LoadingScreen from "../components/LoadingScreen";
 import { userVar } from "../makeVars/MakeVars";
+import { FONT_FAMILY } from "../theme";
 
 const TAB_WIDTH = 150;
 
@@ -284,7 +285,9 @@ export default function CategoriesScreen() {
   const scrollRef = useRef()
 
 
-  const {data, loading, error} = useQuery(GET_CATEGORIES_OF_COLLECTIONS)
+  const {data, loading, error} = useQuery(GET_CATEGORIES_OF_COLLECTIONS, {
+    fetchPolicy: 'no-cache'
+  })
 
   const categories = data && JSON.parse(data?.collection?.metafield?.value)
   
@@ -309,7 +312,6 @@ export default function CategoriesScreen() {
       </View>
 
         <Animated.FlatList
-          layout={Layout.delay(100)}
           className="z-[-1]"
           ref={scrollRef}
           data={activeContent?.category}
@@ -386,7 +388,7 @@ function TabContainer({tabsArray, setActiveContent}) {
               className=" items-center py-4 px-5"
             >
               <View>
-                <Text className="text-[14px] text-black font-normal capitalize">
+                <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal capitalize">
                   {tab.name}
                 </Text>
               </View>

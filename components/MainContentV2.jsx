@@ -7,7 +7,8 @@ import { useEffect } from "react";
 export default function MainContentV2() {
   const gender = useSelector((state) => state.gender.current);
 
-  const hData = homePageData.filter((item) => item.category.includes(gender));
+  // const hData = homePageData.filter((item) => item.category.includes(gender));
+  const hData = homePageData.filter((item) => item.category === gender)
 
   return (
     <View>

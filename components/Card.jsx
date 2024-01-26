@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { FONT_FAMILY } from "../theme";
 
 export function Card({ product }) {
   return (
@@ -20,12 +21,13 @@ export function Card({ product }) {
       </View>
       <View className="bg-white items-center justify-center py-3">
         {product.title && (<Text
+        style={FONT_FAMILY.primary}
           numberOfLines={1}
           className="text-[14px] font-normal text-black w-[70%] mb-2 text-center"
         >
           {product.title}
         </Text>)}
-       {product.priceRange && ( <Text className="text-[13px] font-normal text-red-700 mb-2 text-center">
+       {product.priceRange && ( <Text style={FONT_FAMILY.primary} className="text-[13px] font-normal text-red-700 mb-2 text-center">
           {product.priceRange.minVariantPrice.amount}
         </Text>)}
         <View className="flex-row  justify-center items-center mb-2">

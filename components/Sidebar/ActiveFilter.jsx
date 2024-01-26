@@ -9,6 +9,8 @@ export default function ActiveFilter({
   style,
   showsWithActiveOnly = false,
   activeFilterInput,
+  setLoading,
+  setActiveFilterInput,
 }) {
 
   return (
@@ -25,6 +27,8 @@ export default function ActiveFilter({
               key={index.toString()}
               id={activeFilter.id}
               title={activeFilter.label}
+              setLoading={setLoading}
+              setActiveFilterInput={setActiveFilterInput}
             />
           );
         })}

@@ -2,13 +2,9 @@ import React, {
   useRef,
   useState,
   useLayoutEffect,
-  useMemo,
   useCallback,
-  useContext,
-  useEffect,
-  useTransition,
 } from "react";
-import { useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import {
   Dimensions,
   Image,
@@ -17,6 +13,7 @@ import {
   Text,
   View,
   SafeAreaView,
+  TouchableOpacity,
 } from "react-native";
 import {
   AdjustmentsHorizontalIcon,
@@ -33,7 +30,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 import {
-  GET_ALL_PRODUCTS_ID_IN_COLLECTION,
   GET_COLLECTION_BY_ID,
 } from "../graphql/queries";
 import { CollectionCard } from "../components/CollectionCard";
@@ -43,63 +39,27 @@ import TextBody from "../components/texts/TextBody";
 import CardSkeleton from "../components/skeletons/CardSkeleton";
 import HeaderActions from "../components/actions/HeaderActions";
 import SmallButton from "../components/Sidebar/Buttons/SmallButton";
-import { ScreenHeader } from "../components/actions/ScreenHeader";
+import ScreenHeader from "../components/actions/ScreenHeader";
 import MyModal from "../components/Modal/MyModal";
 import FilterBody from "../components/Modal/FilterBody";
-import {
-  FilterSelectionContext,
-  FilterSelectionProvider,
-} from "../contexts/FilterSelectionContext";
 import BottomModal from "../components/Modal/BottomModal";
-import { userVar } from "../makeVars/MakeVars";
+import Skeleton from "../components/skeletons/Skeleton";
+import { FONT_FAMILY } from "../theme";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 export default function CollectionScreen({ route }) {
-  const user = useReactiveVar(userVar);
-  const [filters, setFilters] = useState([]);
-  const [activeFilterInput, setActiveFilterInput] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  console.log("USER LOGGED IN COLLECTION SCREEN : ", user?.email);
-  const [isSideBarVisible, setSideBarVisible] = useState(false);
-  const handleSideBarClose = () => setSideBarVisible(false);
   return (
-    <View className="flex-1 items-center bg-white">
-      <SafeAreaView style={{ flex: 0, backgroundColor: "white" }} />
-      <CollectionData
-        route={route}
-        openSideBar={() => setSideBarVisible(true)}
-        setFilters={setFilters}
-        activeFilterInput={activeFilterInput}
-        setActiveFilterInput={setActiveFilterInput}
-        setLoading={setLoading}
-      />
-      <MyModal visible={isSideBarVisible}>
-        <FilterBody
-          onClose={handleSideBarClose}
-          loading={loading}
-          setLoading={setLoading}
-          filters={filters}
-          activeFilterInput={activeFilterInput}
-          setActiveFilterInput={setActiveFilterInput}
-          r
-        />
-      </MyModal>
-    </View>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="flex-1 items-center bg-white">
+        <CollectionData route={route} />
+      </View>
+    </SafeAreaView>
   );
 }
 
-function CollectionData({
-  route,
-  openSideBar,
-  setFilters,
-  activeFilterInput,
-  setActiveFilterInput,
-  setLoading,
-}) {
-  const [showPageIndicator, setShowPageIndicator] = useState(false);
-  const [productTotalCount, setProductTotalCount] = useState(0);
+function CollectionData({ route }) {
+  const maxFilterPriceRange = useRef();
   const [sortKeys, setSortKeys] = useState({
     handle: "default",
     sort_key: "COLLECTION_DEFAULT",
@@ -107,16 +67,17 @@ function CollectionData({
     reverse: false,
   });
 
+  const [activeFilterInput, setActiveFilterInput] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [isSideBarVisible, setSideBarVisible] = useState(false);
+
   const navigation = useNavigation();
   const { collectionId } = route.params;
-  const flatListRef = useRef();
   const filterActionsLayout = useSharedValue(100);
   const scrollY = useSharedValue(0);
   const filterInputs = activeFilterInput.map(
     (filterValue) => filterValue.input
   );
-
-  const [isPending, startTransition] = useTransition();
 
   const {
     loading: colloctionLoading,
@@ -130,29 +91,26 @@ function CollectionData({
       sortKey: sortKeys.sort_key,
       reverse: sortKeys.reverse,
     },
+    fetchPolicy: "network-only",
   });
 
-  const [
-    getAllProductId,
-    {
-      loading: allProductsLoading,
-      error: allProductsError,
-      data: allProductsData,
-      fetchMore: allProductsFetchMore,
-    },
-  ] = useLazyQuery(GET_ALL_PRODUCTS_ID_IN_COLLECTION, {
-    variables: {
-      collectionId,
-      filterInput: filterInputs,
-    },
-    fetchPolicy: "network-only",
-    // notifyOnNetworkStatusChange: true,
-  });
+  const filters = colloctionData?.collection?.products?.filters;
+  const priceRange = filters?.find((item) => item.type === "PRICE_RANGE")
+    .values[0];
+  const maxPriceRange =
+    priceRange && priceRange.input !== undefined
+      ? JSON.parse(priceRange.input)
+      : 0;
+
+  if (
+    maxFilterPriceRange.current === undefined ||
+    !maxFilterPriceRange.current
+  ) {
+    maxFilterPriceRange.current = maxPriceRange?.price?.max;
+  }
 
   const handleSortPress = (item) => {
-    startTransition(() => {
-      setSortKeys(item);
-    });
+    setSortKeys(item);
   };
 
   useLayoutEffect(() => {
@@ -161,158 +119,84 @@ function CollectionData({
     });
   });
 
-  useEffect(() => {
-    setProductTotalCount(0);
-    getAllProductId();
-  }, [getAllProductId, activeFilterInput]);
-
-  useEffect(() => {
-    if (allProductsData && !allProductsLoading) {
-      let hasNextPage =
-        allProductsData?.collection?.products?.pageInfo?.hasNextPage;
-      let allProductsCount = 0;
-      let count = 1;
-
-      const fetchMoreProducts = async () => {
-        await allProductsFetchMore({
-          variables: {
-            cursor: allProductsData?.collection?.products?.pageInfo.endCursor,
-          },
-          updateQuery: (result, { fetchMoreResult }) => {
-            setProductTotalCount(
-              (prevState) =>
-                prevState + fetchMoreResult?.collection?.products?.edges?.length
-            );
-            fetchMoreResult.collection.products.pageInfo.hasNextPage =
-              fetchMoreResult.collection.products.pageInfo.hasNextPage;
-            return fetchMoreResult;
-          },
-        });
-
-        allProductsCount =
-          allProductsCount +
-          allProductsData?.collection?.products?.edges?.length;
-      };
-
-      if (hasNextPage) {
-        fetchMoreProducts();
-      } else if (productTotalCount === 0) {
-        setProductTotalCount(
-          allProductsData?.collection?.products?.edges?.length
-        );
-      }
-    }
-  }, [allProductsData, allProductsLoading]);
-
-  useEffect(() => {
-    if (colloctionData) {
-      setFilters(colloctionData?.collection?.products?.filters);
-    }
-  }, [colloctionData]);
-
   if (colloctionError) {
     return <Text>Error occured: {colloctionError.message}</Text>;
   }
 
   return (
     <>
-      {isPending && (
-        <View className="flex-1 bg-red-200 absolute top-0 left-0 right-0 bottom-0 z-50"></View>
-      )}
-      {/* <Suspense fallback={<View className="flex-1 absolute top-0 left-0 bottom-0 right-0 z-40 overlay-[0.3] items-center justify-center"><Text>Loading..</Text></View>}> */}
       <CollectionHeader
         scrollY={scrollY}
         filterActionsLayout={filterActionsLayout}
         data={colloctionData}
         sortKeys={sortKeys}
         setSortKeys={setSortKeys}
-        startTransition={startTransition}
-        isPending={isPending}
         handleSortPress={handleSortPress}
         activeFilterInput={activeFilterInput}
         setActiveFilterInput={setActiveFilterInput}
         setLoading={setLoading}
+        openSideBar={() => setSideBarVisible(true)}
       />
-      {/* {colloctionLoading && (<View className="absolute top-0 left-0 bottom-0 right-0 bg-white opacity-[0.6] z-50 items-center justify-center"><SafeAreaView/><ActivityIndicator size='small' color='black' /><SafeAreaView/></View>)} */}
+      {/* {preventInitialLoadingSpinner && colloctionLoading && (
+        <LoadingFullScreen />
+      )} */}
       {
         <CollectionBody
           colloctionData={colloctionData}
           colloctionLoading={colloctionLoading}
-          flatListRef={flatListRef}
           filterActionsLayout={filterActionsLayout}
           scrollY={scrollY}
-          setShowPageIndicator={setShowPageIndicator}
           fetchMore={fetchMore}
-          openSideBar={openSideBar}
+          openSideBar={() => setSideBarVisible(true)}
           sortKeys={sortKeys}
           setSortKeys={setSortKeys}
-          startTransition={startTransition}
-          isPending={isPending}
           handleSortPress={handleSortPress}
           activeFilterInput={activeFilterInput}
           setActiveFilterInput={setActiveFilterInput}
           setLoading={setLoading}
         />
       }
-      {colloctionData?.collection?.products < 0 && (
-        <View className="flex-1 items-center justify-center">
-          <Image
-            className="w-32 h-32"
-            source={require("../assets/empty-box.png")}
-          />
-          <Text className="text-[18px] text-gray-500 font-normal capitalize mt-4 mb-6">
-            No Products found !!!
-          </Text>
-          <Button
-            onPress={() => navigation.navigate("Home")}
-            label="go home"
-            size="sm"
-            flex={false}
-          />
-        </View>
-      )}
 
-      {showPageIndicator && (
-        <PageIndicatorPopup
-          current={colloctionData.collection?.products?.edges?.length}
-          flatListRef={flatListRef}
-          total={productTotalCount}
+      <PageIndicatorPopup  />
+
+      <MyModal visible={isSideBarVisible}>
+        <FilterBody
+          onClose={() => setSideBarVisible(false)}
+          loading={loading}
+          setLoading={setLoading}
+          filters={filters}
+          activeFilterInput={activeFilterInput}
+          setActiveFilterInput={setActiveFilterInput}
+          maxFilterPriceRange={maxFilterPriceRange}
         />
-      )}
-      {/* </Suspense> */}
+      </MyModal>
     </>
   );
 }
 
 function CollectionBody({
   colloctionData,
-  flatListRef,
+  colloctionLoading,
   filterActionsLayout,
   scrollY,
-  setShowPageIndicator,
   fetchMore,
   openSideBar,
   setSortKeys,
   sortKeys,
-  startTransition,
-  isPending,
   handleSortPress,
   activeFilterInput,
   setActiveFilterInput,
   setLoading,
 }) {
+  const navigation = useNavigation();
+  const [flatListData, setFlatListData] = useState(
+    colloctionData?.collection?.products?.edges
+  );
+
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
       scrollY.value = e.contentOffset.y;
     },
-  });
-
-  const handleOnScrollBeginDrag = useCallback(() => {
-    setShowPageIndicator(true);
-  });
-
-  const handleOnMomentumScrollEnd = useCallback(() => {
-    setShowPageIndicator(false);
   });
 
   function handlePagingation() {
@@ -324,63 +208,175 @@ function CollectionBody({
         updateQuery: (previousResult, { fetchMoreResult }) => {
           const newEdges = fetchMoreResult.collection.products.edges || [];
           const prevEdges = previousResult.collection.products.edges || [];
-          const updatedEdges = [...prevEdges, ...newEdges];
-          fetchMoreResult.collection.products.edges = updatedEdges;
+          fetchMoreResult.collection.products.edges = [...prevEdges, ...newEdges];
 
-          return fetchMoreResult;
+          return fetchMoreResult
         },
       });
     }
   }
 
-  const ListHeaderComponent = useMemo(() => (
-    <View style={{ width: SCREEN_WIDTH }} className="w-full">
-      <ImageWrapper data={colloctionData} />
-      <CollectionInfo data={colloctionData} />
-      <View
-        onLayout={(e) => {
-          filterActionsLayout.value = e.nativeEvent.layout;
-        }}
-        className="w-full"
-      >
-        <ActionSlider
-          onPress={openSideBar}
-          setSortKeys={setSortKeys}
-          sortKeys={sortKeys}
-          startTransition={startTransition}
-          isPending={isPending}
-          handleSortPress={handleSortPress}
-          activeFilterInput={activeFilterInput}
-          setActiveFilterInput={setActiveFilterInput}
-          setLoading={setLoading}
+  const hasNextPage =
+    colloctionData?.collection?.products?.pageInfo?.hasNextPage;
+
+  if (
+    !colloctionLoading &&
+    colloctionData?.collection?.products?.edges.length === 0
+  )
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Image
+          className="w-32 h-32"
+          source={require("../assets/empty-box.png")}
+        />
+        <Text
+          style={FONT_FAMILY.primary}
+          className="text-[18px] text-gray-500 font-normal capitalize mt-4 mb-6"
+        >
+          No Products found !!!
+        </Text>
+        <Button
+          onPress={() => navigation.navigate("Home")}
+          label="go home"
+          size="sm"
+          flex={false}
         />
       </View>
-    </View>
-  ));
+    );
 
   return (
-    <View className="pb-14">
+    <View className="">
       <Animated.FlatList
         data={colloctionData?.collection?.products?.edges}
-        ref={flatListRef}
-        keyExtractor={(item) => item.node.id}
+        keyExtractor={(item) => item?.node?.id}
         horizontal={false}
+        removeClippedSubviews={true}
         onScroll={scrollHandler}
-        onScrollBeginDrag={handleOnScrollBeginDrag}
-        onMomentumScrollEnd={handleOnMomentumScrollEnd}
         numColumns={2}
         columnWrapperStyle={{ padding: 4 }}
         onEndReached={handlePagingation}
-        onEndReachedThreshold={1}
-        ListHeaderComponent={colloctionData && ListHeaderComponent}
+        onEndReachedThreshold={2}
+        ListEmptyComponent={
+          <View className="w-full h-full">
+            <View className="flex-row w-full px-1 pt-1">
+              <View className="w-[50%] items-center justify-center overflow-hidden p-1 rounded-md">
+                <View className="w-full overflow-hidden rounded-lg">
+                  <Skeleton width={SCREEN_WIDTH / 2 - 4} height={300} />
+                  <View className="pt-2 items-center">
+                    <Skeleton
+                      width={200}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton
+                      width={150}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton width={200} height={15} rounded />
+                  </View>
+                </View>
+              </View>
+              <View className="w-[50%] items-center justify-center overflow-hidden p-1 rounded-md">
+                <View className="w-full overflow-hidden rounded-lg">
+                  <Skeleton width={SCREEN_WIDTH / 2 - 4} height={300} />
+                  <View className="pt-2 items-center">
+                    <Skeleton
+                      width={200}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton
+                      width={150}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton width={200} height={15} rounded />
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View className="flex-row w-full px-1 pt-1">
+              <View className="w-[50%] items-center justify-center overflow-hidden p-1 rounded-md">
+                <View className="w-full overflow-hidden rounded-lg">
+                  <Skeleton width={SCREEN_WIDTH / 2 - 4} height={300} />
+                  <View className="pt-2 items-center">
+                    <Skeleton
+                      width={200}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton
+                      width={150}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton width={200} height={15} rounded />
+                  </View>
+                </View>
+              </View>
+              <View className="w-[50%] items-center justify-center overflow-hidden p-1 rounded-md">
+                <View className="w-full overflow-hidden rounded-lg">
+                  <Skeleton width={SCREEN_WIDTH / 2 - 4} height={300} />
+                  <View className="pt-2 items-center">
+                    <Skeleton
+                      width={200}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton
+                      width={150}
+                      height={15}
+                      rounded
+                      style={{ marginBottom: 8 }}
+                    />
+                    <Skeleton width={200} height={15} rounded />
+                  </View>
+                </View>
+              </View>
+            </View>
+          </View>
+        }
+        ListHeaderComponent={
+          <View style={{ width: SCREEN_WIDTH }} className="w-full">
+            <ImageWrapper data={colloctionData} />
+            <CollectionInfo data={colloctionData} loading={colloctionLoading} />
+            <View
+              onLayout={(e) => {
+                filterActionsLayout.value = e.nativeEvent.layout;
+              }}
+              className="w-full"
+            >
+              <ActionSlider
+                onPress={openSideBar}
+                setSortKeys={setSortKeys}
+                sortKeys={sortKeys}
+                handleSortPress={handleSortPress}
+                activeFilterInput={activeFilterInput}
+                setActiveFilterInput={setActiveFilterInput}
+                setLoading={setLoading}
+              />
+            </View>
+          </View>
+        }
         renderItem={({ item, index }) => (
           <View className="w-[50%] pb-1 px-1">
-            <CollectionCard key={item.node.id} product={item.node} />
-
-            {colloctionData?.collection?.products?.pageInfo?.hasNextPage &&
+            <CollectionCard
+              key={item.node.id}
+              product={item.node}
+              onPress={() => navigation.navigate("ProductDetailScreen", { productId: item.node.id })}
+            />
+            {hasNextPage &&
               colloctionData?.collection?.products?.edges.length - 2 ===
                 index && <CardSkeleton key="123" />}
-            {colloctionData?.collection?.products?.pageInfo?.hasNextPage &&
+            {hasNextPage &&
               colloctionData?.collection?.products?.edges.length - 1 ===
                 index && <CardSkeleton key="124" />}
           </View>
@@ -392,9 +388,7 @@ function CollectionBody({
 
 function ActionSlider({
   onPress,
-  setSortKeys,
   sortKeys,
-  startTransition,
   handleSortPress,
   activeFilterInput,
   setActiveFilterInput,
@@ -485,7 +479,10 @@ function ActionSlider({
                   key={index.toString()}
                   active={sortKeys?.handle === item.handle}
                   label={item.label}
-                  onPress={() => handleSortPress(item)}
+                  onPress={() => {
+                    setModalVisible(false);
+                    handleSortPress(item);
+                  }}
                   style={{ borderBottomWidth: 1, borderBottomColor: "#ddd" }}
                 />
               )
@@ -496,14 +493,15 @@ function ActionSlider({
   );
 }
 
-function SortCard({ style, active, label, onPress }) {
+function SortCard({ style, active, label, onPress, onClose }) {
   return (
-    <Pressable
+    <TouchableOpacity
       style={style}
       onPress={onPress}
       className="flex-row justify-between px-5 py-4"
     >
       <Text
+        style={FONT_FAMILY.primary}
         className={`text-[14px] text-black ${
           active ? "font-medium" : "font-light"
         }`}
@@ -515,14 +513,14 @@ function SortCard({ style, active, label, onPress }) {
           <View className="w-[10px] h-[10px] rounded-full bg-black"></View>
         )}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
 function SortButton({ onPress, label, active }) {
   [isSortactive, setSortActive] = useState(false);
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${
         active ? " bg-black" : "bg-white"
@@ -530,20 +528,21 @@ function SortButton({ onPress, label, active }) {
     >
       <ArrowsUpDownIcon size={20} color={`${active ? "white" : "black"}`} />
       <Text
+        style={FONT_FAMILY.primary}
         className={`text-[14px] ${
           active ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         {label ? label : "Sort by"}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
 function FilterButton({ onPress }) {
   [isFilterActive, setFilterActive] = useState(false);
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
       className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${
         isFilterActive ? " bg-black" : "bg-white"
@@ -554,23 +553,48 @@ function FilterButton({ onPress }) {
         color={`${isFilterActive ? "white" : "black"}`}
       />
       <Text
+        style={FONT_FAMILY.primary}
         className={`text-[14px] ${
           isFilterActive ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         filter {isFilterActive ? "(" + 0 + ")" : ""}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
-function CollectionInfo({ data }) {
+function CollectionInfo({ data, loading }) {
   const [isModalVisible, setModalVisible] = useState(false);
+
+  // const cachedInfo = useMemo(() => {}, []);
+
   return (
-    <View className="w-full items-center px-5 bg-white">
-      <Text className="text-[26px] text-black font-light text-center capitalize mt-2">
-        {data?.collection?.title}
-      </Text>
+    <View className="w-full items-center px-5 bg-white pt-3">
+      {data?.collection?.title && (
+        <Text
+          style={FONT_FAMILY.primary}
+          className="text-[26px] text-black font-light text-center capitalize mt-2"
+        >
+          {data?.collection?.title}
+        </Text>
+      )}
+      {!data?.collection?.title && (
+        <View className="pt-2 items-center">
+          <Skeleton
+            width={200}
+            height={15}
+            rounded
+            style={{ marginBottom: 8 }}
+          />
+          <Skeleton
+            width={150}
+            height={15}
+            rounded
+            style={{ marginBottom: 8 }}
+          />
+        </View>
+      )}
       {data?.collection?.metafield?.value && (
         <TextBody
           body={data?.collection?.metafield?.value}
@@ -592,7 +616,10 @@ function CollectionInfo({ data }) {
           </Pressable>
         </View>
         <View className="p-5">
-          <Text className="text-[16px] text-black font-light leading-6">
+          <Text
+            style={FONT_FAMILY.primary}
+            className="text-[16px] text-black font-light leading-6"
+          >
             {data?.collection?.metafield?.value}
           </Text>
         </View>
@@ -608,7 +635,7 @@ function ImageWrapper({ data }) {
         <LinearGradient
           style={{ width: SCREEN_WIDTH }}
           className="absolute top-0 h-[80px]"
-          colors={["rgba(0, 0, 0, 0.3)", "transparent"]}
+          colors={["rgba(0, 0, 0, 0.4)", "transparent"]}
           start={{ x: 0.5, y: 0 }}
           end={{ x: 0.5, y: 1 }}
         />
@@ -616,7 +643,7 @@ function ImageWrapper({ data }) {
       {!data?.collection?.image?.url && (
         <Image
           className="w-full h-full absolute top-0 left-0"
-          source={require("../assets/snc-logo.avif")}
+          source={require("../assets/logo-collection.jpeg")}
         />
       )}
       {data?.collection?.image?.url && (
@@ -635,12 +662,11 @@ function CollectionHeader({
   data,
   sortKeys,
   setSortKeys,
-  startTransition,
-  isPending,
   handleSortPress,
   activeFilterInput,
   setActiveFilterInput,
   setLoading,
+  openSideBar,
 }) {
   const headerAnimatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -679,13 +705,12 @@ function CollectionHeader({
   return (
     <View className="w-full z-20">
       <HeaderActions />
-      {
-        <ScreenHeader
-          headerAnimatedStyle={headerAnimatedStyle}
-          headerRight={true}
-          title={data?.collection?.title}
-        />
-      }
+
+      <ScreenHeader
+        headerAnimatedStyle={headerAnimatedStyle}
+        headerRight={true}
+        title={data?.collection?.title}
+      />
 
       <Animated.View
         style={[
@@ -701,10 +726,9 @@ function CollectionHeader({
         className="absolute top-[50px] z-20 bg-white w-full "
       >
         <ActionSlider
+          onPress={openSideBar}
           sortKeys={sortKeys}
           setSortKeys={setSortKeys}
-          startTransition={startTransition}
-          isPending={isPending}
           handleSortPress={handleSortPress}
           activeFilterInput={activeFilterInput}
           setActiveFilterInput={setActiveFilterInput}
@@ -715,21 +739,12 @@ function CollectionHeader({
   );
 }
 
-function PageIndicatorPopup({ flatListRef, current = 18, total }) {
+function PageIndicatorPopup() {
   return (
     <Pressable
       className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center "
-      onPress={() => {
-        flatListRef.current.scrollToIndex({
-          animated: true,
-          index: 0,
-        });
-      }}
     >
       <ArrowUpIcon size={16} color="black" />
-      <Text className="text-[14px] text-gray-800 font-normal ml-1">
-        {current} of {total}
-      </Text>
     </Pressable>
   );
 }

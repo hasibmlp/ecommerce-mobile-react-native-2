@@ -3,6 +3,7 @@ import { ChevronDownIcon } from "react-native-heroicons/outline";
 import BottomModal from "../Modal/BottomModal";
 import { useEffect, useState } from "react";
 import ColorSwatchImage from "../buttons/ColorSwatchImage";
+import { FONT_FAMILY } from "../../theme";
 
 const Selection = ({
   options,
@@ -17,11 +18,14 @@ const Selection = ({
   fontsLoaded,
   context = "box",
   colorValues,
+  initialValue1
 }) => {
   const assignedOption = context === "color" ? colorValues : options;
-  const initialValue = assignedOption.find((item) => item.value?.toLowerCase() === value?.toLowerCase()) ?? assignedOption[0]
+  const initialValue = assignedOption.find((item) => item.value?.toLowerCase() === value?.toLowerCase())
   const [isActive, setActive] = useState(false);
   const [activeSelection, setActiveSelection] = useState(initialValue);
+
+  console.log("AAAAAAAAAAAA",initialValue)
 
   const handleSelection = (value) => {
     setActiveSelection(value);
@@ -36,6 +40,9 @@ const Selection = ({
   };
 
   useEffect(() => {}, [fontsLoaded]);
+  useEffect(() => {
+    console.log("VALUE VALUE VALUE",value)
+  }, [value])
 
   useEffect(() => {
     onChange && onChange({ type: name, ...activeSelection });
@@ -46,7 +53,7 @@ const Selection = ({
   if (context === "box")
     return (
       <View className="mb-5">
-        <Text className="text-base text-black font-medium mb-3">
+        <Text style={FONT_FAMILY.primary} className="text-base text-black font-medium mb-3">
           {label}
         </Text>
         <View className="flex-row items-center w-full flex-wrap">
@@ -55,14 +62,15 @@ const Selection = ({
               key={index.toString()}
               onPress={() => handleSelection(item)}
               className={`py-2 min-w-[90] px-2 ${
-                activeSelection?.value === item.value
+                value === item.value
                   ? "bg-black"
                   : "border border-neutral-300"
               }  items-center justify-center rounded-md mr-3`}
             >
               <Text
+              style={FONT_FAMILY.primary}
                 className={`text-base ${
-                  activeSelection?.value === item.value
+                  value === item.value
                     ? "text-white"
                     : "text-black"
                 } font-medium `}
@@ -118,12 +126,12 @@ const Selection = ({
   if (context === "color")
   return (
     <View className="mb-5">
-      <Text className="text-base text-black font-medium mb-3">Color: {activeSelection?.value}</Text>
+      <Text style={FONT_FAMILY.primary} className="text-base text-black font-medium mb-3">Color: {value}</Text>
       <View className="flex-row flex-wrap gap-2">
         {colorValues?.map((item, index) => (
           <TouchableOpacity
             className={`${
-              activeSelection?.name === item.name
+              value === item.name
                 ? "border border-black-300"
                 : "border border-gray-50"
             } rounded-full `}

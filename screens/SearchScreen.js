@@ -1,4 +1,4 @@
-import { useLazyQuery, useQuery, useReactiveVar } from "@apollo/client";
+import { useLazyQuery, useReactiveVar } from "@apollo/client";
 import {
   ActivityIndicator,
   Image,
@@ -39,6 +39,7 @@ export default function SearchScreen() {
       variables: {
         query: queryValue,
       },
+      fetchPolicy: "no-cache",
     }
   );
 
@@ -102,7 +103,10 @@ export default function SearchScreen() {
               onPress={() => console.log("dslfjlsjdflks")}
               className="bg-blue-300 w-8 justify-center items-center"
             > */}
-            <TouchableOpacity onpress={() => console.log("loglogloglogloglog")} className=" h-full items-center justify-center">
+            <TouchableOpacity
+              onpress={() => console.log("loglogloglogloglog")}
+              className=" h-full items-center justify-center"
+            >
               <MagnifyingGlassIcon size={24} color="black" />
             </TouchableOpacity>
             {/* </TouchableOpacity> */}

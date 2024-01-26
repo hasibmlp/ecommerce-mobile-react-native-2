@@ -256,7 +256,9 @@ const ShippingAddressForm = ({
   const user = useReactiveVar(userVar);
   const [countryModal, setCountryModal] = useState(false);
 
-  const { data, error, loading } = useQuery(GET_SHIPPING_COUNTRIES);
+  const { data, error, loading } = useQuery(GET_SHIPPING_COUNTRIES, {
+    fetchPolicy: 'no-cache'
+  });
 
   const handleCountrySelect = (value) => {
     setFieldValue("country", value);

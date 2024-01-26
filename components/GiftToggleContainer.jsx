@@ -23,6 +23,7 @@ import { useMutation, useReactiveVar } from "@apollo/client";
 import { cartIdVar } from "../makeVars/MakeVars";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
+import { FONT_FAMILY } from "../theme";
 
 const gitMessageValidationSchema = yup.object({
   gitMessage: yup
@@ -86,7 +87,7 @@ export default function GiftToggleContainer() {
         }}
         className="flex-row justify-between items-center py-5 px-4"
       >
-        <Text className="text-[15px] text-black font-medium">
+        <Text style={FONT_FAMILY.primary} className="text-[15px] text-black font-normal">
           Add a Gift Message
         </Text>
         <View>

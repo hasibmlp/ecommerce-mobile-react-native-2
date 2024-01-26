@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from "react-native"
 import ColorSwatchImage from "../buttons/ColorSwatchImage"
 import { useEffect, useState } from "react"
+import { FONT_FAMILY } from "../../theme"
 
 const ColorSelection = ({onChange, handleChange, value, colorValues}) => {
     const initialColorValue = colorValues.find(item => item.name === value)
@@ -19,7 +20,7 @@ const ColorSelection = ({onChange, handleChange, value, colorValues}) => {
   
     return (
       <View className="mb-6 px-2">
-          <Text className="pb-4">Color: {activeColor?.value}</Text>
+          <Text style={FONT_FAMILY.primary} className="pb-4">Color: {activeColor?.value}</Text>
           <View className="flex-row flex-wrap gap-4">
             {colorValues.map((item, index) => (
               <Pressable className={`${activeColor?.name === item.name && 'border-[1px]'} rounded-full `} key={index.toString()} onPress={() => handlePress(item)}>
