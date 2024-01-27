@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import {  Text, View } from "react-native";
-import { Image } from 'expo-image'
+// import { Image } from 'expo-image'
 import { FONT_FAMILY } from "../../theme";
 
 // title, subTitle, desc, cta, imageUrls, style, height=230
@@ -39,13 +39,13 @@ export default function TwoCategoryBlock({ content }) {
         >
           {/* <Image className="w-full h-full absolute left-0 top-0" src={content.data.images[0].url} /> */}
           <View className="w-full h-full absolute left-0 top-0">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={content.data.images[0].url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
           {content.data.images[0].title && (
             <LinearGradient
@@ -67,13 +67,13 @@ export default function TwoCategoryBlock({ content }) {
           className={`flex-1 justify-end`}
         >
           <View className="w-full h-full absolute left-0 top-0">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={content.data.images[1].url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
           {content.data.images[1].title && (
             <LinearGradient

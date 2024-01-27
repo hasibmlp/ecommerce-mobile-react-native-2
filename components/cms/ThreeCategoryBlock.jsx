@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { Text, View } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -42,13 +42,13 @@ export default function ThreeCategoryBlock({ content }) {
         >
           {/* <Image className="w-full h-full absolute left-0 top-0" src={content.data.images[0].url} /> */}
           <View className="w-full h-full absolute left-0 top-0">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={content.data.images[0].url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
           {content.data.images[0].title && (
             <LinearGradient
@@ -70,13 +70,13 @@ export default function ThreeCategoryBlock({ content }) {
           className={`flex-1 justify-end`}
         >
           <View className="w-full h-full absolute left-0 top-0">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={content.data.images[1].url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
           {content.data.images[1].title && (
             <LinearGradient
@@ -98,13 +98,13 @@ export default function ThreeCategoryBlock({ content }) {
           className={`flex-1 justify-end`}
         >
           <View className="w-full h-full absolute left-0 top-0">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={content.data.images[2].url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
           {content.data.images[2].title && (
             <LinearGradient

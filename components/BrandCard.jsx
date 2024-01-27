@@ -1,5 +1,5 @@
-import { Text, View } from "react-native";
-import { Image } from "expo-image";
+import { Text, View, Image } from "react-native";
+// import { Image } from "expo-image";
 import { FONT_FAMILY } from "../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -38,15 +38,15 @@ export default function BrandCard({
       >
         <View className="flex-1">
           {brand.image && (
-            // <Image className="h-full w-full" src={brand.image} />
-            <Image
-              style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-              // className="flex-1 w-full bg-neutral-200"
-              source={brand.image}
-              placeholder={blurhash}
-              contentFit="cover"
-              transition={100}
-            />
+            <Image className="h-full w-full" src={brand.image} />
+            // <Image
+            //   style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
+            //   // className="flex-1 w-full bg-neutral-200"
+            //   source={brand.image}
+            //   placeholder={blurhash}
+            //   contentFit="cover"
+            //   transition={100}
+            // />
           )}
         </View>
         <View className=" h-[60px] justify-center">

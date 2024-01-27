@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
 } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { PlusIcon } from "react-native-heroicons/outline";
 import BottomModal from "./Modal/BottomModal";
 import { getVariantForSingleOption } from "./utils/UtilsFunctions";
@@ -42,7 +42,7 @@ export function CollectionCard({ product, onPress }) {
       className=" w-full justify-center mr-[10px] "
     >
       <View className="w-full h-[300px] overflow-hidden rounded-[2px]">
-        {images && (
+        {/* {images && (
           <Image
             style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
             // className="flex-1 w-full bg-neutral-200"
@@ -52,13 +52,7 @@ export function CollectionCard({ product, onPress }) {
             transition={100}
             cachePolicy="none"
           />
-          // <Pressable onPress={handlePress}>
-          //   {/* <Image
-          //     className="w-full h-full"
-          //     src={product?.featuredImage?.url}
-          //   /> */}
-          // </Pressable>
-        )}
+        )} */}
       </View>
 
       <View
@@ -224,13 +218,13 @@ function PreSelectionColor({ options, variants, handlePress, loading }) {
               >
                 <View className="w-[100px] h-[150px] rounded-[5px] border border-gray-300">
                   {/* <Image className="w-full h-full" src={item.image.url} /> */}
-                  <Image
+                  {/* <Image
                     style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
                     source={item.image.url}
                     placeholder={blurhash}
                     contentFit="cover"
                     transition={100}
-                  />
+                  /> */}
                 </View>
 
                 <View className="py-1 items-center">

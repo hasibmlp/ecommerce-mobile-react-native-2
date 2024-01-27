@@ -1,5 +1,5 @@
 import { View } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import swatchData from "../../assets/colorSwatchImages/swatchData.json";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -35,7 +35,7 @@ export default function ColorSwatchImage({
 
       {activeColorSwatch && (
         <View className="w-full h-full">
-          {activeColorSwatch.category === "url" ? (
+          {/* {activeColorSwatch.category === "url" ? (
             <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               source={activeColorSwatchValue}
@@ -48,15 +48,15 @@ export default function ColorSwatchImage({
               style={{ backgroundColor: activeColorSwatchValue }}
               className="w-full h-full"
             ></View>
-          )}
+          )} */}
         </View>
       )}
-      {!activeColorSwatchValue && (
+      {/* {!activeColorSwatchValue && (
         <Image
           source={require("../../assets/grid-placeholder-image.png")}
           className="w-full h-full"
         />
-      )}
+      )} */}
     </View>
   );
 }

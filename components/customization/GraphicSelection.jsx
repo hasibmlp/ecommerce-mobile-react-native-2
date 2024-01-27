@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { useState } from "react";
 import { PlusCircleIcon, XMarkIcon } from "react-native-heroicons/outline";
 import * as DocumentPicker from "expo-document-picker";
@@ -114,14 +114,14 @@ const GraphicSelection = ({
                   onPress={() => handleLogoPress(item)}
                   className="h-full w-full border-4 border-transparent"
                 >
-                  <Image
+                  {/* <Image
                     style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
                     // className="flex-1 w-full bg-neutral-200"
                     source={item.imageUrl}
                     placeholder={blurhash}
                     contentFit="cover"
                     transition={100}
-                  />
+                  /> */}
                 </Pressable>
               </View>
             )}

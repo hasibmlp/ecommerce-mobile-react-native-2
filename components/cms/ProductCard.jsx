@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 
 import PriceContainer from "../PriceContainer";
 import ColorSwatchImage from "../buttons/ColorSwatchImage";
@@ -41,7 +41,7 @@ export default function ProductCard({
         style={{ height }}
         className="w-full overflow-hidden rounded-[2px] bg-gray-300"
       >
-        {featuredImage?.url && (
+        {/* {featuredImage?.url && (
           <Image
             style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
             source={featuredImage?.url}
@@ -49,11 +49,7 @@ export default function ProductCard({
             contentFit="cover"
             transition={100}
           />
-          // <Image
-          //   className="h-full w-full"
-          //   src={product.featuredImage?.url}
-          // />
-        )}
+        )} */}
       </View>
       <View className="bg-white items-center justify-center py-3">
         {product.title && (

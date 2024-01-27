@@ -1,5 +1,5 @@
 import { Text, View } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -13,14 +13,14 @@ export default function BannerImageWithContentBlock({ content }) {
           className="flex-row"
         >
           {/* <Image  className="w-[100%]" src={content.data.image.url} /> */}
-          <Image
+          {/* <Image
             style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
             // className="flex-1 w-full bg-neutral-200"
             source={content.data.image.url}
             placeholder={blurhash}
             contentFit="cover"
             transition={100}
-          />
+          /> */}
         </View>
         <View className="items-center py-4">
           {content.data.subTitle && (
@@ -62,14 +62,14 @@ export default function BannerImageWithContentBlock({ content }) {
         >
           {/* <Image className="w-[90%] h-full" src={content.data.image.url} /> */}
           <View className="w-[90%] h-full">
-            <Image
+            {/* <Image
               style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
               // className="flex-1 w-full bg-neutral-200"
               source={content.data.image.url}
               placeholder={blurhash}
               contentFit="cover"
               transition={100}
-            />
+            /> */}
           </View>
         </View>
         <View className="items-center py-4 gap-3">

@@ -1,6 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { View, Text } from "react-native";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -21,14 +21,14 @@ export default function GenderBannerCard({
         src={imageUrl}
       /> */}
       <View className="w-full h-full absolute top-0 left-0">
-        <Image
+        {/* <Image
           style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
           // className="flex-1 w-full bg-neutral-200"
           source={imageUrl}
           placeholder={blurhash}
           contentFit="cover"
           transition={100}
-        />
+        /> */}
       </View>
       <LinearGradient
         colors={["transparent", "rgba(0, 0, 0, 0.20)", "rgba(0, 0, 0, 0.41)"]}
