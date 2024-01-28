@@ -1,6 +1,11 @@
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
 import { useNavigation } from "@react-navigation/native";
-import * as Linking from "expo-linking";
+import * as Linking from 'expo-linking'
 import {
   SafeAreaView,
   Text,
@@ -9,8 +14,6 @@ import {
   Pressable,
   Image,
   TouchableOpacity,
-  ScrollView,
-  TextInput,
 } from "react-native";
 import {
   ChevronDownIcon,
@@ -19,16 +22,11 @@ import {
   ChevronRightIcon,
   PhoneIcon,
   XMarkIcon,
-  CheckCircleIcon,
-  PlusCircleIcon,
   TrashIcon,
+  PlusIcon,
 } from "react-native-heroicons/outline";
-import * as Yup from "yup";
-import { useFonts } from "expo-font";
 
-import ShowAndHide from "../components/ShowAndHide";
 import CardSlider from "../components/CardSlider";
-import HeartButton from "../components/buttons/HeartButton";
 import {
   VariantSelectionContext,
   VariantSelectionProvider,
@@ -39,50 +37,42 @@ import ImageCarousel from "../components/Images/ImageCarousel";
 import BottomModal from "../components/Modal/BottomModal";
 import VariantSelection from "../components/Modal/VariantSelection";
 import { LinearGradient } from "expo-linear-gradient";
-import WhatsappIcon from "../components/icons/WhatsappIcon";
 import EmailIcon from "../components/icons/EmailIcon";
+import WhatsappIcon from "../components/icons/WhatsappIcon";
 import MyModal from "../components/Modal/MyModal";
 import Animated, {
+  Easing,
+  interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import SmileIcon from "../components/icons/SmileIcon";
-import BackIconButton from "../components/buttons/BackIconButton";
-import ScreenHeaderV2 from "../components/actions/ScreenHeaderV2";
 import ShareButton from "../components/buttons/ShareButton";
 import Panel from "../components/actions/Panel";
 import ColorSwatchImage from "../components/buttons/ColorSwatchImage";
 import PriceContainer from "../components/PriceContainer";
-import { Formik } from "formik";
-import ImageSelection from "../components/customization/ImageSelection";
-import Selection from "../components/customization/Selection";
-import ColorSelection from "../components/customization/ColorSelection";
 import { userVar } from "../makeVars/MakeVars";
 import { useQuery, useReactiveVar } from "@apollo/client";
-import EmbroiderySelection from "../components/Modal/CustomSelection";
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
 import CustomSelection from "../components/Modal/CustomSelection";
 import { GET_CUSTOMIZATIN_COLLECTION } from "../graphql/queries";
 import Skeleton from "../components/skeletons/Skeleton";
 import { FONT_FAMILY } from "../theme";
+import ApplePayIcon from "../components/icons/ApplePayIcon";
+import WebView from "react-native-webview";
+import RichText from "../components/RichText";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
-
-const themeColor = "bg-[#4baaca]";
-const textColor = "text-[#4baaca]";
 
 export default function ProductDetailScreen({ route }) {
   const user = useReactiveVar(userVar);
   const scrollY = useSharedValue(0);
 
-  console.log("USER LOGGED IN PRODUCT SCREEN : ", user?.email);
   const navigation = useNavigation();
   const { productId, colorValue } = route.params;
-  const scrollRef = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (e) => {
@@ -103,15 +93,7 @@ export default function ProductDetailScreen({ route }) {
         <View>
           <Header scrollY={scrollY} />
 
-          <Animated.ScrollView
-            bounces={false}
-            onScroll={scrollHandler}
-            scrollEventThrottle={16}
-          >
-            <ImageCarousel />
-            <ProductContent productId={productId} />
-            <RecommendedCollection />
-          </Animated.ScrollView>
+          <Body scrollHandler={scrollHandler} productId={productId} />
 
           <Footer />
         </View>
@@ -140,10 +122,7 @@ const Header = ({ scrollY }) => {
       }
     >
       <View className="flex-1 w-full items-center justify-center">
-        <Text
-          style={FONT_FAMILY.secondary}
-          className="text-2xl text-black"
-        >
+        <Text style={FONT_FAMILY.secondary} className="text-2xl text-black">
           {data?.product?.vendor}
         </Text>
         <Text
@@ -154,6 +133,22 @@ const Header = ({ scrollY }) => {
         </Text>
       </View>
     </ScreenHeaderV3>
+  );
+};
+
+const Body = ({ scrollHandler, productId }) => {
+  const { loading } = useContext(VariantSelectionContext);
+  return (
+    <Animated.ScrollView
+      bounces={false}
+      scrollEnabled={!loading}
+      onScroll={scrollHandler}
+      scrollEventThrottle={16}
+    >
+      <ImageCarousel />
+      <ProductContent productId={productId} />
+      <RecommendedCollection />
+    </Animated.ScrollView>
   );
 };
 
@@ -170,7 +165,7 @@ const Footer = () => {
     setTimeout(() => {
       setVisible(false);
       setProductSuccessfullyAdded(false);
-    }, 4000);
+    }, 5000);
   }, [isProductSuccessfullyAdded]);
 
   return (
@@ -181,13 +176,14 @@ const Footer = () => {
 };
 
 const BottomPopup = ({ visible }) => {
+  const navigation = useNavigation();
   const offset = useSharedValue(100);
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: offset.value }],
   }));
 
   useEffect(() => {
-    offset.value = withTiming(visible ? 0 : 100);
+    offset.value = withTiming(visible ? 0 : 300);
   }, [visible]);
 
   return (
@@ -195,13 +191,13 @@ const BottomPopup = ({ visible }) => {
       style={animatedStyle}
       className="absolute bottom-14 h-12 w-full bg-green-200 flex-row items-center justify-center"
     >
-      <Text
-        style={FONT_FAMILY.secondary}
-        className="text-base text-black"
-      >
+      <Text style={FONT_FAMILY.secondary} className="text-base text-black">
         Product has been added,{" "}
       </Text>
-      <TouchableOpacity className="self-stretch justify-center px-2">
+      <TouchableOpacity
+        onPress={() => navigation.navigate("CartScreen")}
+        className="self-stretch justify-center px-2"
+      >
         <Text
           style={FONT_FAMILY.secondary}
           className="text-base text-black underline"
@@ -229,16 +225,14 @@ function ProductContent({ productId }) {
     <View className="">
       {!data && <CollectionContentSkeleton />}
       <View className="w-full bg-white items-center py-3">
-        <HeartButton />
         {data && <ProductInfo data={data} />}
       </View>
 
       <PurchaseOption productId={productId} data={data} />
-      <PersonalizeSetting />
       <OfferAnnouncement text={data?.product.metafield?.value} />
-      <ToggleContainer />
-      <SmilePointsContainer />
+      <PersonalizeSetting />
       <InstallmentContainer />
+      <ToggleContainer data={data} />
       <SupportContainer />
       <InstagramContainer />
     </View>
@@ -258,11 +252,11 @@ function ProductInfo({ data }) {
       <View className="py-1 w-[90%]">
         <Text
           style={FONT_FAMILY.secondary}
-          className="text-base font-bold text-black text-center pb-2"
+          className="text-base font-normal text-black text-center pb-2"
         >
           {data.product.title}
         </Text>
-        <PriceContainer amount={amount} size="xl" />
+        <PriceContainer amount={amount} size="xl" withOfferTag />
       </View>
     </View>
   );
@@ -287,7 +281,7 @@ const PersonalizeSetting = () => {
         },
       ],
     },
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "no-cache",
   });
 
   const title =
@@ -295,17 +289,16 @@ const PersonalizeSetting = () => {
       ? "Personalize"
       : "Add Embroidery";
 
-  console.log("CUSTOM PRODUCT ID STATE : ", customProductId?.id);
-
   const fromPrice =
     data?.product?.productType === "STETHOSCOPES"
       ? customizationCollectionData?.collection?.products?.edges.find(
-          (productEdge) => productEdge.node.handle === "stethoscope-customization-mobile-app"
+          (productEdge) =>
+            productEdge.node.handle === "stethoscope-customization-mobile-app"
         ).node?.priceRange?.minVariantPrice?.amount
       : customizationCollectionData?.collection?.products?.edges.filter(
           (productEdge) =>
             productEdge.node.handle !== "stethoscope-customization-mobile-app"
-        )[0]?.node?.priceRange?.minVariantPrice?.amount
+        )[0]?.node?.priceRange?.minVariantPrice?.amount;
 
   return (
     <View className="bg-white px-5 pb-3">
@@ -314,10 +307,17 @@ const PersonalizeSetting = () => {
           onPress={() => setModalVisible(true)}
           className="flex-row items-center justify-between h-12 px-3 border border-neutral-300 rounded-md"
         >
-          <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">{title}</Text>
+          <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+            {title}
+          </Text>
           <View className="flex-row items-center">
             {!customizationCollectionLoading && (
-              <Text style={FONT_FAMILY.secondary} className="text-sm text-black mr-1">from  {fromPrice} AED </Text>
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-sm text-black mr-1"
+              >
+                from {fromPrice} AED{" "}
+              </Text>
             )}
             {customizationCollectionLoading && (
               <Skeleton
@@ -337,14 +337,22 @@ const PersonalizeSetting = () => {
           <View className="flex-row items-center justify-between h-10 ">
             <Text style={FONT_FAMILY.secondary}>{title}</Text>
             <View className="flex-row items-center self-stretch">
-              <Text style={FONT_FAMILY.secondary} className="text-sm text-black px-2">
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-sm text-black px-2"
+              >
                 AED {customProductId.price}
               </Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(true)}
                 className=" self-stretch justify-center px-2"
               >
-                <Text style={FONT_FAMILY.secondary} className="text-sm text-black">Edit</Text>
+                <Text
+                  style={FONT_FAMILY.secondary}
+                  className="text-sm text-black"
+                >
+                  Edit
+                </Text>
               </TouchableOpacity>
               <View className="h-6 w-[1px] bg-neutral-500 mx-2"></View>
               <TouchableOpacity
@@ -366,12 +374,18 @@ const PersonalizeSetting = () => {
                   customProductId.selections[0]?.secondLine) && (
                   <View>
                     {customProductId.selections[0]?.firstLine && (
-                      <Text style={FONT_FAMILY.secondary} className="text-xs text-balck font-normal">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-xs text-balck font-normal"
+                      >
                         {customProductId.selections[0]?.firstLine}
                       </Text>
                     )}
                     {customProductId.selections[0]?.secondLine && (
-                      <Text style={FONT_FAMILY.secondary} className="text-xs text-balck font-normal">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-xs text-balck font-normal"
+                      >
                         {customProductId.selections[0]?.secondLine}
                       </Text>
                     )}
@@ -380,13 +394,26 @@ const PersonalizeSetting = () => {
               </View>
 
               <View className="flex-1">
-                <Text style={FONT_FAMILY.secondary} className="text-sm text-balck font-medium">Text</Text>
+                <Text
+                  style={FONT_FAMILY.secondary}
+                  className="text-sm text-balck font-medium"
+                >
+                  Text
+                </Text>
 
                 {customProductId.selections[0]?.firstLine && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">First Line: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      First Line:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.firstLine}
                       </Text>
                     </View>
@@ -395,9 +422,17 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.secondLine && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Second Line: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      Second Line:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.secondLine}
                       </Text>
                     </View>
@@ -406,9 +441,17 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.color && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Color: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      Color:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.color}
                       </Text>
                     </View>
@@ -417,9 +460,17 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.fontStyle && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Font: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      Font:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.fontStyle}
                       </Text>
                     </View>
@@ -428,9 +479,17 @@ const PersonalizeSetting = () => {
 
                 {customProductId.selections[0]?.position && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Placement: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      Placement:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.position}
                       </Text>
                     </View>
@@ -453,13 +512,26 @@ const PersonalizeSetting = () => {
               </View>
 
               <View className="flex-1">
-                <Text style={FONT_FAMILY.secondary} className="text-sm text-balck font-medium">Icon</Text>
+                <Text
+                  style={FONT_FAMILY.secondary}
+                  className="text-sm text-balck font-medium"
+                >
+                  Icon
+                </Text>
 
                 {customProductId.selections[0]?.position && (
                   <View className="flex-row">
-                    <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">Placement: </Text>
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-sm text-black "
+                    >
+                      Placement:{" "}
+                    </Text>
                     <View className=" flex-1">
-                      <Text style={FONT_FAMILY.secondary} className="text-sm text-black ">
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-sm text-black "
+                      >
                         {customProductId.selections[0]?.position}
                       </Text>
                     </View>
@@ -691,14 +763,195 @@ function PurchaseOption({ productId, data }) {
   );
 }
 
-function ToggleContainer() {
+function ToggleContainer({ data }) {
+  const r2 = {
+    type: "root",
+    children: [
+      {
+        type: "heading",
+        children: [
+          { type: "text", value: "t", bold: true },
+          { type: "text", value: "heading 1" },
+        ],
+        level: 1,
+      },
+      {
+        type: "heading",
+        level: 2,
+        children: [{ type: "text", value: "heading 2", bold: true }],
+      },
+      {
+        type: "heading",
+        level: 3,
+        children: [{ type: "text", value: "heading 3", bold: true }],
+      },
+      {
+        type: "heading",
+        level: 4,
+        children: [{ type: "text", value: "heading 4", bold: true }],
+      },
+      {
+        type: "heading",
+        level: 5,
+        children: [{ type: "text", value: "heading 5", bold: true }],
+      },
+      {
+        type: "heading",
+        level: 6,
+        children: [{ type: "text", value: "heading 6", bold: true }],
+      },
+      {
+        type: "paragraph",
+        children: [{ type: "text", value: "this is paragraph without bold" }],
+      },
+      {
+        type: "paragraph",
+        children: [
+          { type: "text", value: "this is paragraph with bold", bold: true },
+        ],
+      },
+      {
+        type: "paragraph",
+        children: [
+          {
+            type: "text",
+            value: "this is paragraph without bold and italic",
+            italic: true,
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        children: [
+          {
+            type: "text",
+            value: "this is paragragh with bold and italic",
+            bold: true,
+            italic: true,
+          },
+        ],
+      },
+      {
+        type: "paragraph",
+        children: [
+          { type: "text", value: "" },
+          {
+            url: "link.to",
+            title: "link title",
+            type: "link",
+            children: [
+              { type: "text", value: "this is link", bold: true, italic: true },
+            ],
+          },
+          { type: "text", value: "" },
+        ],
+      },
+      {
+        listType: "unordered",
+        type: "list",
+        children: [
+          {
+            type: "list-item",
+            children: [{ type: "text", value: "this is unordered list-1" }],
+          },
+          {
+            type: "list-item",
+            children: [{ type: "text", value: "this is unordered list -2" }],
+          },
+        ],
+      },
+      {
+        listType: "ordered",
+        type: "list",
+        children: [
+          {
+            type: "list-item",
+            children: [{ type: "text", value: "this orderderd list -1" }],
+          },
+          {
+            type: "list-item",
+            children: [{ type: "text", value: "this is orderdered list -2" }],
+          },
+        ],
+      },
+      { type: "paragraph", children: [{ type: "text", value: "" }] },
+      {
+        type: "heading",
+        children: [{ type: "text", value: "the end" }],
+        level: 1,
+      },
+    ],
+  };
+
+  const richTextJson = data?.product?.metafields.find(
+    (item) => item?.key === "washing_instruction"
+  )?.value;
+  console.log(richTextJson);
+  let parsedJson;
+  if (richTextJson) parsedJson = JSON.parse(richTextJson);
+
   return (
     <View className="mb-3">
-      <ShowAndHide title="Product Details" />
-      <ShowAndHide title="Size & Fit" />
-      <ShowAndHide title="Shipping &  Return policy" />
-      <ShowAndHide title="Washing instruction" />
+      <ToggleItem label="description">
+        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
+          {data?.product?.description}
+        </Text>
+      </ToggleItem>
+      <ToggleItem label="Size & Fit">
+        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
+          {data?.product?.description}
+        </Text>
+      </ToggleItem>
+      <ToggleItem label="Shipping &  Return policy">
+        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
+          {data?.product?.description}
+        </Text>
+      </ToggleItem>
+      {parsedJson && (
+        <ToggleItem label="Washing instruction">
+          <RichText content={parsedJson} />
+        </ToggleItem>
+      )}
     </View>
+  );
+}
+
+function ToggleItem({ label, children }) {
+  const heightOffset = useSharedValue(0);
+  const [viewHeight, setViewHieght] = useState(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: interpolate(heightOffset.value, [0, 1], [0, viewHeight]),
+  }));
+
+  const handlePress = () => {
+    heightOffset.value = withTiming(heightOffset.value === 0 ? 1 : 0, {
+      duration: 400,
+      easing: Easing.bezier(0.4, 0.0, 0.2, 1),
+    });
+  };
+
+  return (
+    <>
+      <Panel
+        onPress={handlePress}
+        rightIcon={<PlusIcon size={20} color="black" />}
+      >
+        <View className={`flex-1 w-full justify-center px-4`}>
+          <Text style={FONT_FAMILY.secondary} className="text-sm capitalize">
+            {label}
+          </Text>
+        </View>
+      </Panel>
+      <Animated.View style={animatedStyle} className="overflow-hidden">
+        <View
+          onLayout={(e) => setViewHieght(e.nativeEvent.layout.height)}
+          className="absolute w-full bottom-0 left-0 p-4 bg-white"
+        >
+          {children}
+        </View>
+      </Animated.View>
+    </>
   );
 }
 
@@ -717,10 +970,16 @@ function SupportContainer() {
       >
         <View className="flex-row gap-x-1 items-center">
           <View className="flex-row gap-x-1">
-            <Text style={FONT_FAMILY.secondary} className="text-[13px] text-black font-medium ">
+            <Text
+              style={FONT_FAMILY.secondary}
+              className="text-[13px] text-black font-medium "
+            >
               Need help?
             </Text>
-            <Text style={FONT_FAMILY.secondary} className="text-[13px] text-black font-light ">
+            <Text
+              style={FONT_FAMILY.secondary}
+              className="text-[13px] text-black font-light "
+            >
               Call, Whatsapp , or email us
             </Text>
           </View>
@@ -735,7 +994,10 @@ function SupportContainer() {
         <View className="pb-14">
           <View className="pb-8">
             <View className=" w-[90%] mx-auto pb-3">
-              <Text style={FONT_FAMILY.secondary} className="text-[14px] text-gray-800 font-light leading-5">
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-[14px] text-gray-800 font-light leading-5"
+              >
                 If you need to speak with one of our customer case
                 representative you can react us here, We are avilable between
                 10am - 10pm
@@ -747,7 +1009,7 @@ function SupportContainer() {
                 icon={<PhoneIcon size={24} color="black" strokeWidth={1} />}
                 onClick={() => Linking.openURL("tel:+97124913000")}
               />
-              {/* <InformationIconTile label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} /> */}
+              <InformationIconTile label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} />
               <InformationIconTile
                 label="Mail"
                 icon={<EmailIcon />}
@@ -757,13 +1019,9 @@ function SupportContainer() {
               />
             </View>
           </View>
+          
           <Panel
-            label="Shipping Policy"
-            style={{ borderBottomWidth: 1, borderBottomColor: "#D3D3D3" }}
-            rightIcon={<ChevronRightIcon size={24} color="black" />}
-          />
-          <Panel
-            label="Returns & Refunds"
+            label="Shipping Returns & Refunds"
             style={{ borderBottomWidth: 1, borderBottomColor: "#D3D3D3" }}
             rightIcon={<ChevronRightIcon size={24} color="black" />}
           />
@@ -790,18 +1048,28 @@ function InstallmentContainer() {
     <View className="w-full bg-white py-3 mb-3">
       <View className="w-[60%] mx-auto items-center justify-center border rounded-[5px] border-gray-300 self-stretch">
         <View className="bg-gray-100 self-stretch py-1 items-center border-b border-gray-300">
-          <Text style={FONT_FAMILY.secondary} className="text-[14px] font-normal text-black ">
-            Want to pay in instalments?
+          <Text
+            style={FONT_FAMILY.secondary}
+            className="text-[14px] font-normal text-black "
+          >
+            Available payment options
           </Text>
         </View>
-        <Pressable
-          onPress={() => setModalVisible(true)}
-          className="flex-row items-center justify-center py-2"
-        >
-          <Text className="text-[16px] font-bold text-black mr-1">tabby</Text>
-          <InformationCircleIcon size={14} color="black" />
-        </Pressable>
-
+        <View className="w-[60%] flex-row justify-between">
+          <Pressable
+            onPress={() => setModalVisible(true)}
+            className="flex-row items-center justify-center"
+          >
+            <Text className="text-[16px] font-bold text-black mr-1">tabby</Text>
+            <InformationCircleIcon size={14} color="black" />
+          </Pressable>
+          <Pressable
+            onPress={() => setModalVisible(true)}
+            className="flex-row items-center justify-center"
+          >
+            <ApplePayIcon size={36} />
+          </Pressable>
+        </View>
         <MyModal visible={isModalVisible} slide="toUp">
           <View>
             <View className="h-10 flex-row items-center justify-end px-3">
@@ -815,39 +1083,6 @@ function InstallmentContainer() {
           </View>
         </MyModal>
       </View>
-    </View>
-  );
-}
-
-function SmilePointsContainer() {
-  const [isModalVisisble, setModalVisible] = useState(false);
-  return (
-    <View>
-      <Panel
-        onPress={() => setModalVisible(true)}
-        style={{ marginBottom: 12 }}
-        alignment="center"
-      >
-        <View className="flex-row">
-          <SmileIcon />
-          <Text style={FONT_FAMILY.secondary} className="text-[14px] font-light text-gray-800 ml-2 mr-1">
-            We reward with Smile.
-          </Text>
-          <Text style={FONT_FAMILY.secondary} className={`text-[14px] font-normal ${textColor} underline`}>
-            Learn how.
-          </Text>
-        </View>
-      </Panel>
-
-      <MyModal visible={isModalVisisble} slide="toUp">
-        <View>
-          <View className="h-10 flex-row items-center justify-end px-3">
-            <Pressable className="p-1 " onPress={() => setModalVisible(false)}>
-              <XMarkIcon size={24} color="black" />
-            </Pressable>
-          </View>
-        </View>
-      </MyModal>
     </View>
   );
 }
@@ -873,7 +1108,10 @@ function InstagramContainer() {
             source={require("../assets/instalogo.png")}
           />
         </View>
-        <Text style={FONT_FAMILY.secondary} className="text-[15px] w-[250] text-white font-bold ml-2">
+        <Text
+          style={FONT_FAMILY.secondary}
+          className="text-[15px] w-[250] text-white font-bold ml-2"
+        >
           Follow us on instagram for excited offers
         </Text>
       </View>
@@ -918,7 +1156,10 @@ function InformationIconTile({ label, icon, onClick }) {
       className="w-28 h-20 border border-gray-500 rounded-[5px] items-center justify-center"
     >
       {icon}
-      <Text style={FONT_FAMILY.secondary} className="text-[12px] text-black font-normal uppercase mt-2">
+      <Text
+        style={FONT_FAMILY.secondary}
+        className="text-[12px] text-black font-normal uppercase mt-2"
+      >
         {label}
       </Text>
     </Pressable>
@@ -956,14 +1197,14 @@ function SelectionButton({ option, style }) {
   const optionValue = activeOptions.find((i) => i.name === option.name)?.value;
 
   return (
-    <View style={style} className={` w-5 h-10 flex-1`}>
+    <View style={style} className={` w-5 flex-1`}>
       <Text
         style={FONT_FAMILY.secondary}
         className="text-[12px] text-black font-normal uppercase text-center "
       >
         {label}
       </Text>
-      <View className="flex-row items-center justify-center mt-3">
+      <View className="flex-row items-center justify-center mt-2">
         {option.name === "Color" && (
           <ColorSwatchImage
             value={activeOptions.find((i) => i.name === "Color")?.value}

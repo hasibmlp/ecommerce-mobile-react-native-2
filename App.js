@@ -1,6 +1,8 @@
 import { Provider } from "react-redux";
 import { ApolloProvider } from "@apollo/client";
 import { useFonts } from "expo-font";
+import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import AppNavigation from "./navigation/AppNavigation";
 import { store } from "./redux/store";
@@ -18,10 +20,12 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <ApolloProvider client={shopifyClient}>
-      <Provider store={store}>
-        <AppNavigation />
-      </Provider>
-    </ApolloProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <ApolloProvider client={shopifyClient}>
+        <Provider store={store}>
+          <AppNavigation />
+        </Provider>
+      </ApolloProvider>
+    </GestureHandlerRootView>
   );
 }

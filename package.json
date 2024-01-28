@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.1",
+    "@contentful/rich-text-react-renderer": "^15.19.3",
     "@dev-plugins/apollo-client": "^0.0.5",
     "@expo/metro-runtime": "~3.1.1",
     "@heroicons/react": "^2.0.18",
@@ -35,6 +36,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
+    "react-native-gesture-handler": "^2.14.1",
     "react-native-heroicons": "^3.2.0",
     "react-native-pager-view": "6.2.0",
     "react-native-reanimated": "~3.3.0",

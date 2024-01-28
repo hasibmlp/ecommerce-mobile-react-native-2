@@ -1,15 +1,14 @@
 import { Text, View, Pressable } from "react-native";
 import { useState } from "react";
 import { PlusIcon } from "react-native-heroicons/outline";
-import Animated, { Layout } from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 import { FONT_FAMILY } from "../theme";
 
 export default function ShowAndHide({ title }) {
   const [showBody, setShowBody] = useState(false);
 
   return (
-    <Animated.View
-      layout={Layout}
+    <View
       className="border-b border-gray-300 bg-white"
     >
       <Pressable
@@ -26,6 +25,6 @@ export default function ShowAndHide({ title }) {
           </Text>
         </View>
       ) : null}
-    </Animated.View>
+    </View>
   );
 }

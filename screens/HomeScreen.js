@@ -55,13 +55,14 @@ const HomeScreen = () => {
   }));
 
   const screenHeaderAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(scrollY.value, [0, 100], [0, 1]);
-    return { opacity: opacity };
+    const opacity = interpolate(scrollY.value, [0, 40], [0, 1]);
+    const zIndex = interpolate(scrollY.value, [0, 40], [0, 120]);
+    return { opacity: opacity, zIndex };
   });
 
   const genderSelector1AnimatedStyle = useAnimatedStyle(() => {
     return {
-      display: scrollY.value > 100 ? "flex" : "none",
+      display: scrollY.value > 40 ? "flex" : "none",
     };
   });
 
@@ -85,10 +86,13 @@ const HomeScreen = () => {
           className="absolute top-0 w-full h-12 flex-row bg-neutral-50 z-20 justify-between"
         >
           <TouchableOpacity
-            onPress={() => setOpen(!open)}
+            onPress={() => scrollY.value > 100 && setOpen(!open)}
             className="flex-row items-center justify-center px-5"
           >
-            <Text style={FONT_FAMILY.primary} className="text-sm text-black font-normal mr-1 leading-4 uppercase">
+            <Text
+              style={FONT_FAMILY.primary}
+              className="text-sm text-black font-normal mr-1 leading-4 uppercase"
+            >
               Shop {gender}
             </Text>
             <ChevronDownIcon size={14} color="black" />
@@ -96,26 +100,30 @@ const HomeScreen = () => {
           <View className="flex-row px-3">
             <TouchableOpacity
               onPress={() => {
-                navigation.dispatch(
-                  CommonActions.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: "SearchScreens",
-                      },
-                    ],
-                  })
-                );
+                scrollY.value > 100 &&
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      index: 0,
+                      routes: [
+                        {
+                          name: "SearchScreens",
+                        },
+                      ],
+                    })
+                  );
               }}
               className=" h-full justify-center px-3 mr-2"
             >
               <MagnifyingGlassIcon color="black" size={24} />
             </TouchableOpacity>
-            <TouchableOpacity className="h-full justify-center px-1">
-              <View className="bg-neutral-200 h-8 w-8 rounded-full items-center justify-center">
+            <TouchableOpacity onPress={() => navigation.navigate('MoreOptionsScreen')} className="h-full justify-center px-1">
+              <View className="bg-neutral-200 h-10 w-10 rounded-full items-center justify-center">
                 {!user && <UserIcon color="black" size={24} />}
                 {user && (
-                  <Text style={FONT_FAMILY.primary} className="text-lg text-black text-normal">
+                  <Text
+                    style={FONT_FAMILY.primary}
+                    className="text-lg text-black text-normal"
+                  >
                     {user.firstName.slice(0, 1)}
                     {user.lastName.slice(0, 1)}
                   </Text>
@@ -137,7 +145,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Women
               </Text>
               {gender === "women" && (
@@ -151,7 +162,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Men
               </Text>
               {gender === "men" && (
@@ -165,7 +179,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Kids
               </Text>
               {gender === "kids" && (
@@ -186,27 +203,35 @@ const HomeScreen = () => {
               style={{ width: SCREEN_WIDTH }}
               className="absolute bottom-full w-full h-[250] bg-neutral-50 z-50"
             ></View>
-            <Pressable onPress={() => setOpen(!open)} className="items-start h-full justify-center">
-              <Text style={FONT_FAMILY.primary} className="text-2xl text-black">
-                Good evening! {user?.firstName}
-              </Text>
+            <TouchableOpacity
+              onPress={() => setOpen(!open)}
+              className="items-start h-full justify-center"
+            >
+              <GreetingCard user={user} />
               <View className="flex-row items-center justify-center mt-2">
-                <Text style={FONT_FAMILY.primary} className="text-sm text-black font-normal mr-1 leading-4 uppercase">
+                <Text
+                  style={FONT_FAMILY.primary}
+                  className="text-sm text-black font-normal mr-1 leading-4 uppercase"
+                >
                   Shop {gender}
                 </Text>
                 <ChevronDownIcon size={14} color="black" />
               </View>
-            </Pressable>
-            <TouchableOpacity className="h-full justify-center px-1 ">
-              <View className="bg-neutral-200 h-12 w-12 rounded-full items-center justify-center">
-                {!user && <UserIcon color="black" size={24} />}
-                {user && (
-                  <Text style={FONT_FAMILY.primary}  className="text-xl text-black text-normal">
-                    {user.firstName.slice(0, 1)}
-                    {user.lastName.slice(0, 1)}
-                  </Text>
-                )}
-              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MoreOptionsScreen")}
+              className="rounded-full bg-neutral-200 h-14 w-14 items-center justify-center"
+            >
+              {!user && <UserIcon color="black" size={24} />}
+              {user && (
+                <Text
+                  style={FONT_FAMILY.primary}
+                  className="text-xl text-black text-normal"
+                >
+                  {user.firstName.slice(0, 1)}
+                  {user.lastName.slice(0, 1)}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -221,7 +246,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Women
               </Text>
               {gender === "women" && (
@@ -235,7 +263,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Men
               </Text>
               {gender === "men" && (
@@ -249,7 +280,10 @@ const HomeScreen = () => {
               }}
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
-              <Text style={FONT_FAMILY.primary} className="text-sm  text-black font-normal uppe">
+              <Text
+                style={FONT_FAMILY.primary}
+                className="text-sm  text-black font-normal uppe"
+              >
                 Shop Kids
               </Text>
               {gender === "kids" && (
@@ -276,19 +310,40 @@ const HomeScreen = () => {
             className="h-[50px] flex flex-row bg-white items-center rounded-[10px] flex-1 pl-2 mx-3 mb-3"
           >
             <MagnifyingGlassIcon size={22} color="black" strokeWidth={1} />
-            <Text style={FONT_FAMILY.primary} className="text-[14px] font-normal text-gray-500 ml-[15px]">
+            <Text
+              style={FONT_FAMILY.primary}
+              className="text-[14px] font-normal text-gray-500 ml-[15px]"
+            >
               Search
             </Text>
           </TouchableOpacity>
 
-          <MainContentV2 />
+          <MemorizeMainContentV2 />
         </Animated.ScrollView>
       </View>
     </View>
   );
 };
 
+const GreetingCard = ({user}) => {
+  let timeOfDay
+  const date = new Date()
+  const hour = date.getHours()
 
-// const MemorizeMainContentV2 = memo(MainContentV2);
+  if(hour < 12) {
+    timeOfDay = 'morning'
+  }else if(hour >= 12 && hour <= 17)
+    timeOfDay = 'afternoon'
+  else 
+    timeOfDay = 'evening'
+
+  return (
+    <Text style={FONT_FAMILY.primary} className="text-2xl text-black">
+      Good {timeOfDay}! {user?.firstName}
+    </Text>
+  );
+};
+
+const MemorizeMainContentV2 = memo(MainContentV2);
 
 export default HomeScreen;

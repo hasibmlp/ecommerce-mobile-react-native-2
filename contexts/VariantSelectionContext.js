@@ -21,14 +21,23 @@ function VariantSelectionProvider({
   const [selectedVariant, setSelectedVariant] = useState({});
   const [activeOptions, setActiveOptions] = useState([]);
   const [customProductId, setCustomProductId] = useState("");
-  const [ isProductSuccessfullyAdded, setProductSuccessfullyAdded ] = useState(false)
+  const [isProductSuccessfullyAdded, setProductSuccessfullyAdded] =
+    useState(false);
 
   console.log(customProductId);
 
   const cart = useReactiveVar(cartVar);
 
   const { data, loading, error } = useQuery(GET_PRODUCT, {
-    variables: { productId },
+    variables: {
+      productId,
+      metaIdentifiers: [
+        {
+          key: "washing_instruction",
+          namespace: "mobile",
+        },
+      ],
+    },
     fetchPolicy: "no-cache",
   });
 
@@ -138,7 +147,7 @@ function VariantSelectionProvider({
         ],
         onCompleted: () => {
           typeof onClose === "function" && onClose();
-          setProductSuccessfullyAdded(true)
+          setProductSuccessfullyAdded(true);
         },
       });
     }
@@ -148,16 +157,14 @@ function VariantSelectionProvider({
     if (variants && variants.length === 1) {
       setSelectedVariant(variants[0]);
     }
-  }, [variants]);
 
-  useEffect(() => {
-    if (!selectedVariant.id && variantId && variants) {
+    if (!selectedVariant.id && variantId && variants.length > 0) {
       const preSelectedVarinat = variants?.find(
         (variant) => variant.id === variantId
       );
       if (preSelectedVarinat) setSelectedVariant(preSelectedVarinat);
     }
-  }, [variantId, variants]);
+  }, [variants?.length, variantId]);
 
   useEffect(() => {
     if (!productId.id && activeOptions.length === 0 && colorValue?.value) {
@@ -167,7 +174,26 @@ function VariantSelectionProvider({
 
   useEffect(() => {
     if (options?.length === activeOptions?.length) {
-      const variant = getVariantForOptions(variants, activeOptions);
+      let filteredVariants = variants;
+
+      for (let i = 0; i < activeOptions.length; i++) {
+        const optionName = activeOptions[i].name;
+        const optionValue = activeOptions[i].value;
+
+        if (optionName && optionValue) {
+          filteredVariants = filteredVariants.filter(
+            (variant) =>
+              variant.selectedOptions.find(
+                (option) => option.name === optionName
+              )?.value === optionValue
+          );
+        }
+      }
+
+      // const variant = getVariantForOptions(variants, activeOptions);
+      const variant =
+        filteredVariants.length === 1 ? filteredVariants[0] : null;
+
       if (variant) {
         setSelectedVariant(variant);
       } else {
@@ -217,7 +243,7 @@ function VariantSelectionProvider({
         setCustomProductId,
         isProductSuccessfullyAdded,
         setProductSuccessfullyAdded,
-        loading:addCartV2ItemLoading
+        loading: addCartV2ItemLoading,
       }}
     >
       {children}

@@ -135,7 +135,7 @@ export const GET_COLLECTION = gql`
 `;
 
 export const GET_PRODUCT = gql`
-  query getProductVairants($productId: ID!) {
+  query getProductDetails($productId: ID!, $metaIdentifiers: [HasMetafieldsIdentifier!]!) {
     product(id: $productId) {
       id
       vendor
@@ -172,6 +172,13 @@ export const GET_PRODUCT = gql`
         id
         name
         values
+      }
+      metafields(identifiers: $metaIdentifiers) {
+        id
+        key
+        namespace
+        type
+        value
       }
       variants(first: 100) {
         edges {

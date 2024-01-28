@@ -19,8 +19,8 @@ export default function Panel({children, label, leftIcon, rightIcon, style, alig
       <Pressable onPress={onPress} style={style} className="flex-row bg-white min-h-[60px]">
         {leftIcon && (<View className="min-w-[50px] max-w-[100px] items-center justify-center p-2">{leftIcon}</View>)}
         <View className={`flex-1 justify-center ${alignmentStyle}`}>
-          {children && (<View className={`flex-1 justify-center ${alignmentStyle}`}>{children}</View>)}
-          {label && !children && (<Text style={FONT_FAMILY.primary} className={`text-[13px] text-black font-light`}>{label}</Text>)}
+          {children && (<View className={`flex-1 justify-center w-full ${alignmentStyle}`}>{children}</View>)}
+          {label && !children && (<Text style={FONT_FAMILY.primary} className={`text-[13px] text-black font-light px-4`}>{label}</Text>)}
         </View>
         {rightIcon && (<View className="min-w-[50px] items-center justify-center p-2">
           {rightIcon}

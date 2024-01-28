@@ -1,5 +1,5 @@
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
-import { FONT_FAMILY } from "../../theme";
+import { COLOR_THEME, FONT_FAMILY } from "../../theme";
 
 const themeColor = "bg-[#4baaca]";
 
@@ -88,7 +88,7 @@ export default function Button({
             colors.length === 0
               ? ["action", "secondary"].includes(type)
                 ? "transparent"
-                : "#3198bb"
+                : COLOR_THEME.primary
               : buttonStyle.container,
         },
       ]}
@@ -99,7 +99,7 @@ export default function Button({
           style={[
             textStyle,
             {
-              color: textColors.length > 0 ? buttonColor.text : '#fff',
+              color: textColors.length > 0 ? buttonColor.text : type === 'primary' ? '#fff' : COLOR_THEME.primary,
             },
             FONT_FAMILY.secondary
           ]}
