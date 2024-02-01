@@ -66,8 +66,9 @@ const RichText = ({ content }) => {
   };
 
   return (
-    <View className="bg-white p-5">
-      {content.children.map((node, index) => renderNode(node, index))}
+    <View className="bg-white ">
+      {content &&
+        content.children.map((node, index) => renderNode(node, index))}
     </View>
   );
 };

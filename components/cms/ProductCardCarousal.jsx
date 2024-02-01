@@ -51,7 +51,7 @@ export default function ProductCardCarousal({ content }) {
             data.collection.products.edges?.map((product, index) => (
               <ProductCard
                 key={product.node.id}
-                onpress={() => {
+                onPress={() => {
                   navigation.navigate("ProductDetailScreen", {
                     productId: product.node.id,
                   });

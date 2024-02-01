@@ -20,7 +20,7 @@ export default function App() {
   if (!fontsLoaded) return null;
 
   return (
-    <GestureHandlerRootView style={{flex: 1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <ApolloProvider client={shopifyClient}>
         <Provider store={store}>
           <AppNavigation />

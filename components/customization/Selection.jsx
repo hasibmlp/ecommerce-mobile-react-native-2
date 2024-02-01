@@ -25,8 +25,6 @@ const Selection = ({
   const [isActive, setActive] = useState(false);
   const [activeSelection, setActiveSelection] = useState(initialValue);
 
-  console.log("AAAAAAAAAAAA",initialValue)
-
   const handleSelection = (value) => {
     setActiveSelection(value);
     setActive(false);
@@ -41,7 +39,6 @@ const Selection = ({
 
   useEffect(() => {}, [fontsLoaded]);
   useEffect(() => {
-    console.log("VALUE VALUE VALUE",value)
   }, [value])
 
   useEffect(() => {

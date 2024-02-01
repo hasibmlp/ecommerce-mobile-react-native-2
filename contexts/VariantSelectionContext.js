@@ -36,6 +36,18 @@ function VariantSelectionProvider({
           key: "washing_instruction",
           namespace: "mobile",
         },
+        {
+          key: "youmaylike_proudcts",
+          namespace: "mobile",
+        },
+        {
+          key: "return_and_shipping_policy",
+          namespace: "mobile",
+        },
+        {
+          key: "size_and_fit_image_url",
+          namespace: "mobile",
+        },
       ],
     },
     fetchPolicy: "no-cache",

@@ -135,7 +135,10 @@ export const GET_COLLECTION = gql`
 `;
 
 export const GET_PRODUCT = gql`
-  query getProductDetails($productId: ID!, $metaIdentifiers: [HasMetafieldsIdentifier!]!) {
+  query getProductDetails(
+    $productId: ID!
+    $metaIdentifiers: [HasMetafieldsIdentifier!]!
+  ) {
     product(id: $productId) {
       id
       vendor
@@ -871,6 +874,62 @@ export const GET_VARIANT_OF_PRODUCTS = gql`
               url
             }
           }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_PRODUCT_RECOMMENDATIONS = gql`
+  query getProductRecommendations($proudctId: ID!) {
+    productRecommendations(productId: $proudctId) {
+      id
+      vendor
+      title
+      priceRange {
+        minVariantPrice {
+          amount
+        }
+      }
+      images(first: 1) {
+        edges {
+          node {
+            url
+          }
+        }
+      }
+      options {
+        id
+        name
+        values
+      }
+    }
+  }
+`;
+
+export const GET_PROUDCTS_BY_IDS = gql`
+  query ProductsById($ids: [ID!]!) {
+    nodes(ids: $ids) {
+      ... on Product {
+        id
+        vendor
+        title
+        priceRange {
+          minVariantPrice {
+            amount
+          }
+        }
+        images(first: 1) {
+          edges {
+            node {
+              url
+            }
+          }
+        }
+        options {
+          id
+          name
+          values
         }
       }
     }

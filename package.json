@@ -21,6 +21,7 @@
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
     "@reduxjs/toolkit": "^1.9.5",
+    "@shopify/checkout-sheet-kit": "^1.0.0",
     "expo": "^49.0.22",
     "expo-document-picker": "~11.5.4",
     "expo-font": "~11.4.0",

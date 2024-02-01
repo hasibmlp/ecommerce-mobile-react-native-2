@@ -14,7 +14,7 @@ export default function ProductCard({
   width = 160,
   height = 250,
   style,
-  onpress,
+  onPress,
 }) {
   const amount = {
     price: product?.priceRange.minVariantPrice.amount,
@@ -33,7 +33,7 @@ export default function ProductCard({
 
   return (
     <TouchableOpacity
-      onPress={onpress}
+      onPress={onPress}
       style={[{ width }, style]}
       className="justify-start mr-[10px]"
     >

@@ -75,8 +75,7 @@ const CustomSelection = ({
   const handleTextStyle = (item) => {
     setActiveSelectionsForTextDisplay((prevState) => {
       if (item?.type === "position") {
-        const prevSelections = prevState.selections;
-        return { postion: item.postion, selections: prevSelections };
+        return { postion: item.postion, selections: prevState.selections };
       } else {
         const prevSelection = [...prevState.selections];
         const itemIndex = prevSelection.findIndex(

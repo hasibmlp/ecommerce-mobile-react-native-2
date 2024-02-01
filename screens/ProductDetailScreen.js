@@ -1,11 +1,6 @@
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { useContext, useEffect, useLayoutEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import * as Linking from 'expo-linking'
+import * as Linking from "expo-linking";
 import {
   SafeAreaView,
   Text,
@@ -63,6 +58,8 @@ import { FONT_FAMILY } from "../theme";
 import ApplePayIcon from "../components/icons/ApplePayIcon";
 import WebView from "react-native-webview";
 import RichText from "../components/RichText";
+import RecommedationCardSlider from "../components/RecommedationCardSlider";
+import YouMayLikeCardSlider from "../components/YouMayLikeCardSlider";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -147,7 +144,7 @@ const Body = ({ scrollHandler, productId }) => {
     >
       <ImageCarousel />
       <ProductContent productId={productId} />
-      <RecommendedCollection />
+      <RecommendedCollection productId={productId} />
     </Animated.ScrollView>
   );
 };
@@ -209,11 +206,21 @@ const BottomPopup = ({ visible }) => {
   );
 };
 
-function RecommendedCollection() {
+function RecommendedCollection({ productId }) {
+  const { data } = useContext(VariantSelectionContext);
+  const youMayLikeData = data?.product?.metafields.find(
+    (item) => item?.key === "youmaylike_proudcts"
+  )?.value;
+  let youMayLikeProudcts;
+  if (youMayLikeData) {
+    youMayLikeProudcts = JSON.parse(youMayLikeData);
+  }
+
+  console.log(youMayLikeProudcts);
   return (
     <View>
-      <CardSlider id={"gid://shopify/Collection/139270488173"} />
-      <CardSlider id={"gid://shopify/Collection/139270488173"} />
+      {youMayLikeProudcts && <YouMayLikeCardSlider ids={youMayLikeProudcts} />}
+      <RecommedationCardSlider id={productId} />
     </View>
   );
 }
@@ -886,27 +893,42 @@ function ToggleContainer({ data }) {
   const richTextJson = data?.product?.metafields.find(
     (item) => item?.key === "washing_instruction"
   )?.value;
-  console.log(richTextJson);
   let parsedJson;
   if (richTextJson) parsedJson = JSON.parse(richTextJson);
 
+  const shippingPolicy = data?.product?.metafields.find(
+    (item) => item?.key === "return_and_shipping_policy"
+  )?.value;
+  let shippingPolicyParsed;
+  if (shippingPolicy) shippingPolicyParsed = JSON.parse(shippingPolicy);
+
+  const sizeAndFitUrl = data?.product?.metafields.find(
+    (item) => item?.key === "size_and_fit_image_url"
+  )?.value;
+
+  console.log(sizeAndFitUrl)
+
   return (
     <View className="mb-3">
-      <ToggleItem label="description">
-        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
-          {data?.product?.description}
-        </Text>
-      </ToggleItem>
-      <ToggleItem label="Size & Fit">
-        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
-          {data?.product?.description}
-        </Text>
-      </ToggleItem>
-      <ToggleItem label="Shipping &  Return policy">
-        <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
-          {data?.product?.description}
-        </Text>
-      </ToggleItem>
+      {data?.product?.description && (
+        <ToggleItem label="description">
+          <Text style={FONT_FAMILY.secondary} className="text-sm text-black">
+            {data?.product?.description}
+          </Text>
+        </ToggleItem>
+      )}
+      {sizeAndFitUrl && (
+        <ToggleItem label="Size & Fit">
+          <View className="w-[400] h-[400] bg-neutral-200 mx-auto">
+            <Image className="w-full h-full" source={{uri: sizeAndFitUrl}} />
+          </View>
+        </ToggleItem>
+      )}
+      {shippingPolicyParsed && (
+        <ToggleItem label="Shipping &  Return policy">
+          <RichText content={shippingPolicyParsed} />
+        </ToggleItem>
+      )}
       {parsedJson && (
         <ToggleItem label="Washing instruction">
           <RichText content={parsedJson} />
@@ -1009,7 +1031,13 @@ function SupportContainer() {
                 icon={<PhoneIcon size={24} color="black" strokeWidth={1} />}
                 onClick={() => Linking.openURL("tel:+97124913000")}
               />
-              <InformationIconTile label="Whatsapp" icon={<WhatsappIcon/>} onClick={() => Linking.openURL('whatsapp://send?phone=+971504713945')} />
+              <InformationIconTile
+                label="Whatsapp"
+                icon={<WhatsappIcon />}
+                onClick={() =>
+                  Linking.openURL("whatsapp://send?phone=+971504713945")
+                }
+              />
               <InformationIconTile
                 label="Mail"
                 icon={<EmailIcon />}
@@ -1019,7 +1047,7 @@ function SupportContainer() {
               />
             </View>
           </View>
-          
+
           <Panel
             label="Shipping Returns & Refunds"
             style={{ borderBottomWidth: 1, borderBottomColor: "#D3D3D3" }}

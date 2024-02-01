@@ -203,15 +203,6 @@ const AccordianItem = ({
   };
 
   const handleReset = (setValues) => {
-    setValues({
-      position: "left",
-      language: "defaultLanguage",
-      fontStyle: "defaultFontStyle",
-      color: "defaultColor",
-      firstLine: "",
-      secondLine: "",
-      // Add other fields as needed
-    });
     setCustomProductId(null);
   };
 
@@ -248,13 +239,33 @@ const AccordianItem = ({
   useEffect(() => {}, [customProductId]);
 
   const initialValue = {
-    position: customProductId?.id && customProductId?.selections[0]?.position ? customProductId?.selections[0]?.position : 'left',
-    language: customProductId?.id && customProductId?.selections[0]?.language ? customProductId?.selections[0]?.language : '',
-    fontStyle: customProductId?.id && customProductId?.selections[0]?.fontStyle ? customProductId?.selections[0]?.fontStyle : '',
-    color: customProductId?.id && customProductId?.selections[0]?.color ? customProductId?.selections[0]?.color : '',
-    firstLine: customProductId?.id && customProductId?.selections[0]?.firstLine ? customProductId?.selections[0]?.firstLine : '',
-    secondLine: customProductId?.id && customProductId?.selections[0]?.secondLine ? customProductId?.selections[0]?.secondLine : '',
+    position:
+      customProductId?.id && customProductId?.selections[0]?.position
+        ? customProductId?.selections[0]?.position
+        : "left",
+    language:
+      customProductId?.id && customProductId?.selections[0]?.language
+        ? customProductId?.selections[0]?.language
+        : languageOptions[0].value,
+    fontStyle:
+      customProductId?.id && customProductId?.selections[0]?.fontStyle
+        ? customProductId?.selections[0]?.fontStyle
+        : fontOptions[0].value,
+    color:
+      customProductId?.id && customProductId?.selections[0]?.color
+        ? customProductId?.selections[0]?.color
+        : colorValues[0].value,
+    firstLine:
+      customProductId?.id && customProductId?.selections[0]?.firstLine
+        ? customProductId?.selections[0]?.firstLine
+        : "",
+    secondLine:
+      customProductId?.id && customProductId?.selections[0]?.secondLine
+        ? customProductId?.selections[0]?.secondLine
+        : "",
   };
+
+  console.log("CUSTOM PRODUCT SELECTION : ", customProductId);
 
   if (context === "text-only") {
     return (
@@ -288,9 +299,11 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={initialValue}
               validationSchema={validationSchemaTextOnly}
               onSubmit={(values) => {
+                console.log("FORMIK SUBMITTING VALUES: ", values);
                 if (values) {
                   setCustomProductId({
                     id: data?.id,
@@ -300,37 +313,19 @@ const AccordianItem = ({
                     selections: [{ ...values }],
                   });
                 } else {
-                  // setTotalCustom(prevState => {
-                  // const prevTotalCustom = [...prevState.selections]
-                  // return {type: 'text-only', selections: filterdArray}
-                  // })
                 }
                 onClose();
-              }}
-              onReset={(values, { setValues }) => {
-                // Manually set the values you want the form to reset to
-                setValues({
-                  position: "left",
-                  language: "english",
-                  fontStyle: "d",
-                  color: "navy",
-                  firstLine: "sfsf",
-                  secondLine: "sdf",
-                  // Add other fields as needed
-                });
-                setCustomProductId({}); // Reset any other state values if needed
               }}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
               }) => {
-                console.log("BBBBBBBBBB", values);
                 return (
                   <>
                     <FormErrorBlock errors={errors} touched={touched} />
@@ -435,7 +430,10 @@ const AccordianItem = ({
                             type="secondary"
                             label="reset"
                             flex={true}
-                            onPress={handleReset}
+                            onPress={() => {
+                              resetForm();
+                              setCustomProductId(null);
+                            }}
                           />
                         </View>
                         <View className="flex-1">
@@ -488,12 +486,13 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={{
-                position: customProductId?.id
-                  ? customProductId.type === "graphics-only"
-                    ? customProductId.selections[0].position
-                    : "left"
-                  : "left",
+                position:
+                  customProductId?.id &&
+                  customProductId?.selections[0]?.position
+                    ? customProductId?.selections[0]?.position
+                    : "left",
                 imageUrl: customProductId?.id
                   ? customProductId.type === "graphics-only"
                     ? customProductId.selections[0].imageUrl
@@ -520,13 +519,12 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
-              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
@@ -575,7 +573,10 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleReset}
+                          onPress={() => {
+                            resetForm();
+                            setCustomProductId(null);
+                          }}
                         />
                       </View>
                       <View className="flex-1">
@@ -627,6 +628,7 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={{
                 position: customProductId?.id
                   ? customProductId.type === "text-with-graphics"
@@ -684,13 +686,12 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
-              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
@@ -829,7 +830,10 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleReset}
+                          onPress={() => {
+                            resetForm();
+                            setCustomProductId(null);
+                          }}
                         />
                       </View>
                       <View className="flex-1">
@@ -881,21 +885,22 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={{
                 laserFontStyle: customProductId?.id
                   ? customProductId.type === "laser-printing"
-                    ? customProductId.selections[0].fontStyle
+                    ? customProductId.selections[0].laserFontStyle
                     : fontOptions[0].value
                   : fontOptions[0].value,
 
                 laserFirstLine: customProductId?.id
                   ? customProductId.type === "laser-printing"
-                    ? customProductId.selections[0].firstLine
+                    ? customProductId.selections[0].laserFirstLine
                     : ""
                   : "",
                 laserSecondLine: customProductId?.id
                   ? customProductId.type === "laser-printing"
-                    ? customProductId.selections[0].secondLine
+                    ? customProductId.selections[0].laserSecondLine
                     : ""
                   : "",
               }}
@@ -917,35 +922,18 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
-              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
               }) => (
                 <>
                   <FormErrorBlock errors={errors} touched={touched} />
-                  {/* <ImageSelection
-                  title="Select Position"
-                  style={{ marginBottom: 12 }}
-                  defaultValue={values.position}
-                  handleChange={handleChange("position")}
-                  images={[
-                    {
-                      url: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-                      title: "Left",
-                    },
-                    {
-                      url: "https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg",
-                      title: "Right",
-                    },
-                  ]}
-                /> */}
 
                   <Selection
                     context="box"
@@ -1001,7 +989,10 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleReset}
+                          onPress={() => {
+                            resetForm();
+                            setCustomProductId(null);
+                          }}
                         />
                       </View>
                       <View className="flex-1">
@@ -1053,6 +1044,7 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={{
                 position: customProductId?.id
                   ? customProductId.type === "tube-printing"
@@ -1088,6 +1080,7 @@ const AccordianItem = ({
               validationSchema={validationSchemaTextOnly}
               onSubmit={(values) => {
                 if (values) {
+                  console.log("TUBE VALUES",values)
                   setCustomProductId({
                     id: data?.id,
                     type: "tube-printing",
@@ -1103,13 +1096,12 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
-              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
@@ -1233,7 +1225,10 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleReset}
+                          onPress={() => {
+                            resetForm();
+                            setCustomProductId(null);
+                          }}
                         />
                       </View>
                       <View className="flex-1">
@@ -1287,6 +1282,7 @@ const AccordianItem = ({
             }}
           >
             <Formik
+              enableReinitialize
               initialValues={{
                 laserFontStyle: customProductId?.id
                   ? customProductId.type === "laser-with-tube-printing"
@@ -1352,13 +1348,12 @@ const AccordianItem = ({
                 }
                 onClose();
               }}
-              onReset={handleReset}
             >
               {({
                 handleBlur,
                 handleChange,
                 handleSubmit,
-                handleReset,
+                resetForm,
                 errors,
                 touched,
                 values,
@@ -1396,7 +1391,7 @@ const AccordianItem = ({
                     handleChange={handleChange("laserFontStyle")}
                     errors={errors.laserFontStyle}
                     touched={touched.laserFontStyle}
-                    value={values.fontStyle}
+                    value={values.laserFontStyle}
                     fontsLoaded={fontsLoaded}
                   />
 
@@ -1538,7 +1533,10 @@ const AccordianItem = ({
                           type="secondary"
                           label="reset"
                           flex={true}
-                          onPress={handleReset}
+                          onPress={() => {
+                            resetForm();
+                            setCustomProductId(null);
+                          }}
                         />
                       </View>
                       <View className="flex-1">
