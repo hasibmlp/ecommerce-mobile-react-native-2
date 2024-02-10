@@ -1,5 +1,4 @@
-import { Text, View } from "react-native";
-// import { Image } from "expo-image";
+import { Image, Text, View } from "react-native";
 import { FONT_FAMILY } from "../../theme";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
@@ -17,21 +16,10 @@ export default function ImageCard({
         className="w-[150px] h-[170px] bg-gray-200 overflow-hidden rounded-[5px]"
       >
         <View className="flex-1">
-          {/* {(<Image
+          {(<Image
             className="h-full w-full"
             src={imageUrl}
-          />)} */}
-
-          {/* {
-            <Image
-              style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-              // className="flex-1 w-full bg-neutral-200"
-              source={imageUrl}
-              placeholder={blurhash}
-              contentFit="cover"
-              transition={100}
-            />
-          } */}
+          />)}
         </View>
       </View>
       {title && (

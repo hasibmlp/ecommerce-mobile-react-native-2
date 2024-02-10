@@ -14,13 +14,10 @@ import {
   UserIcon,
   ChevronRightIcon,
 } from "react-native-heroicons/outline";
-import {
-  useLazyQuery,
-  useMutation,
-  useReactiveVar,
-} from "@apollo/client";
+import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated from "react-native-reanimated";
+import { useShopifyCheckoutSheet } from "@shopify/checkout-sheet-kit";
 
 import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import {
@@ -54,6 +51,8 @@ export default function CartScreen() {
   const cart = useReactiveVar(cartVar);
   const checkoutVisited = useReactiveVar(checkoutVisitedVar);
   const isLoggedinId = useReactiveVar(isLoggedinFrstTimeVar);
+
+  const shopifyCheckout = useShopifyCheckoutSheet();
 
   console.log("USER LOGGED IN CART SCREEN : ", user?.email);
 
@@ -135,9 +134,10 @@ export default function CartScreen() {
 
     if (!userToken) {
       console.log("User token doesn't exit block ran......");
-      navigation.navigate("CheckoutScreen", {
-        url: await cart.checkoutUrl,
-      });
+      // navigation.navigate("CheckoutScreen", {
+      //   url: await cart.checkoutUrl,
+      // });
+      shopifyCheckout.present(await cart.checkoutUrl);
     } else {
       console.log(
         "CHECKOUT URL FROM CART: ",
@@ -170,13 +170,20 @@ export default function CartScreen() {
 
           cartVar(newCart);
 
-          navigation.navigate("CheckoutScreen", {
-            url: checkoutVisited
+          // navigation.navigate("CheckoutScreen", {
+          //   url: checkoutVisited
+          //     ? withoutParams
+          //     : isLoggedinId
+          //     ? cart?.checkoutUrl
+          //     : withoutParams,
+          // });
+          shopifyCheckout.present(
+            checkoutVisited
               ? withoutParams
               : isLoggedinId
               ? cart?.checkoutUrl
-              : withoutParams,
-          });
+              : withoutParams
+          );
         },
       });
     }
@@ -209,6 +216,12 @@ export default function CartScreen() {
       });
     }
   }, [cart?.id, user]);
+
+  useEffect(() => {
+    if (cartDetailsData) {
+      shopifyCheckout.preload(cartDetailsData?.cart?.checkoutUrl);
+    }
+  }, [cartDetailsData]);
 
   const lineItems = cartDetailsData?.cart?.lines?.edges || [];
   const cartProducts = lineItems.filter((i) => !i.node?.attribute);
@@ -263,7 +276,10 @@ export default function CartScreen() {
             >
               <View className="flex flex-row gap-2 items-center">
                 <UserIcon size={24} color="black" />
-                <Text style={FONT_FAMILY.primary} className="text-[14px] text-black font-normal">
+                <Text
+                  style={FONT_FAMILY.primary}
+                  className="text-[14px] text-black font-normal"
+                >
                   Log in or create an account for faster checkout
                 </Text>
               </View>

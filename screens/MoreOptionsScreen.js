@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -15,19 +16,23 @@ import Animated, {
 } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Button from "../components/buttons/Button";
-import { useReactiveVar } from "@apollo/client";
-import { userVar } from "../makeVars/MakeVars";
+import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
+import { cartVar, checkoutVisitedVar, userVar } from "../makeVars/MakeVars";
 import { useNavigation } from "@react-navigation/native";
 import Panel from "../components/actions/Panel";
 import {
   BellAlertIcon,
   BellIcon,
+  CheckBadgeIcon,
   ChevronRightIcon,
   GifIcon,
   GiftIcon,
+  MapIcon,
   StarIcon,
   UserIcon,
 } from "react-native-heroicons/outline";
+import { GET_CART_DETAILS_V2 } from "../graphql/queries";
+import { CREATE_CART } from "../graphql/mutations";
 
 const TAB_WIDTH = 100;
 const TABS = ["Home", "Search", "Profile", "MoreOption"];
@@ -35,6 +40,87 @@ const TABS = ["Home", "Search", "Profile", "MoreOption"];
 export default function MoreOptionScreen() {
   const navigation = useNavigation();
   const user = useReactiveVar(userVar);
+
+  const [createCart, { data, loading, error }] = useMutation(CREATE_CART);
+  const [getCartDetails, { data: cartDetailData, loading: cartDetailLoading }] =
+    useLazyQuery(GET_CART_DETAILS_V2, {
+      fetchPolicy: "no-cache",
+    });
+
+  const handleLogout = async () => {
+    try {
+      const cleanUpStorage = async () => {
+        await AsyncStorage.removeItem("cart-id");
+        cartVar(null);
+        checkoutVisitedVar(false);
+      };
+
+      const setCart = async () => {
+        try {
+          const cartInput = {};
+
+          await createCart({
+            variables: {
+              input: cartInput,
+            },
+            onCompleted: (data) => {
+              console.log("CART CREATED SUCCEFULLY");
+              const set = async () => {
+                if (data?.cartCreate?.cart?.id) {
+                  try {
+                    await AsyncStorage.setItem(
+                      "cart-id",
+                      data?.cartCreate?.cart?.id
+                    );
+                    console.log("CART ID SET TO ASYNC STORAGE");
+                  } catch (e) {
+                    console.log("Error setting cart ID in AsyncStorage:", e);
+                  }
+                }
+              };
+              set();
+            },
+          });
+        } catch (e) {
+          console.log("Error setting up the cart: ", e);
+        }
+      };
+
+      const getCart = async () => {
+        const cartId = await AsyncStorage.getItem("cart-id");
+
+        console.log("CART ID IN GETTING CART: ", cartId);
+        if (cartId) {
+          console.log("FETCHING CART CODE ABOUT RUN");
+          getCartDetails({
+            variables: {
+              cartId: cartId,
+            },
+            onCompleted: async (data) => {
+              console.log("cart details fetched successfully from profile");
+              cartVar(await data?.cart);
+              await AsyncStorage.removeItem("my-key");
+              userVar(null);
+            },
+          });
+        }
+      };
+
+      const initializeCart = async () => {
+        await setCart();
+        await getCart();
+      };
+
+      const initilalizeLogout = async () => {
+        await cleanUpStorage();
+        await initializeCart();
+      };
+
+      initilalizeLogout();
+    } catch (e) {
+      console.log("log out failed!");
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white ">
@@ -44,26 +130,12 @@ export default function MoreOptionScreen() {
         </View>
         <ScrollView className="w-full h-full">
           <View className="mt-3">
-            <Profile />
+            <Profile onLogout={handleLogout} />
 
             <Panel
+            onPress={() => navigation.navigate("ProfileOrdersScreen")}
               style={{ marginTop: 12 }}
-              leftIcon={<BellIcon size={24} color="black" />}
-              rightIcon={<ChevronRightIcon size={24} color="black" />}
-            >
-              <View className="px-1">
-                <Text className="text-sm text-balck font-medium">
-                  Notification
-                </Text>
-                <Text className="text-xs text-black font-light">
-                  Stay up to date on latest offers and more.
-                </Text>
-              </View>
-            </Panel>
-
-            <Panel
-              style={{ marginTop: 12 }}
-              leftIcon={<BellIcon size={24} color="black" />}
+              leftIcon={<CheckBadgeIcon size={24} color="black" />}
               rightIcon={<ChevronRightIcon size={24} color="black" />}
             >
               <View className="px-1">
@@ -76,28 +148,16 @@ export default function MoreOptionScreen() {
               </View>
             </Panel>
             <Panel
-              leftIcon={<StarIcon size={24} color="black" />}
+              onPress={() => navigation.navigate("ProfileAddressScreen")}
+              leftIcon={<MapIcon size={24} color="black" />}
               rightIcon={<ChevronRightIcon size={24} color="black" />}
             >
               <View className="px-1">
                 <Text className="text-sm text-balck font-medium">
-                  My Favourites
+                  My Addresses
                 </Text>
                 <Text className="text-xs text-black font-light">
                   Add favourites
-                </Text>
-              </View>
-            </Panel>
-            <Panel
-              leftIcon={<GiftIcon size={24} color="black" />}
-              rightIcon={<ChevronRightIcon size={24} color="black" />}
-            >
-              <View className="px-1">
-                <Text className="text-sm text-balck font-medium">
-                  Smile Rewards
-                </Text>
-                <Text className="text-xs text-black font-light">
-                  Earn and Reward
                 </Text>
               </View>
             </Panel>
@@ -111,7 +171,7 @@ export default function MoreOptionScreen() {
   );
 }
 
-const Profile = () => {
+const Profile = ({onLogout}) => {
   const navigation = useNavigation();
   const user = useReactiveVar(userVar);
   return (
@@ -134,16 +194,15 @@ const Profile = () => {
       )}
 
       {user && (
-        <Panel
-          onPress={() => navigation.navigate("ProfileScreen")}
-          leftIcon={<ProfileIcon />}
-          rightIcon={<ChevronRightIcon size={24} color="black" />}
-        >
+        <Panel leftIcon={<ProfileIcon />}>
           <View className="px-1">
             <Text className="text-xl text-balck font-normal">
               Hello {user.firstName}
             </Text>
             <Text className="text-sm text-black font-light">{user.email}</Text>
+            <TouchableOpacity onPress={onLogout}>
+              <Text className="text-base text-red-500 font-light">Log out</Text>
+            </TouchableOpacity>
           </View>
         </Panel>
       )}

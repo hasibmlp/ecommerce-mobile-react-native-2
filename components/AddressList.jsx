@@ -8,7 +8,6 @@ import AddressForm from "./AddressForm";
 import Panel from "./actions/Panel";
 import { useState } from "react";
 import Button from "./buttons/Button";
-import CheckBox from "./Sidebar/Buttons/Checkbox";
 import RadioButton from "./buttons/RadioButton";
 
 const AddressList = ({
@@ -31,7 +30,7 @@ const AddressList = ({
   };
 
   const handleItemPress = (item) => {
-    onItemPress(item);
+    onItemPress && typeof onItemPress === "function" && onItemPress(item);
   };
 
   const userAddresses = user?.addresses?.edges;

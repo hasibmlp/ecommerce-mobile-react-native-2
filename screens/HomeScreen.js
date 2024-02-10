@@ -116,7 +116,10 @@ const HomeScreen = () => {
             >
               <MagnifyingGlassIcon color="black" size={24} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('MoreOptionsScreen')} className="h-full justify-center px-1">
+            <TouchableOpacity
+              onPress={() => navigation.navigate("MoreOptionsScreen")}
+              className="h-full justify-center px-1"
+            >
               <View className="bg-neutral-200 h-10 w-10 rounded-full items-center justify-center">
                 {!user && <UserIcon color="black" size={24} />}
                 {user && (
@@ -325,17 +328,15 @@ const HomeScreen = () => {
   );
 };
 
-const GreetingCard = ({user}) => {
-  let timeOfDay
-  const date = new Date()
-  const hour = date.getHours()
+const GreetingCard = ({ user }) => {
+  let timeOfDay;
+  const date = new Date();
+  const hour = date.getHours();
 
-  if(hour < 12) {
-    timeOfDay = 'morning'
-  }else if(hour >= 12 && hour <= 17)
-    timeOfDay = 'afternoon'
-  else 
-    timeOfDay = 'evening'
+  if (hour < 12) {
+    timeOfDay = "morning";
+  } else if (hour >= 12 && hour <= 17) timeOfDay = "afternoon";
+  else timeOfDay = "evening";
 
   return (
     <Text style={FONT_FAMILY.primary} className="text-2xl text-black">

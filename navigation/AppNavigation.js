@@ -30,6 +30,9 @@ import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
 import ProfileScreen from "../screens/ProfileScreen";
 import { CART_BUYER_IDENTITY_UPDATE, CREATE_CART } from "../graphql/mutations";
 import SearchResultsScreen from "../screens/SearchResultsScreen";
+import ProfileAddressScreen from "../screens/ProfileAddressScreen";
+import OrdersScreen from "../screens/OrdersScreen";
+import ProfileOrdersDetailsScreen from "../screens/ProfileOrdersDetailsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,6 +120,27 @@ export const MoreOptionsScreens = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="ProfileAddressScreen"
+        component={ProfileAddressScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProfileOrdersScreen"
+        component={OrdersScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ProfileOrdersDetailsScreen"
+        component={ProfileOrdersDetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 };
@@ -181,15 +205,17 @@ export function HomeTabs() {
 export default function AppNavigation() {
   const user = useReactiveVar(userVar);
   const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER, {
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "no-cache",
   });
   const [appInitialFlag, setAppInitialFlag] = useState(false);
 
   const [createCart] = useMutation(CREATE_CART);
-  const [getCartDetails, { data: cartDetailData }] =
-    useLazyQuery(GET_CART_DETAILS_V2, {
-      fetchPolicy: 'no-cache'
-    });
+  const [getCartDetails, { data: cartDetailData }] = useLazyQuery(
+    GET_CART_DETAILS_V2,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
   const [
     updateCartBuyer,
@@ -348,7 +374,7 @@ export default function AppNavigation() {
                     "BUYER IDENTITY ADDED: ",
                     JSON.stringify(data, null, 2)
                   );
-                  cartVar(newCart);
+                  newCart;
                 },
               });
             } else {
@@ -392,13 +418,13 @@ export default function AppNavigation() {
             headerShown: false,
           }}
         />
-        {(
+        {
           <Stack.Screen
             navigationKey={user ? "user" : "guest"}
             name="AuthScreen"
             component={AuthScreen}
           />
-        )}
+        }
       </Stack.Navigator>
     </NavigationContainer>
   );

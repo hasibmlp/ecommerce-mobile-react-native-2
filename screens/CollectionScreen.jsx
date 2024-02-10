@@ -1,9 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useLayoutEffect,
-  useCallback,
-} from "react";
+import React, { useRef, useState, useLayoutEffect, useCallback } from "react";
 import { useQuery } from "@apollo/client";
 import {
   Dimensions,
@@ -27,11 +22,10 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
-import {
-  GET_COLLECTION_BY_ID,
-} from "../graphql/queries";
+import { GET_COLLECTION_BY_ID } from "../graphql/queries";
 import { CollectionCard } from "../components/CollectionCard";
 import { LinearGradient } from "expo-linear-gradient";
 import Button from "../components/buttons/Button";
@@ -157,7 +151,7 @@ function CollectionData({ route }) {
         />
       }
 
-      <PageIndicatorPopup  />
+      <PageIndicatorPopup />
 
       <MyModal visible={isSideBarVisible}>
         <FilterBody
@@ -208,9 +202,12 @@ function CollectionBody({
         updateQuery: (previousResult, { fetchMoreResult }) => {
           const newEdges = fetchMoreResult.collection.products.edges || [];
           const prevEdges = previousResult.collection.products.edges || [];
-          fetchMoreResult.collection.products.edges = [...prevEdges, ...newEdges];
+          fetchMoreResult.collection.products.edges = [
+            ...prevEdges,
+            ...newEdges,
+          ];
 
-          return fetchMoreResult
+          return fetchMoreResult;
         },
       });
     }
@@ -371,7 +368,11 @@ function CollectionBody({
             <CollectionCard
               key={item.node.id}
               product={item.node}
-              onPress={() => navigation.navigate("ProductDetailScreen", { productId: item.node.id })}
+              onPress={() =>
+                navigation.navigate("ProductDetailScreen", {
+                  productId: item.node.id,
+                })
+              }
             />
             {hasNextPage &&
               colloctionData?.collection?.products?.edges.length - 2 ===
@@ -441,55 +442,72 @@ function ActionSlider({
     },
   ];
 
+  const sharedValue = useSharedValue(0);
+
+  const animatedStylec = useAnimatedStyle(() => ({
+    width: interpolate(sharedValue.value, [0, 1], [0, 50]),
+  }));
+
+  const handlePress = () => {
+    sharedValue.value = withSpring(1);
+  };
+
   return (
-    <ScrollView
-      horizontal={true}
-      className="px-2 py-4"
-      showsHorizontalScrollIndicator={false}
-    >
+    <View className="w-full flex-row items-center px-2 py-4">
       <FilterButton onPress={onPress} />
+
       <SortButton
+        sharedValue={sharedValue}
         active={sortKeys.handle !== "default" ? true : false}
         label={sortKeys?.label}
         onPress={() => setModalVisible(true)}
       />
-      {activeFilterInput &&
-        activeFilterInput.map((activeFilter, index) => {
-          return (
-            <SmallButton
-              key={index.toString()}
-              id={activeFilter.id}
-              title={activeFilter.label}
-              setActiveFilterInput={setActiveFilterInput}
-              setLoading={setLoading}
-            />
-          );
-        })}
-
-      <BottomModal
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-        title="Sort by"
+      <ScrollView
+        horizontal={true}
+        className=""
+        showsHorizontalScrollIndicator={false}
       >
-        <View className="pb-10">
-          {sort_keys.map(
-            (item, index) =>
-              item.handle !== "default" && (
-                <SortCard
-                  key={index.toString()}
-                  active={sortKeys?.handle === item.handle}
-                  label={item.label}
-                  onPress={() => {
-                    setModalVisible(false);
-                    handleSortPress(item);
-                  }}
-                  style={{ borderBottomWidth: 1, borderBottomColor: "#ddd" }}
-                />
-              )
-          )}
-        </View>
-      </BottomModal>
-    </ScrollView>
+        {activeFilterInput &&
+          activeFilterInput.map((activeFilter, index) => {
+            return (
+              <SmallButton
+                key={index.toString()}
+                id={activeFilter.id}
+                title={activeFilter.label}
+                setActiveFilterInput={setActiveFilterInput}
+                setLoading={setLoading}
+              />
+            );
+          })}
+
+        <BottomModal
+          visible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+          title="Sort by"
+        >
+          <View className="pb-10">
+            {sort_keys.map(
+              (item, index) =>
+                item.handle !== "default" && (
+                  <SortCard
+                    key={index.toString()}
+                    active={sortKeys?.handle === item.handle}
+                    label={item.label}
+                    onPress={() => {
+                      setModalVisible(false);
+                      handleSortPress(item);
+                    }}
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: "#ddd",
+                    }}
+                  />
+                )
+            )}
+          </View>
+        </BottomModal>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -517,25 +535,27 @@ function SortCard({ style, active, label, onPress, onClose }) {
   );
 }
 
-function SortButton({ onPress, label, active }) {
+function SortButton({ onPress, label, active, sharedValue }) {
   [isSortactive, setSortActive] = useState(false);
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
+    <Animated.View
       className={`px-2 h-10 self-start rounded-[5px] border border-gray-400 ${
         active ? " bg-black" : "bg-white"
       } mr-2 flex-row items-center`}
     >
-      <ArrowsUpDownIcon size={20} color={`${active ? "white" : "black"}`} />
-      <Text
+      <TouchableOpacity onPress={onPress}>
+        <ArrowsUpDownIcon size={20} color={`${active ? "white" : "black"}`} />
+        {/* <Text
         style={FONT_FAMILY.primary}
         className={`text-[14px] ${
           active ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         {label ? label : "Sort by"}
-      </Text>
-    </TouchableOpacity>
+      </Text> */}
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -552,14 +572,14 @@ function FilterButton({ onPress }) {
         size={20}
         color={`${isFilterActive ? "white" : "black"}`}
       />
-      <Text
+      {/* <Text
         style={FONT_FAMILY.primary}
         className={`text-[14px] ${
           isFilterActive ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         filter {isFilterActive ? "(" + 0 + ")" : ""}
-      </Text>
+      </Text> */}
     </TouchableOpacity>
   );
 }
@@ -741,9 +761,7 @@ function CollectionHeader({
 
 function PageIndicatorPopup() {
   return (
-    <Pressable
-      className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center "
-    >
+    <Pressable className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center ">
       <ArrowUpIcon size={16} color="black" />
     </Pressable>
   );

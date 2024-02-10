@@ -49,6 +49,10 @@ export default function ColorSwatchImage({
               className="w-full h-full"
             ></View>
           )} */}
+          <View
+            style={{ backgroundColor: activeColorSwatchValue }}
+            className="w-full h-full"
+          ></View>
         </View>
       )}
       {/* {!activeColorSwatchValue && (

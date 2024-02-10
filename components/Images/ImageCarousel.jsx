@@ -71,10 +71,10 @@ export default function ImageCarousel({
           return (
             <Pressable onPress={onPress}>
               <View style={{ width: width, height: height }}>
-                  {/* <Image
+                  <Image
                     style={{ width: width, height: height }}
                     src={item.url}
-                  /> */}
+                  />
                   {/* <Image
                     style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
                     source={item.url}

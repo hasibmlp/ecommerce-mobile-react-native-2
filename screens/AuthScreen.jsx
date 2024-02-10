@@ -20,12 +20,11 @@ import { ScreenHeader } from "../components/actions/ScreenHeader";
 import Button from "../components/buttons/Button";
 import {
   CART_BUYER_IDENTITY_UPDATE,
-  CREATE_CART,
   CREATE_CUSTOMER,
   CREATE_CUSTOMER_TOKEN,
   CUSTOMER_RECOVER,
 } from "../graphql/mutations";
-import { GET_CART_DETAILS_V2, GET_CUSTOMER } from "../graphql/queries";
+import { GET_CUSTOMER } from "../graphql/queries";
 import { cartVar, isLoggedinFrstTimeVar, userVar } from "../makeVars/MakeVars";
 import CheckBox from "../components/Sidebar/Buttons/Checkbox";
 import MyModal from "../components/Modal/MyModal";
@@ -41,7 +40,6 @@ const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 const AuthScreen = () => {
   const cart = useReactiveVar(cartVar);
-  const isLoggedinFrstTime = useReactiveVar(isLoggedinFrstTimeVar);
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("log");
   const [isModalVisible, setModalVisible] = useState(false);
@@ -85,14 +83,6 @@ const AuthScreen = () => {
   ] = useLazyQuery(GET_CUSTOMER, {
     fetchPolicy: 'no-cache'
   });
-
-  const [createCart] = useMutation(CREATE_CART);
-  const [getCartDetails, { data: cartDetailData }] =
-    useLazyQuery(GET_CART_DETAILS_V2, {
-      fetchPolicy: 'no-cache'
-    });
-
-  // console.log("USER ACCESS TOKEN CREATED: ", data?.customerAccessTokenCreate?.customerAccessToken?.accessToken)
 
   const handleLogin = async (values) => {
     try {
@@ -307,68 +297,6 @@ const AuthScreen = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   const getToken = async () => {
-  //     console.log("SLJSLFJKSFJD", customrDetailsData?.customer?.email);
-  //     const token = await AsyncStorage.getItem("my-key");
-  //     console.log("CUSTOMER USER GET CODE RUN ....", token);
-
-  //     updateCartBuyer({
-  //       variables: {
-  //         buyerIdentity: {
-  //           customerAccessToken: token,
-  //           email: customrDetailsData?.customer?.email,
-  //         },
-  //         cartId: cart?.id,
-  //       },
-  //       onCompleted: (data) => {
-  //         console.log("BUYER IDENTITY ADDED: ", JSON.stringify(data, null, 2));
-  //       },
-  //     });
-  //   };
-
-  //   getToken();
-  // }, [customrDetailsData]);
-
-  // useEffect(() => {
-  //   const handleTokenStorage = async () => {
-  //     if (data?.customerAccessTokenCreate?.customerAccessToken === null) {
-  //       Alert.alert(
-  //         data?.customerAccessTokenCreate?.customerUserErrors[0].message
-  //       );
-  //     } else {
-  //       const token =
-  //         data?.customerAccessTokenCreate?.customerAccessToken?.accessToken;
-  //       if (token) {
-  //         getUser({
-  //           variables: {
-  //             customerAccessToken: token,
-  //           },
-  //           onCompleted: async (data) => {
-  //             if (await data?.customer) {
-  //               userVar(await data?.customer);
-  //               console.log("USER UPDATED SUCCESFULLY");
-  //               navigation.navigate("MainScreen");
-  //             }
-  //           },
-  //         });
-  //       }
-  //       try {
-  //         if (token !== null) await AsyncStorage.setItem("my-key", token);
-  //       } catch (e) {}
-  //     }
-  //   };
-
-  //   handleTokenStorage();
-  // }, [data?.customerAccessTokenCreate?.customerAccessToken]);
-
-  // useEffect(() => {
-  //   if (customrDetailsData?.customer) {
-  //     userVar(customrDetailsData?.customer);
-  //     console.log("USER UPDATED SUCCESFULLY");
-  //     navigation.navigate("MainScreen");
-  //   }
-  // }, [customrDetailsData]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -376,7 +304,7 @@ const AuthScreen = () => {
       {/* {customerDetailsLoading && <LoadingFullScreen />}
       {customerCreationLoading && <LoadingFullScreen />} */}
       <View className="flex-1 items-center bg-neutral-50">
-        <ScreenHeader />
+        {/* <ScreenHeader /> */}
 
         <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 

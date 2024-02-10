@@ -3,6 +3,9 @@ import { ApolloProvider } from "@apollo/client";
 import { useFonts } from "expo-font";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  ShopifyCheckoutSheetProvider, 
+} from "@shopify/checkout-sheet-kit";
 
 import AppNavigation from "./navigation/AppNavigation";
 import { store } from "./redux/store";
@@ -22,9 +25,11 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ApolloProvider client={shopifyClient}>
-        <Provider store={store}>
-          <AppNavigation />
-        </Provider>
+        <ShopifyCheckoutSheetProvider>
+          <Provider store={store}>
+            <AppNavigation />
+          </Provider>
+        </ShopifyCheckoutSheetProvider>
       </ApolloProvider>
     </GestureHandlerRootView>
   );

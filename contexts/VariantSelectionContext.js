@@ -28,6 +28,8 @@ function VariantSelectionProvider({
 
   const cart = useReactiveVar(cartVar);
 
+  console.log('THIS IS CARTVAR', cart.id)
+
   const { data, loading, error } = useQuery(GET_PRODUCT, {
     variables: {
       productId,
@@ -97,6 +99,7 @@ function VariantSelectionProvider({
   });
 
   const handleAddCartBtn = (onClose) => {
+    console.log("pressed")
     const uniqueId = uid();
     const customSelections = customProductId?.id
       ? JSON.stringify(customProductId?.selections[0])
@@ -147,6 +150,8 @@ function VariantSelectionProvider({
             ],
           };
 
+      console.log("cartid: ", cart?.id)
+
       addCartV2Item({
         variables: input,
         refetchQueries: [
@@ -158,10 +163,12 @@ function VariantSelectionProvider({
           },
         ],
         onCompleted: () => {
+          console.log("succussfully added item to cart")
           typeof onClose === "function" && onClose();
           setProductSuccessfullyAdded(true);
         },
       });
+
     }
   };
 

@@ -118,7 +118,7 @@ const ProfileScreen = ({ route }) => {
       {cartDetailLoading && <LoadingFullScreen />}
       <ScrollView className="bg-neutral-100">
         <View className="flex-1 bg-neutral-100 ">
-          <ScreenHeader title="Personal Information" />
+          {/* <ScreenHeader title="Personal Information" /> */}
           <View className="w-full p-8 items-center bg-white mt-32 ">
             <View className=" border-4 border-[#fff] absolute -top-10 rounded-full">
               <View className="w-20 h-20 rounded-full bg-neutral-200"></View>

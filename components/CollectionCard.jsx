@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableHighlight,
+  Image,
 } from "react-native";
 // import { Image } from "expo-image";
 import { PlusIcon } from "react-native-heroicons/outline";
@@ -42,17 +43,10 @@ export function CollectionCard({ product, onPress }) {
       className=" w-full justify-center mr-[10px] "
     >
       <View className="w-full h-[300px] overflow-hidden rounded-[2px]">
-        {/* {images && (
-          <Image
-            style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-            // className="flex-1 w-full bg-neutral-200"
-            source={product?.featuredImage?.url}
-            placeholder={blurhash}
-            contentFit="cover"
-            transition={100}
-            cachePolicy="none"
-          />
-        )} */}
+        {images && (
+          <Image source={{uri: product?.featuredImage?.url}} className="w-full h-full" />
+         
+        )}
       </View>
 
       <View

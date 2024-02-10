@@ -650,6 +650,32 @@ export const GET_CUSTOMER = gql`
         province
         zip
       }
+      orders(first: 10) {
+        edges {
+          node {
+            id
+            orderNumber
+            name
+            processedAt
+            fulfillmentStatus
+            lineItems(first: 10) {
+              edges {
+                node {
+                  title
+                  variant {
+                    id
+                    title
+                    image {
+                      url
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -930,6 +956,126 @@ export const GET_PROUDCTS_BY_IDS = gql`
           id
           name
           values
+        }
+      }
+    }
+  }
+`;
+
+export const GET_CUSTOMER_ORDERS = gql`
+  query getCustomerOrders($customerAccessToken: String!) {
+    customer(customerAccessToken: $customerAccessToken) {
+      id
+      orders(first: 10) {
+        edges {
+          node {
+            id
+            orderNumber
+            name
+            canceledAt
+            processedAt
+            fulfillmentStatus
+            financialStatus
+            lineItems(first: 10) {
+              edges {
+                node {
+                  title
+                  variant {
+                    id
+                    title
+                    image {
+                      url
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_ORDER_DETAILS = gql`
+  query getOrderDetails($orderId: ID!) {
+    node(id: $orderId) {
+      ... on Order {
+        id
+        canceledAt
+        fulfillmentStatus
+        financialStatus
+        lineItems(first: 10) {
+          edges {
+            node {
+              title
+              currentQuantity
+              quantity
+              variant {
+                id
+                title
+                selectedOptions {
+                  name
+                  value
+                }
+                image{
+                  id
+                  url
+                }
+                price {
+                  amount
+                  currencyCode
+                }
+                compareAtPrice {
+                  amount
+                  currencyCode
+                }
+                product {
+                  id
+                  vendor
+                  title
+                }
+              }
+            }
+          }
+        }
+        name
+        orderNumber
+        processedAt
+        billingAddress {
+          id
+          address1
+          address2
+          city
+          firstName
+          lastName
+          zip
+          formatted
+          formattedArea
+        }
+        successfulFulfillments(first: 1) {
+          trackingCompany
+          trackingInfo {
+            number
+            url
+          }
+        }
+        subtotalPrice {
+          amount
+          currencyCode
+        }
+        totalShippingPrice {
+          amount
+          currencyCode
+        }
+        totalTax {
+          amount
+          currencyCode
+        }
+        totalPrice {
+          amount
+          currencyCode
         }
       }
     }

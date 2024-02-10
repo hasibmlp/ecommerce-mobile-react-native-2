@@ -1,10 +1,9 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 // import { Image } from "expo-image";
 
 import PriceContainer from "../PriceContainer";
 import ColorSwatchImage from "../buttons/ColorSwatchImage";
 import { FONT_FAMILY } from "../../theme";
-
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
@@ -41,20 +40,17 @@ export default function ProductCard({
         style={{ height }}
         className="w-full overflow-hidden rounded-[2px] bg-gray-300"
       >
-        {/* {featuredImage?.url && (
+        {featuredImage?.url && (
           <Image
-            style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
-            source={featuredImage?.url}
-            placeholder={blurhash}
-            contentFit="cover"
-            transition={100}
+            source={{ uri: featuredImage?.url }}
+            className="w-full h-full"
           />
-        )} */}
+        )}
       </View>
       <View className="bg-white items-center justify-center py-3">
         {product.title && (
           <Text
-          style={FONT_FAMILY.primary}
+            style={FONT_FAMILY.primary}
             numberOfLines={1}
             className="text-[13px] font-normal text-black w-[90%] mb-2 text-center"
           >
@@ -81,7 +77,10 @@ export default function ProductCard({
                   disableWhenUnavailable={false}
                 />
               ))}
-            <Text style={FONT_FAMILY.primary} className="ml-1 text-[13px] text-black font-light">
+            <Text
+              style={FONT_FAMILY.primary}
+              className="ml-1 text-[13px] text-black font-light"
+            >
               {totalNumberOfReminingColor > 0 &&
                 "+" + totalNumberOfReminingColor}
             </Text>

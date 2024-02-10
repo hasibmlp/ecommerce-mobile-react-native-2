@@ -718,6 +718,7 @@ function PurchaseOption({ productId, data }) {
   }
 
   const handlePress = () => {
+    console.log("button pressed!!")
     if (selectedVariant.id) {
       selectedVariant.currentlyNotInStock
         ? () => console.log("PROUCT NOT IN STOCK")
