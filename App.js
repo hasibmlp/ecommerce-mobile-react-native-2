@@ -3,9 +3,7 @@ import { ApolloProvider } from "@apollo/client";
 import { useFonts } from "expo-font";
 import "react-native-gesture-handler";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {
-  ShopifyCheckoutSheetProvider, 
-} from "@shopify/checkout-sheet-kit";
+import { ShopifyCheckoutSheetProvider } from "@shopify/checkout-sheet-kit";
 
 import AppNavigation from "./navigation/AppNavigation";
 import { store } from "./redux/store";
@@ -16,6 +14,11 @@ export default function App() {
   const [fontsLoaded] = useFonts({
     Georgia: require("./assets/fonts/georgia.ttf"),
     NunitoSans: require("./assets/fonts/NunitoSans.ttf"),
+    EBGaramond: require("./assets/fonts/EBGaramond-Regular.ttf"),
+    EBGaramondBold: require("./assets/fonts/EBGaramond-Bold.ttf"),
+    EBGaramondMedium: require("./assets/fonts/EBGaramond-Medium.ttf"),
+    Nexa: require("./assets/fonts/NexaRegular.otf"),
+    NexaBold: require("./assets/fonts/NexaBold.otf"),
   });
 
   useEffect(() => {}, [fontsLoaded]);

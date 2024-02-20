@@ -26,10 +26,10 @@ export default function ProductCardCarousal({ content }) {
 
   return (
     <View className={`bg-white py-[15px] pb-[40px] flex-col mb-3`}>
-      <View className="flex-row justify-between py-[10px] px-[15px]">
+      <View className="flex-row justify-between items-center py-[10px] px-[15px]">
         {!data && loading && <Skeleton width={100} height={12} rounded />}
         {data && (
-          <Text style={FONT_FAMILY.primary} className="text-[18px] font-light text-black capitalize">
+          <Text style={FONT_FAMILY.primary} className="text-2xl font-light text-black capitalize">
             {data.collection.title}
           </Text>
         )}
@@ -40,7 +40,7 @@ export default function ProductCardCarousal({ content }) {
             })
           }
         >
-          <Text style={FONT_FAMILY.primary} className="text-[11px] text-red-900 font-normal uppercase underline">
+          <Text style={FONT_FAMILY.font_3} className="text-[13px] text-black font-normal uppercase underline">
             View all
           </Text>
         </TouchableOpacity>

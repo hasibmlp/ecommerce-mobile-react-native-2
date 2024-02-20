@@ -1,6 +1,6 @@
 
 import { useLayoutEffect, useState, useRef, useEffect } from "react";
-import { SafeAreaView, Text, View, Dimensions, FlatList } from "react-native";
+import { SafeAreaView, Text, View, Dimensions, FlatList, Image } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -60,9 +60,10 @@ export default function InfoSlider({content}) {
     
     function renderItem ({item, index}) {
         return(
-            <View style={{width: ITEM_WIDTH, height: content.data.height}} className='flex-row items-center justify-center bg-black mx-[15px] mb-4 rounded-[10px] '>
+            <View style={{width: ITEM_WIDTH, height: content.data.height}} className='flex-row items-center justify-center mx-[15px] mb-4 rounded-sm overflow-hidden'>
+                <Image source={require("../../assets/Sliderannouncement2.png")} className="w-full h-full absolute top-0 left-0" />
                 <View className="absolute left-5"><MaterialCommunityIcons name={item.iconName || 'square-rounded-outline'} size={24} color="white"/></View>
-                <Text style={FONT_FAMILY.primary} className='text-[14px] font-normal text-white uppercase'>{item.title}</Text>
+                <Text style={FONT_FAMILY.font_3} className='text-xs font-normal text-white uppercase'>{item.title}</Text>
             </View>
         )
     }

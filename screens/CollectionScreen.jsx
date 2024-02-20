@@ -39,6 +39,8 @@ import FilterBody from "../components/Modal/FilterBody";
 import BottomModal from "../components/Modal/BottomModal";
 import Skeleton from "../components/skeletons/Skeleton";
 import { FONT_FAMILY } from "../theme";
+import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
+import SearchIconButton from "../components/buttons/SearchIconButton";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
@@ -73,6 +75,8 @@ function CollectionData({ route }) {
     (filterValue) => filterValue.input
   );
 
+  console.log("activeFilterInput 12345", activeFilterInput)
+
   const {
     loading: colloctionLoading,
     error: colloctionError,
@@ -89,8 +93,7 @@ function CollectionData({ route }) {
   });
 
   const filters = colloctionData?.collection?.products?.filters;
-  const priceRange = filters?.find((item) => item.type === "PRICE_RANGE")
-    .values[0];
+  const priceRange = filters?.find((item) => item.type === "PRICE_RANGE")?.values[0];
   const maxPriceRange =
     priceRange && priceRange.input !== undefined
       ? JSON.parse(priceRange.input)
@@ -151,7 +154,7 @@ function CollectionData({ route }) {
         />
       }
 
-      <PageIndicatorPopup />
+      {/* <PageIndicatorPopup /> */}
 
       <MyModal visible={isSideBarVisible}>
         <FilterBody
@@ -373,6 +376,7 @@ function CollectionBody({
                   productId: item.node.id,
                 })
               }
+              navigateTo={"ProductDetailScreen"}
             />
             {hasNextPage &&
               colloctionData?.collection?.products?.edges.length - 2 ===
@@ -544,16 +548,16 @@ function SortButton({ onPress, label, active, sharedValue }) {
         active ? " bg-black" : "bg-white"
       } mr-2 flex-row items-center`}
     >
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity className="flex-row" onPress={onPress}>
         <ArrowsUpDownIcon size={20} color={`${active ? "white" : "black"}`} />
-        {/* <Text
-        style={FONT_FAMILY.primary}
-        className={`text-[14px] ${
+        <Text
+        style={FONT_FAMILY.secondary}
+        className={`text-sm ${
           active ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         {label ? label : "Sort by"}
-      </Text> */}
+      </Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -572,14 +576,14 @@ function FilterButton({ onPress }) {
         size={20}
         color={`${isFilterActive ? "white" : "black"}`}
       />
-      {/* <Text
-        style={FONT_FAMILY.primary}
+      <Text
+        style={FONT_FAMILY.secondary}
         className={`text-[14px] ${
           isFilterActive ? "text-white" : "text-black"
         } font-normal uppercase ml-1`}
       >
         filter {isFilterActive ? "(" + 0 + ")" : ""}
-      </Text> */}
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -724,12 +728,11 @@ function CollectionHeader({
 
   return (
     <View className="w-full z-20">
-      <HeaderActions />
-
-      <ScreenHeader
-        headerAnimatedStyle={headerAnimatedStyle}
-        headerRight={true}
-        title={data?.collection?.title}
+      <ScreenHeaderV3
+        label={data?.collection?.title}
+        animated={true}
+        scrollY={scrollY}
+        right={<SearchIconButton />}
       />
 
       <Animated.View
@@ -743,7 +746,7 @@ function CollectionHeader({
           },
           filterSliderAnimatedStyle,
         ]}
-        className="absolute top-[50px] z-20 bg-white w-full "
+        className="absolute top-[45px] z-20 bg-white w-full "
       >
         <ActionSlider
           onPress={openSideBar}
@@ -761,7 +764,7 @@ function CollectionHeader({
 
 function PageIndicatorPopup() {
   return (
-    <Pressable className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center ">
+    <Pressable onPress={() => {}} className="bg-gray-100 absolute bottom-6 py-2 px-3 rounded-full shadow-sm flex-row items-center ">
       <ArrowUpIcon size={16} color="black" />
     </Pressable>
   );

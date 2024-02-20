@@ -1,5 +1,5 @@
 import {
-    Image,
+  Image,
   SafeAreaView,
   ScrollView,
   Text,
@@ -19,8 +19,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import Skeleton from "../components/skeletons/Skeleton";
 import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
+import SupportModal from "../components/Modal/SupportModal";
 
 const OrdersScreen = () => {
+  const [isModalVisible, setModalVisible] = useState(false);
   const [orders, setOrders] = useState();
   const navigation = useNavigation();
 
@@ -56,7 +58,10 @@ const OrdersScreen = () => {
       <ScreenHeaderV3
         label="My Orders"
         right={
-          <TouchableOpacity className=" w-full h-full items-center justify-center">
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            className=" w-full h-full items-center justify-center"
+          >
             <QuestionMarkCircleIcon size={30} color="black" />
           </TouchableOpacity>
         }
@@ -157,7 +162,7 @@ const OrdersScreen = () => {
               month: "long",
               day: "numeric",
             });
-            console.log(item.node.canceledAt);
+            
             return (
               <View key={item.node.id} className="bg-white mt-3">
                 <View className="flex-row justify-between items-center p-4">
@@ -190,16 +195,19 @@ const OrdersScreen = () => {
 
                 <View className="flex-row px-4 mt-3">
                   {item?.node?.lineItems?.edges?.map((i) => {
-                    console.log(i?.node?.variant?.image?.url)
-                    if(i?.node?.title === '') return null
-                    return(
-                    <View
-                      key={i.node.variant?.id}
-                      className="h-[130] w-[80] bg-neutral-300 mr-2"
-                    >
-                        <Image className="w-full h-full" source={{uri: i?.node?.variant?.image?.url}} />
-                    </View>
-                  )})}
+                    if (i?.node?.title === "Cash on Delivery fee") return null;
+                    return (
+                      <View
+                        key={i.node.variant?.id}
+                        className="h-[130] w-[80] bg-neutral-300 mr-2"
+                      >
+                        <Image
+                          className="w-full h-full"
+                          source={{ uri: i?.node?.variant?.image?.url }}
+                        />
+                      </View>
+                    );
+                  })}
                 </View>
 
                 <TouchableOpacity
@@ -218,6 +226,11 @@ const OrdersScreen = () => {
               </View>
             );
           })}
+
+        <SupportModal
+          isModalVisible={isModalVisible}
+          onClose={() => setModalVisible(false)}
+        />
       </ScrollView>
     </SafeAreaView>
   );

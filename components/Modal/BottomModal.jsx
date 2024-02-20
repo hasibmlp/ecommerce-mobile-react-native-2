@@ -65,15 +65,15 @@ export default function BottomModal({visible, children, onClose, title}) {
 function BottomModalHeader({ handleClose, title }) {
         return (
           <View className=" flex-row justify-between items-center px-5 pb-4 pt-6">
-            <Text style={FONT_FAMILY.primary} className="text-[22px] font-light text-black">{title}</Text>
-            <Pressable
+            <Text style={FONT_FAMILY.primary} className="text-2xl font-light text-black">{title}</Text>
+            <TouchableOpacity
               className=" py-2 px-3"
               onPress={handleClose}
             >
-              <Text style={FONT_FAMILY.primary} className="text-[14px] font-medium text-black uppercase">
+              <Text style={FONT_FAMILY.font_3} className="text-[14px] font-medium text-black uppercase">
                 Done
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         );
       }

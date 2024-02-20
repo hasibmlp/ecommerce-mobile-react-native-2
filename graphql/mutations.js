@@ -15,6 +15,126 @@ export const ADD_CART_ITEM_V2 = gql`
     cartLinesAdd(cartId: $cartId, lines: $lines) {
       cart {
         id
+        checkoutUrl
+        discountCodes {
+          code
+          applicable
+        }
+        buyerIdentity {
+          email
+          customer {
+            id
+            email
+          }
+        }
+        discountAllocations {
+          ... on CartAutomaticDiscountAllocation {
+            discountedAmount {
+              amount
+            }
+            title
+          }
+          ... on CartCodeDiscountAllocation {
+            code
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+          ... on CartCustomDiscountAllocation {
+            title
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        lines(first: 10, reverse: true) {
+          edges {
+            node {
+              id
+              quantity
+              attribute(key: "custom-product-uid") {
+                key
+                value
+              }
+              attributes {
+                key
+                value
+              }
+              discountAllocations {
+                ... on CartAutomaticDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCodeDiscountAllocation {
+                  code
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCustomDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              cost {
+                subtotalAmount {
+                  amount
+                  currencyCode
+                }
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  image {
+                    url
+                    altText
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  product {
+                    productType
+                    vendor
+                    title
+                  }
+                }
+              }
+              discountAllocations {
+                ... on CartCodeDiscountAllocation {
+                  code
+                }
+              }
+            }
+          }
+        }
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalTaxAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
       }
       userErrors {
         field
@@ -29,6 +149,126 @@ export const UPDATE_CART_ITEM = gql`
     cartLinesUpdate(cartId: $cartId, lines: $lines) {
       cart {
         id
+        checkoutUrl
+        discountCodes {
+          code
+          applicable
+        }
+        buyerIdentity {
+          email
+          customer {
+            id
+            email
+          }
+        }
+        discountAllocations {
+          ... on CartAutomaticDiscountAllocation {
+            discountedAmount {
+              amount
+            }
+            title
+          }
+          ... on CartCodeDiscountAllocation {
+            code
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+          ... on CartCustomDiscountAllocation {
+            title
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        lines(first: 10, reverse: true) {
+          edges {
+            node {
+              id
+              quantity
+              attribute(key: "custom-product-uid") {
+                key
+                value
+              }
+              attributes {
+                key
+                value
+              }
+              discountAllocations {
+                ... on CartAutomaticDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCodeDiscountAllocation {
+                  code
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCustomDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              cost {
+                subtotalAmount {
+                  amount
+                  currencyCode
+                }
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  image {
+                    url
+                    altText
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  product {
+                    productType
+                    vendor
+                    title
+                  }
+                }
+              }
+              discountAllocations {
+                ... on CartCodeDiscountAllocation {
+                  code
+                }
+              }
+            }
+          }
+        }
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalTaxAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
       }
       userErrors {
         field
@@ -43,6 +283,126 @@ export const REMOVE_CART_ITEM_V2 = gql`
     cartLinesRemove(cartId: $cartId, lineIds: $lineIds) {
       cart {
         id
+        checkoutUrl
+        discountCodes {
+          code
+          applicable
+        }
+        buyerIdentity {
+          email
+          customer {
+            id
+            email
+          }
+        }
+        discountAllocations {
+          ... on CartAutomaticDiscountAllocation {
+            discountedAmount {
+              amount
+            }
+            title
+          }
+          ... on CartCodeDiscountAllocation {
+            code
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+          ... on CartCustomDiscountAllocation {
+            title
+            discountedAmount {
+              amount
+              currencyCode
+            }
+          }
+        }
+        lines(first: 10, reverse: true) {
+          edges {
+            node {
+              id
+              quantity
+              attribute(key: "custom-product-uid") {
+                key
+                value
+              }
+              attributes {
+                key
+                value
+              }
+              discountAllocations {
+                ... on CartAutomaticDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCodeDiscountAllocation {
+                  code
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+                ... on CartCustomDiscountAllocation {
+                  title
+                  discountedAmount {
+                    amount
+                    currencyCode
+                  }
+                }
+              }
+              cost {
+                subtotalAmount {
+                  amount
+                  currencyCode
+                }
+                totalAmount {
+                  amount
+                  currencyCode
+                }
+              }
+              merchandise {
+                ... on ProductVariant {
+                  id
+                  image {
+                    url
+                    altText
+                  }
+                  selectedOptions {
+                    name
+                    value
+                  }
+                  product {
+                    productType
+                    vendor
+                    title
+                  }
+                }
+              }
+              discountAllocations {
+                ... on CartCodeDiscountAllocation {
+                  code
+                }
+              }
+            }
+          }
+        }
+        cost {
+          subtotalAmount {
+            amount
+            currencyCode
+          }
+          totalTaxAmount {
+            amount
+            currencyCode
+          }
+          totalAmount {
+            amount
+            currencyCode
+          }
+        }
       }
       userErrors {
         field

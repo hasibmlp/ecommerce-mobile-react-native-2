@@ -1,9 +1,9 @@
 export const homePageData = [
     {
-      "category": "women, men, kids",
+      "category": "women",
       "layout": "info-banner-carousel",
       "data": {
-        "height": 42,
+        "height": 50,
         "banner": [
           {
             "title": "2 Hour in Dubai",
@@ -30,66 +30,109 @@ export const homePageData = [
       }
     },
     {
-        "category": "women",
-        "layout": "two-category-block",
-        "data": {
-          "title": "discover",
-          "height": 230,
-          "desc": "large collection of scrubsets and labcoats",
-          "images": [
-            {
-              "title": "scrubset",
-              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
-            },
-            {
-              "title": "labcoat",
-              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
-            }
-          ]
+      "category": "women",
+      "layout": "banner",
+      "data": {
+        "height": 300,
+        "image": {
+          "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Image45.jpg?v=1707671079"
         }
-    },
-    {
-        "category": "women",
-        "layout": "three-category-block",
-        "data": {
-          "title": "complete your looks",
-          "desc": "solid scrub top | pant | printed tops",
-          "height": 230,
-          "images": [
-            {
-              "title": "scrub tops",
-              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
-            },
-            {
-              "title": "pant",
-              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
-            },
-            {
-              "title": "printed tops",
-              "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
-            }
-          ]
-        }
+      }
     },
     {
       "category": "women",
-      "layout": "two-category-block",
+      "layout": "banner",
       "data": {
-        "title": "style your way",
-        "height": 230,
-        "desc": "fashionable jackets and T-shirts",
-        "images": [
+        "height": 500,
+        "image": {
+          "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Highlight2.jpg?v=1707671680"
+        }
+      }
+    },
+    {
+      "category": "women",
+      "layout": "brand-card-carousel",
+      "data": {
+        "title": "Categories",
+        "desc": "Discover our main categories",
+        "brands": [
           {
-            "title": "jackets",
-            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubset.jpg?v=1695124024"
+            "name": "Labcoats",
+            "image": "https://cdn.shopify.com/s/files/1/2610/4676/files/Labcoats2.jpg?v=1707672504"
           },
           {
-            "title": "t-shirts",
-            "url": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/labcoat.jpg?v=1695124024"
+            "name": "Scrubsets",
+            "image": "https://cdn.shopify.com/s/files/1/2610/4676/files/Scrubsets3.jpg?v=1707672503"
+          },
+          {
+            "name": "Scrub Tops",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub Pants",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Printed Tops",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub Pants",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Scrub Jacket",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+          },
+          {
+            "name": "Skirts",
+            "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
           }
         ]
       }
-  },
+    },
+    {
+      "category": "women",
+      "layout": "banner",
+      "data": {
+        "height": 300,
+        "image": {
+          "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Banner73.png?v=1707673820"
+        }
+      }
+    },
+    {
+      "category": "women",
+      "layout": "three-category-block",
+      "data": {
+        "height": 280,
+        "images": [
+          {
+            "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Surgical_hat1.png?v=1707674515"
+          },
+          {
+            "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Hiijab5.png?v=1707674670"
+          },
+          {
+            "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Clogs6.png?v=1707674670"
+          }
+        ]
+      }
+    },
+    {
+      "category": "women",
+      "layout": "banner-content",
+      "data": {
+        "context": 'postCard',
+        "title": "Trending Now",
+        "desc": "Browse our best selling stethoscopes from your favorite Brands",
+        "cta": "shop now",
+        "image": {
+            "title": "scrubset",
+            "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Highlight3.jpg?v=1707674878"
+          }
+      }
+    },
   {
     "category": "women",
     "layout": "product-card-carousel",
@@ -99,11 +142,59 @@ export const homePageData = [
   },
   {
     "category": "women",
+    "layout": "banner",
+    "data": {
+      "height": 400,
+      "image": {
+        "url": "https://cdn.shopify.com/s/files/1/2610/4676/files/Printed_Jackets_Banner.png?v=1707675267"
+      }
+    }
+  },
+  {
+    "category": "women",
+    "layout": "brand-card-carousel",
+    "data": {
+      "title": "Brands",
+      "desc": "Browse through your favorite brands",
+      "brands": [
+        {
+          "name": "Scrub & Clogs",
+          "image": "https://cdn.shopify.com/s/files/1/2610/4676/files/Scrubsets3.jpg?v=1707672503"
+        },
+        {
+          "name": "Healing Hands",
+          "image": "https://cdn.shopify.com/s/files/1/2610/4676/files/Labcoats2.jpg?v=1707672504"
+        },
+        {
+          "name": "Scrub Pants",
+          "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+        },
+        {
+          "name": "Printed Tops",
+          "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+        },
+        {
+          "name": "Scrub Pants",
+          "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+        },
+        {
+          "name": "Scrub Jacket",
+          "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+        },
+        {
+          "name": "Skirts",
+          "image": "https://cdn.shopify.com/s/files/1/0599/1307/6888/files/scrubtop.jpg?v=1695124024"
+        }
+      ]
+    }
+  },
+  {
+    "category": "women",
     "layout": "banner-content",
     "data": {
       "context": 'postCard',
-      "title": "Most wanted",
-      "desc": "large collection of scrubsets and labcoats",
+      "title": "Note Books",
+      "desc": "Browse our best selling stethoscopes from your favorite Brands ",
       "cta": "click now",
       "image": {
           "title": "scrubset",

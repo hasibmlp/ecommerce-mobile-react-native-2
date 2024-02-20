@@ -1,6 +1,7 @@
 export const FONT_FAMILY = {
-  primary: { fontFamily: "Georgia" },
-  secondary: { fontFamily: "NunitoSans" },
+  primary: { fontFamily: "EBGaramondMedium" },
+  secondary: { fontFamily: "Nexa" },
+  font_3: { fontFamily: "NexaBold" }
 };
 
 export const COLOR_THEME = {

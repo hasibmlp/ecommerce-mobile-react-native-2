@@ -33,6 +33,7 @@ import TextOnly from "../customization/CustomSelection";
 import CustomSelection from "../customization/CustomSelection";
 import CustomSelectionInterface from "../customization/CustomSelectionInterface";
 import EmbroiderySelection from "./CustomSelection";
+import PersonalizeSetting from "../PersonalizeSetting";
 
 export default function VariantSelectionModalContent({ handleClose, context }) {
   const {
@@ -74,10 +75,12 @@ export default function VariantSelectionModalContent({ handleClose, context }) {
             ))}
         </View>
 
-        <CustomizationContainer
+        {/* <CustomizationContainer
           customProductId={customProductId}
           setCustomProductId={setCustomProductId}
-        />
+        /> */}
+
+        <PersonalizeSetting/>
 
         <Button
           label={label}

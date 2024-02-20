@@ -21,7 +21,6 @@ import {
   PlusIcon,
 } from "react-native-heroicons/outline";
 
-import CardSlider from "../components/CardSlider";
 import {
   VariantSelectionContext,
   VariantSelectionProvider,
@@ -60,6 +59,7 @@ import WebView from "react-native-webview";
 import RichText from "../components/RichText";
 import RecommedationCardSlider from "../components/RecommedationCardSlider";
 import YouMayLikeCardSlider from "../components/YouMayLikeCardSlider";
+import SupportModal from "../components/Modal/SupportModal";
 
 const screen_width = Dimensions.get("screen").width;
 const ITEM_WIDTH = screen_width;
@@ -109,6 +109,7 @@ const Header = ({ scrollY }) => {
 
   return (
     <ScreenHeaderV3
+      animated={true}
       scrollY={scrollY}
       right={
         <ShareButton
@@ -218,7 +219,7 @@ function RecommendedCollection({ productId }) {
 
   console.log(youMayLikeProudcts);
   return (
-    <View>
+    <View className="pb-12">
       {youMayLikeProudcts && <YouMayLikeCardSlider ids={youMayLikeProudcts} />}
       <RecommedationCardSlider id={productId} />
     </View>
@@ -718,7 +719,7 @@ function PurchaseOption({ productId, data }) {
   }
 
   const handlePress = () => {
-    console.log("button pressed!!")
+    console.log("button pressed!!");
     if (selectedVariant.id) {
       selectedVariant.currentlyNotInStock
         ? () => console.log("PROUCT NOT IN STOCK")
@@ -907,7 +908,7 @@ function ToggleContainer({ data }) {
     (item) => item?.key === "size_and_fit_image_url"
   )?.value;
 
-  console.log(sizeAndFitUrl)
+  console.log(sizeAndFitUrl);
 
   return (
     <View className="mb-3">
@@ -921,7 +922,7 @@ function ToggleContainer({ data }) {
       {sizeAndFitUrl && (
         <ToggleItem label="Size & Fit">
           <View className="w-[400] h-[400] bg-neutral-200 mx-auto">
-            <Image className="w-full h-full" source={{uri: sizeAndFitUrl}} />
+            <Image className="w-full h-full" source={{ uri: sizeAndFitUrl }} />
           </View>
         </ToggleItem>
       )}
@@ -1009,53 +1010,8 @@ function SupportContainer() {
         </View>
       </Panel>
 
-      <BottomModal
-        title="Need Help?"
-        visible={isModalVisible}
-        onClose={() => setModalVisible(false)}
-      >
-        <View className="pb-14">
-          <View className="pb-8">
-            <View className=" w-[90%] mx-auto pb-3">
-              <Text
-                style={FONT_FAMILY.secondary}
-                className="text-[14px] text-gray-800 font-light leading-5"
-              >
-                If you need to speak with one of our customer case
-                representative you can react us here, We are avilable between
-                10am - 10pm
-              </Text>
-            </View>
-            <View className="flex-row justify-between items-center w-[90%] mx-auto">
-              <InformationIconTile
-                label="Phone"
-                icon={<PhoneIcon size={24} color="black" strokeWidth={1} />}
-                onClick={() => Linking.openURL("tel:+97124913000")}
-              />
-              <InformationIconTile
-                label="Whatsapp"
-                icon={<WhatsappIcon />}
-                onClick={() =>
-                  Linking.openURL("whatsapp://send?phone=+971504713945")
-                }
-              />
-              <InformationIconTile
-                label="Mail"
-                icon={<EmailIcon />}
-                onClick={() =>
-                  Linking.openURL("mailto:helloscrubsandclogs.com")
-                }
-              />
-            </View>
-          </View>
+       <SupportModal isModalVisible={isModalVisible} onClose={() => setModalVisible(false)}/>
 
-          <Panel
-            label="Shipping Returns & Refunds"
-            style={{ borderBottomWidth: 1, borderBottomColor: "#D3D3D3" }}
-            rightIcon={<ChevronRightIcon size={24} color="black" />}
-          />
-        </View>
-      </BottomModal>
     </View>
   );
 }

@@ -197,7 +197,7 @@ export default function SearchScreen() {
                   <ProductCard
                     key={item.id}
                     product={item}
-                    onpress={() =>
+                    onPress={() =>
                       navigation.navigate("ProductDetailScreenInSearch", {
                         productId: item.id,
                       })

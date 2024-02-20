@@ -3,7 +3,7 @@ import BrandCard from "../BrandCard";
 
 export default function BrandCardContainer({ content }) {
     return (
-      <View className="bg-white py-4 mb-3">
+      <View className="bg-white mb-3">
         <ScrollView
           className="px-[15px]"
           horizontal

@@ -22,13 +22,9 @@ import Skeleton from "./skeletons/Skeleton";
 
 const blurhash = "LEHV6nWB2yk8pyo0adR*.7kCMdnj";
 
-export function CollectionCard({ product, onPress }) {
+export function CollectionCard({ product, onPress, navigateTo }) {
   const navigation = useNavigation();
   const images = [product.featuredImage];
-
-  handlePress = () => {
-    onPress();
-  };
 
   const amount = {
     price: product?.priceRange.minVariantPrice.amount,
@@ -40,7 +36,7 @@ export function CollectionCard({ product, onPress }) {
     <TouchableOpacity
       onPress={onPress}
       key={product.id}
-      className=" w-full justify-center mr-[10px] "
+      className=" w-full bg-blue-300 justify-center mr-[10px] "
     >
       <View className="w-full h-[300px] overflow-hidden rounded-[2px]">
         {images && (
@@ -50,20 +46,19 @@ export function CollectionCard({ product, onPress }) {
       </View>
 
       <View
-        onPress={handlePress}
         className="bg-white items-center justify-center py-3"
       >
         <Text
           style={FONT_FAMILY.primary}
-          className="text-[12px] text-black font-medium uppercase mb-2"
+          className="text-sm text-black font-medium uppercase mb-1"
         >
           {product.vendor}
         </Text>
         {product.title && (
           <Text
-            style={FONT_FAMILY.primary}
+            style={FONT_FAMILY.secondary}
             numberOfLines={1}
-            className="text-[13px] font-normal text-black w-[90%] mb-2 text-center"
+            className="text-xs font-normal text-black w-[90%] mb-2 text-center"
           >
             {product.title}
           </Text>
@@ -75,13 +70,13 @@ export function CollectionCard({ product, onPress }) {
           />
         )}
 
-        {<ColorSwatchesContainer product={product} />}
+        <ColorSwatchesContainer product={product} navigateTo={navigateTo} />
       </View>
     </TouchableOpacity>
   );
 }
 
-function ColorSwatchesContainer({ product }) {
+function ColorSwatchesContainer({ product, navigateTo }) {
   const [isModalVisisble, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -91,8 +86,9 @@ function ColorSwatchesContainer({ product }) {
     }
   );
 
+
   const handleColorOptionPress = (item) => {
-    navigation.navigate("ProductDetailScreen", {
+    navigation.navigate(navigateTo, {
       productId: product.id,
       colorValue: item,
     });
@@ -168,8 +164,10 @@ function ColorSwatchesContainer({ product }) {
 function PreSelectionColor({ options, variants, handlePress, loading }) {
   const option = options?.find((op) => op?.name === "Color");
 
+  console.log('option: ', option)
+
   const colorOption =
-    variants?.edges.length > 0 > 0 && option.id
+    variants?.edges.length > 0 && option.id
       ? option?.values.map((value) => {
           const variant = variants.edges.find(
             (variant) =>
@@ -188,6 +186,8 @@ function PreSelectionColor({ options, variants, handlePress, loading }) {
           };
         })
       : [];
+
+      console.log("color options",colorOption)
 
   if (loading)
     return (
@@ -208,10 +208,10 @@ function PreSelectionColor({ options, variants, handlePress, loading }) {
               <TouchableOpacity
                 onPress={() => handlePress(item)}
                 key={index.toString()}
-                className="mr-3 w-[100px] self-start items-center"
+                className="mr-3 w-[100px] self-start items-center overflow-hidden"
               >
-                <View className="w-[100px] h-[150px] rounded-[5px] border border-gray-300">
-                  {/* <Image className="w-full h-full" src={item.image.url} /> */}
+                <View className="w-[100px] h-[150px] rounded-md border border-gray-300 overflow-hidden">
+                  <Image className="w-full h-full" src={item.image.url} />
                   {/* <Image
                     style={{ flex: 1, width: "100%", backgroundColor: "gray" }}
                     source={item.image.url}
@@ -223,7 +223,7 @@ function PreSelectionColor({ options, variants, handlePress, loading }) {
 
                 <View className="py-1 items-center">
                   <Text
-                    style={FONT_FAMILY.primary}
+                    style={FONT_FAMILY.secondary}
                     className="text-[14px] text-balck font-normal pb-2"
                   >
                     {item.value}

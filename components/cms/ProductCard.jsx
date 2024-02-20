@@ -48,11 +48,20 @@ export default function ProductCard({
         )}
       </View>
       <View className="bg-white items-center justify-center py-3">
-        {product.title && (
+        {product.vendor && (
           <Text
             style={FONT_FAMILY.primary}
             numberOfLines={1}
-            className="text-[13px] font-normal text-black w-[90%] mb-2 text-center"
+            className="text-sm font-normal text-black w-[90%] mb-1 text-center"
+          >
+            {product.vendor}
+          </Text>
+        )}
+        {product.title && (
+          <Text
+            style={FONT_FAMILY.secondary}
+            numberOfLines={1}
+            className="text-xs font-normal text-black w-[90%] mb-2 text-center"
           >
             {product.title}
           </Text>

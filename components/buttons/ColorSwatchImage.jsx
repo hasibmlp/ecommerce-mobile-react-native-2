@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Image, View } from "react-native";
 // import { Image } from "expo-image";
 import swatchData from "../../assets/colorSwatchImages/swatchData.json";
 
@@ -55,12 +55,12 @@ export default function ColorSwatchImage({
           ></View>
         </View>
       )}
-      {/* {!activeColorSwatchValue && (
+      {!activeColorSwatchValue && (
         <Image
           source={require("../../assets/grid-placeholder-image.png")}
           className="w-full h-full"
         />
-      )} */}
+      )}
     </View>
   );
 }

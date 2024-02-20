@@ -11,7 +11,8 @@ export default function PriceRangeForm({
   option,
   setActiveFilterInput,
   setLoading,
-  maxFilterPriceRange
+  maxFilterPriceRange,
+  activeTabLabel,
 }) {
 
   const validationSchema = yup.object({
@@ -53,6 +54,7 @@ export default function PriceRangeForm({
             input: {
               price: { max: parseInt(values.max), min: parseInt(values.min) },
             },
+            parent: activeTabLabel
           };
 
           setActiveFilterInput((prevState) => {

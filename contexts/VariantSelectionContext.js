@@ -7,8 +7,9 @@ import { useNavigation } from "@react-navigation/native";
 import { uid } from "uid";
 
 import { GET_CART_DETAILS_V2, GET_PRODUCT } from "../graphql/queries";
-import { cartVar } from "../makeVars/MakeVars";
+import { cartVar, checkoutVisitedVar, isLoggedinFrstTimeVar } from "../makeVars/MakeVars";
 import { getVariantForOptions } from "../components/utils/UtilsFunctions";
+import { useShopifyCheckoutSheet } from "@shopify/checkout-sheet-kit";
 
 const VariantSelectionContext = createContext();
 
@@ -24,11 +25,11 @@ function VariantSelectionProvider({
   const [isProductSuccessfullyAdded, setProductSuccessfullyAdded] =
     useState(false);
 
-  console.log(customProductId);
-
   const cart = useReactiveVar(cartVar);
+  const checkoutVisited = useReactiveVar(checkoutVisitedVar);
+  const isLoggedinId = useReactiveVar(isLoggedinFrstTimeVar);
 
-  console.log('THIS IS CARTVAR', cart.id)
+  const shopifyCheckout = useShopifyCheckoutSheet();
 
   const { data, loading, error } = useQuery(GET_PRODUCT, {
     variables: {
@@ -98,8 +99,7 @@ function VariantSelectionProvider({
     }
   });
 
-  const handleAddCartBtn = (onClose) => {
-    console.log("pressed")
+  const handleAddCartBtn = async (onClose) => {
     const uniqueId = uid();
     const customSelections = customProductId?.id
       ? JSON.stringify(customProductId?.selections[0])
@@ -150,9 +150,7 @@ function VariantSelectionProvider({
             ],
           };
 
-      console.log("cartid: ", cart?.id)
-
-      addCartV2Item({
+      const { data } = await addCartV2Item({
         variables: input,
         refetchQueries: [
           {
@@ -162,13 +160,27 @@ function VariantSelectionProvider({
             },
           },
         ],
-        onCompleted: () => {
-          console.log("succussfully added item to cart")
-          typeof onClose === "function" && onClose();
-          setProductSuccessfullyAdded(true);
-        },
       });
 
+      if (data?.cartLinesAdd?.cart?.id) {
+        typeof onClose === "function" && onClose();
+        setProductSuccessfullyAdded(true);
+        cartVar(data?.cartLinesAdd?.cart);
+
+        const modifiedUrl = data?.cartLinesAdd?.cart?.checkoutUrl.replace(
+          /\/cart\/c\//,
+          "/checkouts/cn/"
+        );
+        const withoutParams = modifiedUrl.split("?")[0];
+
+        shopifyCheckout.preload(
+          checkoutVisited
+            ? withoutParams
+            : isLoggedinId
+            ? data?.cartLinesAdd?.cart?.checkoutUrl
+            : withoutParams
+        );
+      }
     }
   };
 

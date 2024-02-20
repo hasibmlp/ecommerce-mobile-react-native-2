@@ -1,5 +1,5 @@
 import {
-    Image,
+  Image,
   SafeAreaView,
   ScrollView,
   Text,
@@ -15,8 +15,10 @@ import { GET_ORDER_DETAILS } from "../graphql/queries";
 import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
 import { QuestionMarkCircleIcon } from "react-native-heroicons/outline";
 import Skeleton from "../components/skeletons/Skeleton";
+import SupportModal from "../components/Modal/SupportModal";
 
 const ProfileOrdersDetailsScreen = ({ route }) => {
+  const [isModalVisible, setModalVisible] = useState(false);
   const { orderId } = route.params;
 
   const { data, loading, error } = useQuery(GET_ORDER_DETAILS, {
@@ -43,7 +45,7 @@ const ProfileOrdersDetailsScreen = ({ route }) => {
       <ScreenHeaderV3
         label="Order Details"
         right={
-          <TouchableOpacity className=" w-full h-full items-center justify-center">
+          <TouchableOpacity onPress={() => setModalVisible(true)} className=" w-full h-full items-center justify-center">
             <QuestionMarkCircleIcon size={30} color="black" />
           </TouchableOpacity>
         }
@@ -177,7 +179,8 @@ const ProfileOrdersDetailsScreen = ({ route }) => {
                   className="flex-row justify-between border-t border-neutral-300 py-2 px-4 "
                 >
                   <Text style={FONT_FAMILY.secondary} className="text-base">
-                    Courier : {data?.node?.successfulFulfillments[0].trackingCompany}
+                    Courier :{" "}
+                    {data?.node?.successfulFulfillments[0].trackingCompany}
                   </Text>
                   <Button label="track" type="action" onPress={() => {}} />
                 </TouchableOpacity>
@@ -199,7 +202,10 @@ const ProfileOrdersDetailsScreen = ({ route }) => {
                   className="flex-row items-center p-3 bg-white"
                 >
                   <View className="w-[100] h-[150] bg-neutral-300">
-                    <Image className="w-full h-full" source={{uri: item.node.variant?.image?.url}}/>
+                    <Image
+                      className="w-full h-full"
+                      source={{ uri: item.node.variant?.image?.url }}
+                    />
                   </View>
                   <View className="p-3">
                     <Text
@@ -379,6 +385,10 @@ const ProfileOrdersDetailsScreen = ({ route }) => {
           </View>
         </View>
       </ScrollView>
+      <SupportModal
+        isModalVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 };

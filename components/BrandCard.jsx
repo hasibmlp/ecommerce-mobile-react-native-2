@@ -12,20 +12,20 @@ export default function BrandCard({
   height = 300,
 }) {
   return (
-    <View className="flex-row bg-gray-50 mr-[10px] rounded-[5px]">
+    <View className="flex-row bg-white mr-[10px] rounded-[5px]">
       {first && (
         <View className="w-[160px] items-center justify-center">
           <Text
             style={FONT_FAMILY.primary}
             numberOfLines={1}
-            className="text-[22px] font-light text-black w-[70%] mb-2 text-center"
+            className="text-2xl font-light text-black w-[70%] mb-2 text-center"
           >
             {collectionTitle}
           </Text>
-          <Text style={FONT_FAMILY.primary} className="text-[14px] w-[70%] font-normal text-black mb-4 text-center">
+          <Text style={FONT_FAMILY.secondary} className="text-[13px] w-[70%] font-normal text-black mb-4 text-center">
             {collectionDesc}
           </Text>
-          <Text style={FONT_FAMILY.primary} className="text-[14px] font-normal text-red-800 text-center underline">
+          <Text style={FONT_FAMILY.secondary} className="text-[16px] font-normal text-red-800 text-center underline">
             {collectionCta}
           </Text>
         </View>
@@ -33,7 +33,7 @@ export default function BrandCard({
 
       <View
         style={{ height }}
-        className="w-[160px] overflow-hidden rounded-[2px]"
+        className="w-[140px] overflow-hidden rounded-[2px]"
       >
         <View className="flex-1">
           {brand.image && (
@@ -41,7 +41,7 @@ export default function BrandCard({
           )}
         </View>
         <View className=" h-[60px] justify-center">
-          <Text className="text-[16px] font-normal text-black text-center uppercase">
+          <Text style={FONT_FAMILY.primary} className="text-sm font-normal text-black text-center uppercase">
             {brand.name}
           </Text>
         </View>

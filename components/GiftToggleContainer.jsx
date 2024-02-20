@@ -20,7 +20,7 @@ import * as yup from "yup";
 import Button from "./buttons/Button";
 import { UPDATE_CART_NOTE } from "../graphql/mutations";
 import { useMutation, useReactiveVar } from "@apollo/client";
-import { cartIdVar } from "../makeVars/MakeVars";
+import { cartIdVar, cartVar } from "../makeVars/MakeVars";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import LoadingFullScreen from "./Sidebar/LoadingFullScreen";
 import { FONT_FAMILY } from "../theme";
@@ -33,61 +33,60 @@ const gitMessageValidationSchema = yup.object({
 });
 
 export default function GiftToggleContainer() {
-  const textRef = useRef()
+  const textRef = useRef();
   const [open, setOpen] = useState(false);
-  const cartId = useReactiveVar(cartIdVar)
-  const [updateCartNote, { data, loading, error }] = useMutation(UPDATE_CART_NOTE)
-
+  const cart = useReactiveVar(cartVar);
+  const [updateCartNote, { data, loading, error }] =
+    useMutation(UPDATE_CART_NOTE);
 
   const handleSubmit = (values) => {
     updateCartNote({
       variables: {
-        cartId,
-        note: values.gitMessage
+        cartId: cart?.id,
+        note: values.gitMessage,
       },
       refetchQueries: [
         {
           query: GET_CART_DETAILS_V2,
           variables: {
-            cartId,
+            cartId: cart?.id,
           },
         },
       ],
-    })
-  }
+    });
+  };
 
   const handleRemove = () => {
-    textRef.current.clear()
+    textRef.current.clear();
     updateCartNote({
       variables: {
-        cartId,
-        note: ''
+        cartId: cart?.id,
+        note: "",
       },
       refetchQueries: [
         {
           query: GET_CART_DETAILS_V2,
           variables: {
-            cartId,
+            cartId: cart?.id,
           },
         },
       ],
-    })
-  }
-
-
-
-
+    });
+  };
 
   return (
     <Animated.View className="bg-white mt-3">
-      {loading && (<LoadingFullScreen />)}
+      {loading && <LoadingFullScreen />}
       <Pressable
         onPress={() => {
           setOpen(!open);
         }}
         className="flex-row justify-between items-center py-5 px-4"
       >
-        <Text style={FONT_FAMILY.primary} className="text-[15px] text-black font-normal">
+        <Text
+          style={FONT_FAMILY.secondary}
+          className="text-[15px] text-black font-normal"
+        >
           Add a Gift Message
         </Text>
         <View>
@@ -97,7 +96,12 @@ export default function GiftToggleContainer() {
       </Pressable>
       {open && (
         <Formik
-          initialValues={{ gitMessage: data?.cartNoteUpdate?.cart?.note.length > 0 ? data?.cartNoteUpdate?.cart?.note : "" }}
+          initialValues={{
+            gitMessage:
+              data?.cartNoteUpdate?.cart?.note?.length > 0
+                ? data?.cartNoteUpdate?.cart?.note
+                : "",
+          }}
           onSubmit={handleSubmit}
           validationSchema={gitMessageValidationSchema}
         >
@@ -115,19 +119,33 @@ export default function GiftToggleContainer() {
                 exiting={FadeOut}
                 className="bg-white px-4 justify-center py-3 "
               >
-                <Text className="text[14px] text-gray-800 font-normal mb-4">
+                <Text
+                  style={FONT_FAMILY.secondary}
+                  className="text[14px] text-gray-800 font-normal mb-4"
+                >
                   • items will be gift wrapped together and 1 gift note
                   included.
                 </Text>
                 <View>
                   <View className="flex-row justify-between">
-                    <Text className="text-[14px] text-black font-normal uppercase mb-3">
+                    <Text
+                      style={FONT_FAMILY.secondary}
+                      className="text-[14px] text-black font-normal uppercase mb-3"
+                    >
                       your message
                     </Text>
-                    {data?.cartNoteUpdate?.cart?.note.length > 0 && (<Button onPress={handleRemove} label="remove" size="md" type="action" />)}
+                    {data?.cartNoteUpdate?.cart?.note?.length > 0 && (
+                      <Button
+                        onPress={handleRemove}
+                        label="remove"
+                        size="md"
+                        type="action"
+                      />
+                    )}
                   </View>
                   <ScrollView keyboardDismissMode="interactive">
                     <TextInput
+                      style={FONT_FAMILY.secondary}
                       ref={textRef}
                       placeholder="Add gift message"
                       multiline={true}
@@ -136,7 +154,9 @@ export default function GiftToggleContainer() {
                       value={values.gitMessage}
                       inputAccessoryViewID="id-123"
                       className={`h-20 border ${
-                        touched.gitMessage && errors.gitMessage ? "border-red-500" : "border-gray-400"
+                        touched.gitMessage && errors.gitMessage
+                          ? "border-red-500"
+                          : "border-gray-400"
                       } rounded-[5px] px-2`}
                       // blurOnSubmit={true}
                       // onSubmitEditing={handleSubmit}
@@ -149,12 +169,16 @@ export default function GiftToggleContainer() {
                       // }}
                     />
                   </ScrollView>
-
                 </View>
                 <View className="flex-row justify-end bg-white pt-5 border-t border-neutral-200">
-                  <Button onPress={handleSubmit} size="sm" label="done" flex={false}  />
+                  <Button
+                    onPress={handleSubmit}
+                    size="sm"
+                    label="done"
+                    flex={false}
+                  />
                 </View>
-                    {/* <InputAccessoryView nativeID="id-123">
+                {/* <InputAccessoryView nativeID="id-123">
                       <View className="flex-row justify-end bg-white px-5 py-3 border-t border-neutral-200">
                         <Button onPress={() => console.log('This is button press from done button')} size="sm" label="done" flex={false}  />
                       </View>

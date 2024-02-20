@@ -33,6 +33,7 @@ import {
 } from "react-native-heroicons/outline";
 import { GET_CART_DETAILS_V2 } from "../graphql/queries";
 import { CREATE_CART } from "../graphql/mutations";
+import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 
 const TAB_WIDTH = 100;
 const TABS = ["Home", "Search", "Profile", "MoreOption"];
@@ -40,6 +41,7 @@ const TABS = ["Home", "Search", "Profile", "MoreOption"];
 export default function MoreOptionScreen() {
   const navigation = useNavigation();
   const user = useReactiveVar(userVar);
+  // const [ loading, setLoading ] = useState(false)
 
   const [createCart, { data, loading, error }] = useMutation(CREATE_CART);
   const [getCartDetails, { data: cartDetailData, loading: cartDetailLoading }] =
@@ -124,6 +126,7 @@ export default function MoreOptionScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white ">
+      {cartDetailLoading || loading && <LoadingFullScreen />}
       <View className="w-full items-center bg-neutral-100">
         <View className="w-full bg-white px-3 py-5 shadow-sm z-10">
           <Text className="text-3xl font-light ">More</Text>

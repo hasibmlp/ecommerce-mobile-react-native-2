@@ -265,7 +265,6 @@ const AccordianItem = ({
         : "",
   };
 
-  console.log("CUSTOM PRODUCT SELECTION : ", customProductId);
 
   if (context === "text-only") {
     return (
@@ -303,7 +302,6 @@ const AccordianItem = ({
               initialValues={initialValue}
               validationSchema={validationSchemaTextOnly}
               onSubmit={(values) => {
-                console.log("FORMIK SUBMITTING VALUES: ", values);
                 if (values) {
                   setCustomProductId({
                     id: data?.id,
@@ -1080,7 +1078,6 @@ const AccordianItem = ({
               validationSchema={validationSchemaTextOnly}
               onSubmit={(values) => {
                 if (values) {
-                  console.log("TUBE VALUES",values)
                   setCustomProductId({
                     id: data?.id,
                     type: "tube-printing",

@@ -75,7 +75,7 @@ export default function Button({
 
   const containerClasses = `justify-center ${
     flex ? "self-stretch" : "self-center"
-  } ${buttonStyle.container} items-center`;
+  } ${buttonStyle.container} items-center h-14`;
 
   return (
     <TouchableOpacity
@@ -99,16 +99,16 @@ export default function Button({
           style={[
             textStyle,
             {
-              color: textColors.length > 0 ? buttonColor.text : type === 'primary' ? '#fff' : COLOR_THEME.primary,
+              color: textColors.length > 0 ? buttonColor.text : type === 'primary' ? '#fff' : 'black',
             },
-            FONT_FAMILY.secondary
+            FONT_FAMILY.font_3
           ]}
           className={`${buttonStyle.text} font-normal uppercase`}
         >
           {label}
         </Text>
       )}
-      {loading && <ActivityIndicator color={textColors[0]} />}
+      {loading && <ActivityIndicator color={'white'} />}
     </TouchableOpacity>
   );
 }

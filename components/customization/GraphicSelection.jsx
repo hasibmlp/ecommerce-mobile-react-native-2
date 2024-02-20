@@ -53,7 +53,6 @@ const GraphicSelection = ({
           canceled: false,
         };
 
-    console.log("item", uploadFile);
 
     setActiveFile(uploadFile);
     handleChange(uploadFile.assets[0].uri);

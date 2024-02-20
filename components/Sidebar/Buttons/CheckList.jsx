@@ -16,6 +16,7 @@ export default function CheckList({
   activeFilterInput,
   active,
   loading,
+  activeTabLabel,
 }) {
   const isChecked = activeFilterInput.some((i) => i.id === option.id);
 
@@ -40,7 +41,8 @@ export default function CheckList({
           id: option.id,
           input: input,
           label: option.label,
-          totalCount: option.count
+          totalCount: option.count,
+          parent: activeTabLabel,
         });
       }
       return preFilterInputs;

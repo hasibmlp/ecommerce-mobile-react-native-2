@@ -204,13 +204,13 @@ export function HomeTabs() {
 
 export default function AppNavigation() {
   const user = useReactiveVar(userVar);
-  const [getUser, { data, loading, error }] = useLazyQuery(GET_CUSTOMER, {
+  const [getUser] = useLazyQuery(GET_CUSTOMER, {
     fetchPolicy: "no-cache",
   });
   const [appInitialFlag, setAppInitialFlag] = useState(false);
 
   const [createCart] = useMutation(CREATE_CART);
-  const [getCartDetails, { data: cartDetailData }] = useLazyQuery(
+  const [getCartDetails] = useLazyQuery(
     GET_CART_DETAILS_V2,
     {
       fetchPolicy: "no-cache",
@@ -356,30 +356,32 @@ export default function AppNavigation() {
           onCompleted: async (cartData) => {
             console.log("cart details fetched successfully");
 
-            if (myToken) {
-              updateCartBuyer({
-                variables: {
-                  buyerIdentity: {
-                    customerAccessToken: myToken,
-                    email: myUser.email,
-                    phone: myUser.phone,
-                  },
-                  cartId: cartId,
-                },
-                onCompleted: (data) => {
-                  const newCart = { ...cartData?.cart };
-                  newCart.buyerIdentity =
-                    data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
-                  console.log(
-                    "BUYER IDENTITY ADDED: ",
-                    JSON.stringify(data, null, 2)
-                  );
-                  newCart;
-                },
-              });
-            } else {
-              cartVar(cartData?.cart);
-            }
+            cartVar(cartData?.cart);
+
+            // if (myToken) {
+            //   updateCartBuyer({
+            //     variables: {
+            //       buyerIdentity: {
+            //         customerAccessToken: myToken,
+            //         email: myUser.email,
+            //         phone: myUser.phone,
+            //       },
+            //       cartId: cartId,
+            //     },
+            //     onCompleted: (data) => {
+            //       const newCart = { ...cartData?.cart };
+            //       newCart.buyerIdentity =
+            //         data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
+            //       console.log(
+            //         "BUYER IDENTITY ADDED: ",
+            //         JSON.stringify(data, null, 2)
+            //       );
+            //       newCart;
+            //     },
+            //   });
+            // } else {
+            //   cartVar(cartData?.cart);
+            // }
           },
         });
       }

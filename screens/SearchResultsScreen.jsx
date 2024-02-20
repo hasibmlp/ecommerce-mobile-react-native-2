@@ -69,8 +69,6 @@ const SearchResultsScreen = ({ route }) => {
 };
 
 function CollectionData({ route, openSideBar }) {
-  const [showPageIndicator, setShowPageIndicator] = useState(false);
-  const [productTotalCount, setProductTotalCount] = useState(0);
   const [sortKeys, setSortKeys] = useState({
     handle: "default",
     sort_key: "RELEVANCE",
@@ -104,7 +102,7 @@ function CollectionData({ route, openSideBar }) {
       sortKey: sortKeys.sort_key,
       reverse: sortKeys.reverse,
     },
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "network-only",
   });
 
   console.log("SEARCH RESULTS", data?.search?.productFilters);
@@ -112,6 +110,36 @@ function CollectionData({ route, openSideBar }) {
   const handleSortPress = (item) => {
     setSortKeys(item);
   };
+
+  const handlePagingation = () => {
+    if (data?.search?.pageInfo?.hasNextPage) {
+      fetchMore({
+        variables: { 
+          cursor: data?.search?.pageInfo?.endCursor,
+        },
+        updateQuery: (previousResult, { fetchMoreResult }) => {
+         if(!fetchMoreResult) return previousResult
+         
+         
+         const newEdges = fetchMoreResult.search.edges.filter(
+          (edge) => !previousResult.search.edges.some((prevEdge) => prevEdge.node.id === edge.node.id)
+        );
+
+         return {
+          search : {
+            ...fetchMoreResult.search,
+            edges: [
+              ...previousResult.search.edges,
+              ...newEdges
+            ]
+          }
+         }
+        },
+      });
+    }
+  };
+
+  console.log("THIS IS SEARCH COLLECTION PAGE 394")
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -147,12 +175,11 @@ function CollectionData({ route, openSideBar }) {
         <CollectionBody
           data={data}
           filterActionsLayout={filterActionsLayout}
-          setShowPageIndicator={setShowPageIndicator}
           openSideBar={openSideBar}
           sortKeys={sortKeys}
           setSortKeys={setSortKeys}
           handleSortPress={handleSortPress}
-          fetchMore={fetchMore}
+          handlePagingation={handlePagingation}
         />
       }
       {data?.search?.edges.length === 0 && (
@@ -173,13 +200,6 @@ function CollectionData({ route, openSideBar }) {
         </View>
       )}
 
-      {showPageIndicator && (
-        <PageIndicatorPopup
-          current={data.search?.edges?.length}
-          flatListRef={flatListRef}
-          total={data?.search?.totalCount}
-        />
-      )}
       <MyModal visible={isSideBarVisible}>
         <FilterBody
           onClose={() => setSideBarVisible(false)}
@@ -198,52 +218,23 @@ function CollectionData({ route, openSideBar }) {
 function CollectionBody({
   data,
   flatListRef,
-  setShowPageIndicator,
-  fetchMore,
+  handlePagingation,
 }) {
-    const navigation = useNavigation()
-  const handleOnScrollBeginDrag = useCallback(() => {
-    setShowPageIndicator(true);
-  });
-
-  const handleOnMomentumScrollEnd = useCallback(() => {
-    setShowPageIndicator(false);
-  });
-
-  const handlePagingation = () => {
-    if (data?.search?.pageInfo?.hasNextPage) {
-      fetchMore({
-        variables: {
-          cursor: data?.search?.pageInfo?.endCursor,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          const newEdges = fetchMoreResult.search.edges || [];
-          const prevEdges = previousResult.search.edges || [];
-          console.log("NEW BRANCH",newEdges[0].node)
-          console.log("PREV BRANCH",prevEdges[0].node)
-          const updatedEdges = [...prevEdges, ...newEdges];
-          fetchMoreResult.search.edges = updatedEdges;
-          return fetchMoreResult;
-        },
-      });
-    }
-  };
+  const navigation = useNavigation();
 
   return (
-    <View className="pb-14">
+    <View className="pb-14 w-full">
       <Animated.FlatList
+      className="w-full"
         data={data?.search?.edges}
         ref={flatListRef}
         keyExtractor={(item) => item.node.id}
         horizontal={false}
-        onScrollBeginDrag={handleOnScrollBeginDrag}
-        onMomentumScrollEnd={handleOnMomentumScrollEnd}
         numColumns={2}
         contentContainerStyle={{ paddingBottom: 150 }}
         columnWrapperStyle={{ padding: 4 }}
         onEndReached={handlePagingation}
         onEndReachedThreshold={1}
-        // onEndReached={handlePagingation}
         ListHeaderComponent={
           <View className="py-4 items-center">
             <Text className="text-sm text-neutral-700">
@@ -252,7 +243,7 @@ function CollectionBody({
           </View>
         }
         renderItem={({ item, index }) => (
-          <View className="w-[50%] pb-1 px-1">
+          <View className="flex-1 max-w-[50%] pb-1 px-1">
             <CollectionCard
               key={item.node.id}
               product={item.node}
@@ -261,6 +252,7 @@ function CollectionBody({
                   productId: item.node.id,
                 })
               }
+              navigateTo={"ProductDetailScreenInSearch"}
             />
 
             {data?.search?.pageInfo?.hasNextPage &&

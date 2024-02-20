@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Image, Pressable, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   ChevronUpDownIcon,
   TagIcon,
@@ -35,7 +42,6 @@ export default function CartCard({
     return parse;
   };
 
-
   const customSelectionId = lineItem?.attributes.find(
     (item) => item.key === "custom-selection-uid"
   )?.value;
@@ -46,9 +52,7 @@ export default function CartCard({
   const customSelectionsParse = parseString(customSelections);
   const customSelectionKeys = Object.keys(customSelectionsParse ?? {});
 
-  const handleCustomProductRemove = () => {
-
-  }
+  const handleCustomProductRemove = () => {};
 
   // console.log(selectedCustomProuduct[1].attribute);
   // console.log(lineItem?.attribute?.value)
@@ -97,8 +101,6 @@ export default function CartCard({
   //     </View>
   //   );
 
-  console.log(assignedCustomProduct);
-
   return (
     <View>
       <View className="bg-white flex flex-row py-4 px-2 items-center mt-3">
@@ -110,12 +112,21 @@ export default function CartCard({
           />
         )}
         <View className="flex flex-col ml-4 w-[55%]">
-          <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-normal mb-3">
+          <Text
+            style={FONT_FAMILY.primary}
+            className="text-lg text-black font-normal mb-1"
+          >
+            {lineItem.merchandise.product.vendor}
+          </Text>
+          <Text
+            style={FONT_FAMILY.secondary}
+            className="text-xs text-black font-normal mb-1"
+          >
             {lineItem.merchandise.product.title}
           </Text>
-          <View className="text-[13px] text-gray-600 font-light flex-row mb-2">
+          <View className="text-[13px] text-gray-600 font-light flex-row mb-2 items-center">
             {lineItem.merchandise.selectedOptions.map((option, index) => (
-              <Text style={FONT_FAMILY.primary} key={index} className={`mr-5 `}>
+              <Text style={FONT_FAMILY.secondary} key={index} className={`mr-5 `}>
                 {option.value}
               </Text>
             ))}
@@ -130,7 +141,10 @@ export default function CartCard({
           {lineItem.discountAllocations.length > 0 && (
             <View className="flex-row items-center mb-2">
               <TagIcon size={18} color="black" />
-              <Text style={FONT_FAMILY.primary} className="text-[14px] text-black text-normal ml-1">
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-[14px] text-black text-normal ml-1"
+              >
                 {discountTitle}
               </Text>
             </View>
@@ -138,11 +152,17 @@ export default function CartCard({
 
           <View className="flex flex-row">
             {subTotalPriceOfLineitem > totalPriceOfLineitem && (
-              <Text style={FONT_FAMILY.primary} className="text-[16px] text-neutral-700 font-normal mr-4 line-through">
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-[16px] text-neutral-700 font-normal mr-4 line-through"
+              >
                 {subTotalPriceOfLineitem} {costCurrencyCode}
               </Text>
             )}
-            <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-noraml">
+            <Text
+              style={FONT_FAMILY.secondary}
+              className="text-[16px] text-black font-noraml"
+            >
               {totalPriceOfLineitem} {costCurrencyCode}
             </Text>
           </View>
@@ -158,13 +178,18 @@ export default function CartCard({
         <View className="bg-white flex flex-row items-center mt-0">
           <View className="w-full flex flex-col px-5">
             <View className="flex-row justify-between">
-
-              <Text style={FONT_FAMILY.primary}  className="text-[16px] text-black font-medium mb-3">
+              <Text
+                style={FONT_FAMILY.secondary}
+                className="text-[16px] text-black font-medium mb-3"
+              >
                 {assignedCustomProduct.node?.merchandise?.product?.title}
               </Text>
 
               <View className="flex flex-row">
-                <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-medium">
+                <Text
+                  style={FONT_FAMILY.secondary}
+                  className="text-[16px] text-black font-medium"
+                >
                   +{totalCustomProduct} {costCurrencyCode}
                 </Text>
               </View>
@@ -173,7 +198,10 @@ export default function CartCard({
             {customSelectionKeys.length > 0 && (
               <View className="mb-4">
                 <View className="w-full flex-row justify-between">
-                  <Text style={FONT_FAMILY.primary} className="text-base text-black font-medium">
+                  <Text
+                    style={FONT_FAMILY.secondary}
+                    className="text-base text-black font-medium"
+                  >
                     Custom selection
                   </Text>
                   <View className="absolute right-0 top-1">
@@ -187,7 +215,7 @@ export default function CartCard({
                 </View>
                 <View className="">
                   {customSelectionKeys.map((item, index) => (
-                    <Text style={FONT_FAMILY.primary} key={index.toString()}>
+                    <Text style={FONT_FAMILY.secondary} key={index.toString()}>
                       {item} : {customSelectionsParse[item]},{" "}
                     </Text>
                   ))}
@@ -200,7 +228,6 @@ export default function CartCard({
 
               </View>
             </ScreenModal> */}
-
           </View>
         </View>
       )}
@@ -213,7 +240,7 @@ const QuanitySelection = ({
   handleLineItemUpdate,
   assignedCustomProduct,
   customSelections,
-  customSelectionId
+  customSelectionId,
 }) => {
   const [isBottomModalVisible, setBottomModalVisible] = useState(false);
   const options = [
@@ -278,33 +305,58 @@ const QuanitySelection = ({
     setBottomModalVisible(false);
   };
 
+  const totalProductQuantity = lineItem?.merchandise?.quantityAvailable;
+  const totalProductCountArray = [];
+  for (let i = 1; i <= totalProductQuantity; i++) {
+    totalProductCountArray.push(i);
+  }
+
+  console.log(totalProductCountArray.length > 1);
+
   return (
     <View className="">
       <TouchableOpacity
         className="flex-row items-center"
-        onPress={() => setBottomModalVisible(true)}
+        onPress={() => {
+          setBottomModalVisible(true)}}
       >
-        <Text style={FONT_FAMILY.primary} className="">Qty {lineItem.quantity}</Text>
-        <ChevronUpDownIcon size={22} color="black" />
+        <Text style={FONT_FAMILY.secondary} className="">
+          Qty {lineItem.quantity}
+        </Text>
+        {(
+          <ChevronUpDownIcon size={22} color="black" />
+        )}
       </TouchableOpacity>
-      <BottomModal
-        visible={isBottomModalVisible}
-        onClose={handleBottomCloseButton}
-      >
-        <View className="w-full pb-20">
-          {options.map((item) => (
-            <Pressable
-              key={item.label}
-              onPress={() => handleNumberPress(item.value)}
-              className="py-4 px-3 border-b border-gray-200 bg-white self-stretch items-center"
+      {(
+        <BottomModal
+          visible={isBottomModalVisible}
+          onClose={handleBottomCloseButton}
+        >
+          <View className="w-full pb-20">
+            <ScrollView
+              className="max-h-[150]"
+              showsVerticalScrollIndicator={false}
             >
-              <Text style={FONT_FAMILY.primary} className="text-[16px] text-black font-normal">
-                {item.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </BottomModal>
+              {totalProductCountArray.map((item) => (
+                <Pressable
+                  key={item}
+                  onPress={() => handleNumberPress(item)}
+                  className={`py-4 px-3 ${
+                    item !== totalProductQuantity && "border-b border-gray-200"
+                  } bg-white self-stretch items-center`}
+                >
+                  <Text
+                    style={FONT_FAMILY.font_3}
+                    className="text-[16px] text-black font-normal"
+                  >
+                    {item}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </BottomModal>
+      )}
     </View>
   );
 };

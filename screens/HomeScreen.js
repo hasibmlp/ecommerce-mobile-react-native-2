@@ -76,6 +76,9 @@ const HomeScreen = () => {
     offset.value = withTiming(open ? 0 : -190);
   }, [open]);
 
+  const width = Dimensions.get('screen').width
+  console.log(width)
+
   return (
     <View className="flex-1">
       <SafeAreaView className="bg-neutral-50 z-20" />
@@ -90,8 +93,8 @@ const HomeScreen = () => {
             className="flex-row items-center justify-center px-5"
           >
             <Text
-              style={FONT_FAMILY.primary}
-              className="text-sm text-black font-normal mr-1 leading-4 uppercase"
+              style={FONT_FAMILY.secondary}
+              className="text-xs text-black font-normal mr-1 leading-4 uppercase"
             >
               Shop {gender}
             </Text>
@@ -124,7 +127,7 @@ const HomeScreen = () => {
                 {!user && <UserIcon color="black" size={24} />}
                 {user && (
                   <Text
-                    style={FONT_FAMILY.primary}
+                    style={FONT_FAMILY.secondary}
                     className="text-lg text-black text-normal"
                   >
                     {user.firstName.slice(0, 1)}
@@ -149,7 +152,7 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
               <Text
-                style={FONT_FAMILY.primary}
+                style={gender === "women" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
                 className="text-sm  text-black font-normal uppe"
               >
                 Shop Women
@@ -166,7 +169,7 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
               <Text
-                style={FONT_FAMILY.primary}
+                style={gender === "men" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
                 className="text-sm  text-black font-normal uppe"
               >
                 Shop Men
@@ -183,7 +186,7 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
               <Text
-                style={FONT_FAMILY.primary}
+                style={gender === "kids" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
                 className="text-sm  text-black font-normal uppe"
               >
                 Shop Kids
@@ -213,8 +216,8 @@ const HomeScreen = () => {
               <GreetingCard user={user} />
               <View className="flex-row items-center justify-center mt-2">
                 <Text
-                  style={FONT_FAMILY.primary}
-                  className="text-sm text-black font-normal mr-1 leading-4 uppercase"
+                  style={FONT_FAMILY.font_3}
+                  className="text-xs text-black mr-1 leading-4 uppercase"
                 >
                   Shop {gender}
                 </Text>
@@ -228,7 +231,7 @@ const HomeScreen = () => {
               {!user && <UserIcon color="black" size={24} />}
               {user && (
                 <Text
-                  style={FONT_FAMILY.primary}
+                  style={FONT_FAMILY.secondary}
                   className="text-xl text-black text-normal"
                 >
                   {user.firstName.slice(0, 1)}
@@ -250,8 +253,8 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
               <Text
-                style={FONT_FAMILY.primary}
-                className="text-sm  text-black font-normal uppe"
+                style={gender === "women" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
+                className="text-xs  text-black font-normal "
               >
                 Shop Women
               </Text>
@@ -267,8 +270,8 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between border-b border-neutral-200"
             >
               <Text
-                style={FONT_FAMILY.primary}
-                className="text-sm  text-black font-normal uppe"
+                style={gender === "men" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
+                className="text-xs  text-black font-normal uppe"
               >
                 Shop Men
               </Text>
@@ -284,8 +287,8 @@ const HomeScreen = () => {
               className="w-full px-4 h-14 bg-neutral-50 flex-row items-center justify-between"
             >
               <Text
-                style={FONT_FAMILY.primary}
-                className="text-sm  text-black font-normal uppe"
+                style={gender === "kids" ?FONT_FAMILY.font_3 : FONT_FAMILY.secondary}
+                className="text-xs  text-black font-normal uppe"
               >
                 Shop Kids
               </Text>
@@ -314,7 +317,7 @@ const HomeScreen = () => {
           >
             <MagnifyingGlassIcon size={22} color="black" strokeWidth={1} />
             <Text
-              style={FONT_FAMILY.primary}
+              style={FONT_FAMILY.secondary}
               className="text-[14px] font-normal text-gray-500 ml-[15px]"
             >
               Search
@@ -339,7 +342,7 @@ const GreetingCard = ({ user }) => {
   else timeOfDay = "evening";
 
   return (
-    <Text style={FONT_FAMILY.primary} className="text-2xl text-black">
+    <Text style={FONT_FAMILY.primary} className="text-[25px] text-black">
       Good {timeOfDay}! {user?.firstName}
     </Text>
   );

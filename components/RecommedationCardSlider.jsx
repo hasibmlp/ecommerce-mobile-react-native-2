@@ -23,16 +23,12 @@ export default function RecommedationCardSlider({ id, products, mt }) {
   if (loading) return <Text>loading..</Text>;
   if (error) return <Text>error occured {error}</Text>;
 
-  console.log("RECOMMENDED PRODUCTS THEERE : ",data?.productRecommendations[0]);
-
-//   return null;
-
   return (
     <View className={`bg-white py-[15px] pb-[40px] flex-col mb-3`}>
       <View className="flex-row justify-between py-[10px] px-[15px]">
         <Text
           style={FONT_FAMILY.primary}
-          className="text-[18px] font-light text-black capitalize"
+          className="text-2xl font-light text-black capitalize"
         >
           Rcommended
         </Text>
@@ -43,16 +39,15 @@ export default function RecommedationCardSlider({ id, products, mt }) {
         showsHorizontalScrollIndicator={false}
       >
         {data?.productRecommendations?.map((product, index) => (
-          <TouchableOpacity
-            key={index.toString()}
-            onPress={() => {
-              navigation.navigate("ProductDetailScreen", {
-                productId: product.id,
-              });
-            }}
-          >
-            <ProductCard product={product} width={150} height={230} />
-          </TouchableOpacity>
+          <ProductCard
+            key={product.id}
+            product={product}
+            width={150}
+            height={230}
+            onPress={() =>
+              navigation.push("ProductDetailScreen", { productId: product.id })
+            }
+          />
         ))}
       </ScrollView>
     </View>

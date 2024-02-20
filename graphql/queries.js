@@ -401,7 +401,7 @@ export const GET_CART_DETAILS_V2 = gql`
           }
         }
       }
-      lines(first: 10) {
+      lines(first: 100, reverse:true) {
         edges {
           node {
             id
@@ -450,6 +450,7 @@ export const GET_CART_DETAILS_V2 = gql`
             merchandise {
               ... on ProductVariant {
                 id
+                quantityAvailable
                 image {
                   url
                   altText
@@ -799,6 +800,7 @@ export const SEARCH_PRODUCTS = gql`
               url
             }
             options {
+              id
               name
               values
             }

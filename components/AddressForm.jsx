@@ -26,8 +26,11 @@ import {
   CUSTOMER_ADDRESS_UPDATE,
   CUSTOMER_DEFAULT_ADDRESS_UPDATE,
 } from "../graphql/mutations";
+import countryData from "../data/country.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CheckBox from "./Sidebar/Buttons/Checkbox";
+import PhoneTextInput from "./PhoneTextInput";
+import { FONT_FAMILY } from "../theme";
 
 const AddressForm = ({ onClose, formData }) => {
   const user = useReactiveVar(userVar);
@@ -87,7 +90,7 @@ const AddressForm = ({ onClose, formData }) => {
     shippingAddress.country = "United Arab Emirates";
     delete shippingAddress.defaultAddress;
 
-    console.log("default address", values);
+    console.log("default avddress", values);
 
     if (values?.defaultAddress) {
       defaultAddressUpdate({
@@ -163,81 +166,83 @@ const AddressForm = ({ onClose, formData }) => {
   console.log(error);
 
   return (
-    <ScrollView className="flex-1">
-      <View className="flex-row w-full h-10 items-center">
-        <TouchableOpacity onPress={onClose} className=" p-2 absolute right-5">
-          <XMarkIcon size={28} color="black" />
-        </TouchableOpacity>
-      </View>
+    <View className="flex-1">
+      <ScrollView className="flex-1">
+        <View className="flex-row w-full h-10 items-center">
+          <TouchableOpacity onPress={onClose} className=" p-2 absolute right-5">
+            <XMarkIcon size={28} color="black" />
+          </TouchableOpacity>
+        </View>
 
-      <Formik
-        initialValues={{
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          country: formData.country,
-          city: formData.city,
-          province: formData.province,
-          address1: formData.address1,
-          address2: formData.address2,
-          zip: formData.zip,
-          phone: formData.phone,
-          defaultAddress: formData.id === user?.defaultAddress?.id,
-        }}
-        onSubmit={handleFormSubmit}
-      >
-        {({
-          handleBlur,
-          handleChange,
-          handleReset,
-          handleSubmit,
-          values,
-          errors,
-          touched,
-          setFieldValue,
-        }) => (
-          <View className="flex-1">
-            <View className="px-4 py-3 bg-gray-100 ">
-              <Text  className="text-[13px] text-gray-500 font-medium uppercase">
-                Shipping Address
-              </Text>
-            </View>
+        <Formik
+          initialValues={{
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            country: formData.country,
+            city: formData.city,
+            province: formData.province,
+            address1: formData.address1,
+            address2: formData.address2,
+            zip: formData.zip,
+            phone: formData.phone,
+            defaultAddress: formData.id === user?.defaultAddress?.id,
+          }}
+          onSubmit={handleFormSubmit}
+        >
+          {({
+            handleBlur,
+            handleChange,
+            handleReset,
+            handleSubmit,
+            values,
+            errors,
+            touched,
+            setFieldValue,
+          }) => (
+            <View className="flex-1">
+              <View className="px-4 py-3 bg-gray-100 ">
+                <Text className="text-[13px] text-gray-500 font-medium uppercase">
+                  Shipping Address
+                </Text>
+              </View>
 
-            {loading && <LoadingFullScreen />}
-            {addressUpdateLoading && <LoadingFullScreen />}
-            {addressDeleteLoading && <LoadingFullScreen />}
+              {loading && <LoadingFullScreen />}
+              {addressUpdateLoading && <LoadingFullScreen />}
+              {addressDeleteLoading && <LoadingFullScreen />}
 
-            <ShippingAddressForm
-              formData={formData}
-              errors={errors}
-              touched={touched}
-              values={values}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              setFieldValue={setFieldValue}
-            />
-
-            <TouchableOpacity
-              className="bg-blue-400 py-4 rounded-[5px] mx-4 mt-5"
-              onPress={handleSubmit}
-            >
-              <Text className="text-[15px] text-white font-medium text-center uppercase">
-                save and continue
-              </Text>
-            </TouchableOpacity>
-
-            {formData !== "new" && (
-              <Button
-                onPress={handleAddressDelete}
-                style={{ marginTop: 22 }}
-                label="remove address"
-                type="action"
-                flex={false}
+              <ShippingAddressForm
+                formData={formData}
+                errors={errors}
+                touched={touched}
+                values={values}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                setFieldValue={setFieldValue}
               />
-            )}
-          </View>
-        )}
-      </Formik>
-    </ScrollView>
+
+              <TouchableOpacity
+                className="bg-blue-400 py-4 rounded-[5px] mx-4 mt-5"
+                onPress={handleSubmit}
+              >
+                <Text className="text-[15px] text-white font-medium text-center uppercase">
+                  save and continue
+                </Text>
+              </TouchableOpacity>
+
+              {formData !== "new" && (
+                <Button
+                  onPress={handleAddressDelete}
+                  style={{ marginTop: 22 }}
+                  label="remove address"
+                  type="action"
+                  flex={false}
+                />
+              )}
+            </View>
+          )}
+        </Formik>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -257,7 +262,7 @@ const ShippingAddressForm = ({
   const [countryModal, setCountryModal] = useState(false);
 
   const { data, error, loading } = useQuery(GET_SHIPPING_COUNTRIES, {
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "no-cache",
   });
 
   const handleCountrySelect = (value) => {
@@ -266,8 +271,8 @@ const ShippingAddressForm = ({
   };
 
   return (
-    <View>
-      <View>
+    <View className="">
+      <View className="">
         {(errors.firstName && touched.firstName) ||
         (errors.lastName && touched.lastName) ? (
           <View className="bg-red-500 py-2 px-4">
@@ -306,32 +311,14 @@ const ShippingAddressForm = ({
         </View>
       </View>
 
-      <View>
-        {errors.phone && touched.phone ? (
-          <View className="bg-red-500 py-2 px-4">
-            <Text className="text-[14px] text-white font-medium ">
-              {errors.phone}
-            </Text>
-          </View>
-        ) : null}
-
-        <View className="px-4 py-3 border-b border-gray-100 bg-white">
-          <Text
-            className={`text-[16px] ${
-              errors.phone && touched.phone ? "text-red-500" : "text-black"
-            } font-medium mb-1`}
-          >
-            Phone*
-          </Text>
-          <TextInput
-            onChangeText={handleChange("phone")}
-            onBlur={handleBlur("phone")}
-            placeholder="e.g +971505050505"
-            className="text-[16px] text-black font-normal"
-            value={values.phone}
-          />
-        </View>
-      </View>
+      <PhoneTextInput
+        errors={errors}
+        touched={touched}
+        handleBlur={handleBlur}
+        handleChange={handleChange}
+        values={values}
+        countries={countryData}
+      />
 
       <View>
         {errors.country && touched.country ? (
@@ -391,7 +378,7 @@ const ShippingAddressForm = ({
             </View>
             {data && (
               <ScrollView className="">
-                {data.shop.shipsToCountries.map((item) => (
+                {/* {data.shop.shipsToCountries.map((item) => (
                   <Pressable
                     onPress={() => handleCountrySelect("United Arab Emirates")}
                     key={item}
@@ -399,6 +386,27 @@ const ShippingAddressForm = ({
                   >
                     <Text className="text-base">{item}</Text>
                   </Pressable>
+                ))} */}
+                {countryData.map((item) => (
+                  <View className="w-full h-14 px-4 border-b border-neutral-200 ">
+                    <TouchableOpacity
+                      onPress={handleSelectCountry}
+                      className="w-full h-full flex-row items-center"
+                    >
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-base mr-10"
+                      >
+                        {item.emoji}
+                      </Text>
+                      <Text
+                        style={FONT_FAMILY.secondary}
+                        className="text-base text-wrap flex-1 "
+                      >
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 ))}
               </ScrollView>
             )}

@@ -13,8 +13,14 @@ import {
   QuestionMarkCircleIcon,
   UserIcon,
   ChevronRightIcon,
+  InformationCircleIcon,
 } from "react-native-heroicons/outline";
-import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
+import {
+  useLazyQuery,
+  useMutation,
+  useQuery,
+  useReactiveVar,
+} from "@apollo/client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated from "react-native-reanimated";
 import { useShopifyCheckoutSheet } from "@shopify/checkout-sheet-kit";
@@ -44,6 +50,8 @@ import CoupenToggleContainer from "../components/CoupenToggleContainer";
 import LoadingFullScreen from "../components/Sidebar/LoadingFullScreen";
 import { FONT_FAMILY } from "../theme";
 import Button from "../components/buttons/Button";
+import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
+import SupportModal from "../components/Modal/SupportModal";
 
 export default function CartScreen() {
   const navigation = useNavigation();
@@ -52,27 +60,24 @@ export default function CartScreen() {
   const checkoutVisited = useReactiveVar(checkoutVisitedVar);
   const isLoggedinId = useReactiveVar(isLoggedinFrstTimeVar);
 
+  const [isModalVisible, setModalVisible] = useState(false);
+
   const shopifyCheckout = useShopifyCheckoutSheet();
 
-  console.log("USER LOGGED IN CART SCREEN : ", user?.email);
+  console.log("CARTVAR FROM CART SCREEN", cart);
 
-  const [
-    getCartDetails,
-    {
-      loading: cartDetailsLoading,
-      error: cartDetailsError,
-      data: cartDetailsData,
-      refetch,
+  const {
+    loading: cartDetailsLoading,
+    error: cartDetailsError,
+    data: cartDetailsData,
+    refetch,
+  } = useQuery(GET_CART_DETAILS_V2, {
+    variables: {
+      cartId: cart?.id,
     },
-  ] = useLazyQuery(GET_CART_DETAILS_V2, {
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: "no-cache",
+    fetchPolicy: "network-only",
   });
-
-  console.log(
-    "CART DATA FETCHED BUYER IDENTITY: ",
-    cartDetailsData?.cart?.buyerIdentity
-  );
 
   const [
     updateCartBuyerIdentity,
@@ -103,46 +108,64 @@ export default function CartScreen() {
     notifyOnNetworkStatusChange: true,
   });
 
-  const handleLineItemUpdate = (line) => {
-    updateLineItem({
+  const handleLineItemUpdate = async (line) => {
+    const { data } = await updateLineItem({
       variables: {
         cartId: cart?.id,
         lines: line || [],
       },
-      onCompleted: () => {
-        refetch();
-      },
     });
+    if (data) {
+      refetch();
+      const modifiedUrl = data?.cartLinesUpdate?.cart?.checkoutUrl.replace(
+        /\/cart\/c\//,
+        "/checkouts/cn/"
+      );
+      const withoutParams = modifiedUrl.split("?")[0];
+
+      shopifyCheckout.preload(
+        checkoutVisited
+          ? withoutParams
+          : isLoggedinId
+          ? data?.cartLinesUpdate?.cart?.checkoutUrl
+          : withoutParams
+      );
+    }
   };
 
-  function handleItemRemove(ids) {
-    removeCartItem({
+  async function handleItemRemove(ids) {
+    const { data } = await removeCartItem({
       variables: {
         cartId: cart?.id,
         lineIds: ids,
       },
-      onCompleted: () => {
-        refetch();
-      },
     });
+    if (data) {
+      refetch();
+      const modifiedUrl = data?.cartLinesRemove?.cart?.checkoutUrl.replace(
+        /\/cart\/c\//,
+        "/checkouts/cn/"
+      );
+      const withoutParams = modifiedUrl.split("?")[0];
+
+      shopifyCheckout.preload(
+        checkoutVisited
+          ? withoutParams
+          : isLoggedinId
+          ? data?.cartLinesRemove?.cart?.checkoutUrl
+          : withoutParams
+      );
+    }
   }
 
   const handleCheckoutV2 = async () => {
+    // shopifyCheckout.present(await cart.checkoutUrl);
     // Check if there is a user token exist
     const userToken = await AsyncStorage.getItem("my-key");
-    console.log("USER TOKEN FROM HANDLE CHECKOUT", userToken);
 
     if (!userToken) {
-      console.log("User token doesn't exit block ran......");
-      // navigation.navigate("CheckoutScreen", {
-      //   url: await cart.checkoutUrl,
-      // });
       shopifyCheckout.present(await cart.checkoutUrl);
     } else {
-      console.log(
-        "CHECKOUT URL FROM CART: ",
-        cartDetailsData?.cart?.checkoutUrl
-      );
       await updateCartBuyerIdentity({
         variables: {
           buyerIdentity: {
@@ -157,7 +180,6 @@ export default function CartScreen() {
           newCart.buyerIdentity =
             data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
 
-          console.log("BUYER IDENTITY ADDED: ", JSON.stringify(data, null, 2));
           // Replace "/cart/c/" with "/checkouts/cn/"
           const modifiedUrl =
             data?.cartBuyerIdentityUpdate?.cart?.checkoutUrl.replace(
@@ -165,8 +187,6 @@ export default function CartScreen() {
               "/checkouts/cn/"
             );
           const withoutParams = modifiedUrl.split("?")[0];
-
-          console.log(withoutParams);
 
           cartVar(newCart);
 
@@ -196,6 +216,24 @@ export default function CartScreen() {
   }, []);
 
   // useEffect(() => {
+  //   if (cartDetailsData) {
+  //     const modifiedUrl = cartDetailsData?.cart?.checkoutUrl.replace(
+  //       /\/cart\/c\//,
+  //       "/checkouts/cn/"
+  //     );
+  //     const withoutParams = modifiedUrl.split("?")[0];
+
+  //     shopifyCheckout.preload(
+  //       checkoutVisited
+  //         ? withoutParams
+  //         : isLoggedinId
+  //         ? cartDetailsData?.cart?.checkoutUrl
+  //         : withoutParams
+  //     );
+  //   }
+  // }, [cartDetailsData]);
+
+  // useEffect(() => {
   //   const getAcessToken = async () => {
   //     const token = await AsyncStorage.getItem("my-key");
   //     if (token !== null) {
@@ -207,27 +245,30 @@ export default function CartScreen() {
   //   getAcessToken();
   // });
 
-  useEffect(() => {
-    if (cart?.id) {
-      getCartDetails({
-        variables: {
-          cartId: cart?.id,
-        },
-      });
-    }
-  }, [cart?.id, user]);
+  // useEffect(() => {
+  //    console.log("CART OBJECT CHANGE TRIGGERED!!")
+  //   if (cart?.id) {
+  //     getCartDetails({
+  //       variables: {
+  //         cartId: cart?.id,
+  //       },
+  //     });
+  //   }
+  // }, [cart?.id, user]);
 
-  useEffect(() => {
-    if (cartDetailsData) {
-      shopifyCheckout.preload(cartDetailsData?.cart?.checkoutUrl);
-    }
-  }, [cartDetailsData]);
+  // useEffect(() => {
+  //   refetch()
+  // }, [cart])
+
+  // useEffect(() => {
+  //   if (cartDetailsData) {
+  //     shopifyCheckout.preload(cartDetailsData?.cart?.checkoutUrl);
+  //   }
+  // }, [cartDetailsData]);
 
   const lineItems = cartDetailsData?.cart?.lines?.edges || [];
   const cartProducts = lineItems.filter((i) => !i.node?.attribute);
   const customProducts = lineItems.filter((i) => i.node?.attribute);
-
-  console.log(customProducts);
 
   return (
     <View className="flex-1">
@@ -236,15 +277,23 @@ export default function CartScreen() {
       {updateLineItemLoading && <LoadingFullScreen />}
       {updateCartBuyerIdentityLoading && <LoadingFullScreen />}
       <SafeAreaView className="bg-white">
-        <View className="w-full relative flex-row justify-center items-center h-[35px]">
+        {/* <View className="w-full relative flex-row justify-center items-center h-[35px]">
           <Text className="text-[16px] text-black font-normal">
             Your Bag (4)
           </Text>
           <View className="flex-row gap-4 absolute top-1 right-3">
-            <HeartIcon size={24} color="black" strokeWidth={1} />
             <QuestionMarkCircleIcon size={24} color="black" strokeWidth={1} />
           </View>
-        </View>
+        </View> */}
+        <ScreenHeaderV3
+          left={null}
+          label="Bag"
+          right={
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <InformationCircleIcon size={28} color="black" />
+            </TouchableOpacity>
+          }
+        />
       </SafeAreaView>
       {cartProducts.length === 0 && (
         <View className="flex-1 items-center justify-center bg-white">
@@ -277,7 +326,7 @@ export default function CartScreen() {
               <View className="flex flex-row gap-2 items-center">
                 <UserIcon size={24} color="black" />
                 <Text
-                  style={FONT_FAMILY.primary}
+                  style={FONT_FAMILY.secondary}
                   className="text-[14px] text-black font-normal"
                 >
                   Log in or create an account for faster checkout
@@ -321,13 +370,13 @@ export default function CartScreen() {
           <View className="px-3 bg-white py-3 mt-3">
             <View className="flex-row justify-between items-center py-2">
               <Text
-                style={FONT_FAMILY.primary}
+                style={FONT_FAMILY.secondary}
                 className="text-[16px] text-black font-normal"
               >
                 Subtotal
               </Text>
               <Text
-                style={FONT_FAMILY.primary}
+                style={FONT_FAMILY.secondary}
                 className="text-[16px] text-red-800 font-normal"
               >
                 {cartDetailsData?.cart?.cost?.subtotalAmount?.amount}{" "}
@@ -336,13 +385,13 @@ export default function CartScreen() {
             </View>
             <View className="flex-row justify-between items-center py-2">
               <Text
-                style={FONT_FAMILY.primary}
+                style={FONT_FAMILY.secondary}
                 className="text-[16px] text-black font-normal"
               >
                 Tax
               </Text>
               <Text
-                style={FONT_FAMILY.primary}
+                style={FONT_FAMILY.secondary}
                 className="text-[16px] text-black font-normal"
               >
                 {cartDetailsData?.cart?.cost?.totalTaxAmount?.amount}{" "}
@@ -352,20 +401,20 @@ export default function CartScreen() {
             <View className="flex-row justify-between items-center py-2 mb-3">
               <View className="flex-row items-end">
                 <Text
-                  style={FONT_FAMILY.primary}
+                  style={FONT_FAMILY.secondary}
                   className="text-[20px] text-black font-normal"
                 >
                   Grand Total
                 </Text>
                 <Text
-                  style={FONT_FAMILY.primary}
+                  style={FONT_FAMILY.secondary}
                   className="text-[13px] text-black font-light ml-2"
                 >
                   VAT Inclusive
                 </Text>
               </View>
               <Text
-                style={FONT_FAMILY.primary}
+                style={FONT_FAMILY.secondary}
                 className="text-[20px] text-black font-medium"
               >
                 {cartDetailsData?.cart?.cost?.totalAmount?.amount}{" "}
@@ -377,6 +426,10 @@ export default function CartScreen() {
           </View>
         </Animated.ScrollView>
       )}
+      <SupportModal
+        isModalVisible={isModalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }

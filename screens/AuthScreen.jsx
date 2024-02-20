@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
   Dimensions,
+  FlatList,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -16,6 +17,8 @@ import { Formik } from "formik";
 import { useLazyQuery, useMutation, useReactiveVar } from "@apollo/client";
 import * as Yup from "yup";
 
+import countryData from "../data/country.json";
+
 import { ScreenHeader } from "../components/actions/ScreenHeader";
 import Button from "../components/buttons/Button";
 import {
@@ -25,25 +28,41 @@ import {
   CUSTOMER_RECOVER,
 } from "../graphql/mutations";
 import { GET_CUSTOMER } from "../graphql/queries";
-import { cartVar, isLoggedinFrstTimeVar, userVar } from "../makeVars/MakeVars";
+import {
+  cartVar,
+  checkoutVisitedVar,
+  isLoggedinFrstTimeVar,
+  userVar,
+} from "../makeVars/MakeVars";
 import CheckBox from "../components/Sidebar/Buttons/Checkbox";
 import MyModal from "../components/Modal/MyModal";
-import { XMarkIcon } from "react-native-heroicons/outline";
+import { MapIcon, XMarkIcon } from "react-native-heroicons/outline";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
 } from "react-native-reanimated";
+import { useShopifyCheckoutSheet } from "@shopify/checkout-sheet-kit";
+import ScreenHeaderV3 from "../components/actions/ScreenHeaderV3";
+import BackIconButton from "../components/buttons/BackIconButton";
+import { FONT_FAMILY } from "../theme";
+import PhoneTextInput from "../components/PhoneTextInput";
 
 const SCREEN_WIDTH = Dimensions.get("screen").width;
 
 const AuthScreen = () => {
-  const cart = useReactiveVar(cartVar);
-  const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("log");
   const [isModalVisible, setModalVisible] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
+
+  const shopifyCheckout = useShopifyCheckoutSheet();
+
+  const cart = useReactiveVar(cartVar);
+  const checkoutVisited = useReactiveVar(checkoutVisitedVar);
+  const isLoggedinId = useReactiveVar(isLoggedinFrstTimeVar);
+
+  const navigation = useNavigation();
   const [createUserToken, { data, loading, error }] = useMutation(
     CREATE_CUSTOMER_TOKEN
   );
@@ -64,14 +83,10 @@ const AuthScreen = () => {
     },
   ] = useMutation(CUSTOMER_RECOVER);
 
-  const [
-    updateCartBuyer,
-    {
-      data: updateCartBuyerData,
-      loading: updateCartBuyerLoading,
-      error: updateCartBuyerError,
-    },
-  ] = useMutation(CART_BUYER_IDENTITY_UPDATE);
+  // console.log("REGISTER DATA", customerCreationData)
+  // console.log("REGISTER DATA", customerCreationError)
+
+  const [updateCartBuyer] = useMutation(CART_BUYER_IDENTITY_UPDATE);
 
   const [
     getUser,
@@ -81,149 +96,96 @@ const AuthScreen = () => {
       error: customerDetailsError,
     },
   ] = useLazyQuery(GET_CUSTOMER, {
-    fetchPolicy: 'no-cache'
+    fetchPolicy: "no-cache",
   });
 
   const handleLogin = async (values) => {
     try {
-      await createUserToken({
+      const { data } = await createUserToken({
         variables: {
           input: {
             email: values.email,
             password: values.password,
           },
         },
-        onCompleted: (data) => {
-          const handleTokenStorage = async () => {
-            if (
-              (await data?.customerAccessTokenCreate?.customerAccessToken) ===
-              null
-            ) {
-              Alert.alert(
-                await data?.customerAccessTokenCreate?.customerUserErrors[0]
-                  .message
-              );
-            } else {
-              const token = await data?.customerAccessTokenCreate
-                ?.customerAccessToken?.accessToken;
-              if (token) {
-                await getUser({
-                  variables: {
-                    customerAccessToken: token,
-                  },
-                  onCompleted: async (data) => {
-                    console.log("USER UPDATED SUCCESFULLY");
-                    const user = await data.customer;
-                    if (await user) {
-                      userVar(await user);
-                      isLoggedinFrstTimeVar(true);
-                    }
-
-                    const token = await AsyncStorage.getItem("my-key");
-                    console.log("CUSTOMER USER GET CODE RUN ....", token);
-
-                    // await AsyncStorage.removeItem("cart-id");
-                    // cartVar(null);
-
-                    // console.log(
-                    //   "REMOVED CART FORM ASYNC STORAGE AND CARTVAR",
-                    //   cart
-                    // );
-
-                    // const cartInput = {
-                    //   buyerIdentity: {
-                    //     email: user?.email,
-                    //     phone: user?.phone,
-                    //     customerAccessToken: token,
-                    //   },
-                    // };
-
-                    // await createCart({
-                    //   variables: {
-                    //     input: cartInput,
-                    //   },
-                    //   onCompleted: (data) => {
-                    //     console.log("CART CREATED SUCCEFULLY");
-                    //     const set = async () => {
-                    //       if (data?.cartCreate?.cart?.id) {
-                    //         try {
-                    //           await AsyncStorage.setItem(
-                    //             "cart-id",
-                    //             data?.cartCreate?.cart?.id
-                    //           );
-                    //           console.log("CART ID SET TO ASYNC STORAGE");
-                    //         } catch (e) {
-                    //           console.log(
-                    //             "Error setting cart ID in AsyncStorage:",
-                    //             e
-                    //           );
-                    //         }
-                    //       }
-                    //     };
-                    //     set();
-                    //   },
-                    //   refetchQueries: [
-                    //     {
-                    //       query: GET_CART_DETAILS_V2,
-                    //     },
-                    //   ],
-                    // });
-
-                    // const cartId = await AsyncStorage.getItem("cart-id");
-
-                    // console.log("CART ID IN GETTING CART: ", cartId);
-                    // await getCartDetails({
-                    //   variables: {
-                    //     cartId: "gid://shopify/Cart/Z2NwLXVzLWVhc3QxOjAxSEtZRFFGVFoxQTMzQkpOMkpSMVNCSkY5",
-                    //   },
-                    //   onCompleted: async (data) => {
-                    //     console.log(
-                    //       "cart details fetched successfully in authScreen"
-                    //     );
-                    //     cartVar(await data?.cart);
-                    //   },
-                    // });
-
-                    updateCartBuyer({
-                      variables: {
-                        buyerIdentity: {
-                          customerAccessToken: token,
-                          email: user.email,
-                          phone: user.phone,
-                        },
-                        cartId: cart?.id,
-                      },
-                      onCompleted: (data) => {
-                        const newCart = { ...cart };
-                        newCart.buyerIdentity =
-                          data?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
-                        cartVar(newCart);
-                        console.log(
-                          "BUYER IDENTITY ADDED: ",
-                          JSON.stringify(data, null, 2)
-                        );
-                      },
-                    });
-                  },
-                });
-              }
-              try {
-                if (token !== null) await AsyncStorage.setItem("my-key", token);
-              } catch (e) {}
-            }
-          };
-
-          if (data.customerAccessTokenCreate.customerUserErrors.length > 0) {
-            setStatusMessage({
-              message:
-                data.customerAccessTokenCreate.customerUserErrors[0].message,
-              status: "error",
-            });
-          } else {
-            handleTokenStorage();
-          }
-        },
       });
+
+      if (data) {
+        if (data.customerAccessTokenCreate.customerUserErrors.length > 0) {
+          setStatusMessage({
+            message:
+              data.customerAccessTokenCreate.customerUserErrors[0].message,
+            status: "error",
+          });
+        } else {
+          if (
+            (await data?.customerAccessTokenCreate?.customerAccessToken) ===
+            null
+          ) {
+            Alert.alert(
+              await data?.customerAccessTokenCreate?.customerUserErrors[0]
+                .message
+            );
+          } else {
+            const token = await data?.customerAccessTokenCreate
+              ?.customerAccessToken?.accessToken;
+
+            if (token) {
+              const { data: userData } = await getUser({
+                variables: {
+                  customerAccessToken: token,
+                },
+              });
+
+              console.log("USER UPDATED SUCCESFULLY");
+              const user = await userData.customer;
+              if (user) {
+                userVar(user);
+                isLoggedinFrstTimeVar(true);
+              }
+
+              const { data: buyerData } = await updateCartBuyer({
+                variables: {
+                  buyerIdentity: {
+                    customerAccessToken: token,
+                    email: user.email,
+                    phone: user.phone,
+                  },
+                  cartId: cart?.id,
+                },
+              });
+
+              const newCart = { ...cart };
+              newCart.buyerIdentity =
+                buyerData?.cartBuyerIdentityUpdate?.cart?.buyerIdentity;
+              cartVar(newCart);
+              console.log(
+                "BUYER IDENTITY ADDED: ",
+                JSON.stringify(buyerData, null, 2)
+              );
+
+              const modifiedUrl =
+                buyerData?.cartBuyerIdentityUpdate?.cart?.checkoutUrl.replace(
+                  /\/cart\/c\//,
+                  "/checkouts/cn/"
+                );
+              const withoutParams = modifiedUrl.split("?")[0];
+
+              shopifyCheckout.preload(
+                checkoutVisited
+                  ? withoutParams
+                  : isLoggedinId
+                  ? buyerData?.cartBuyerIdentityUpdate?.cart?.checkoutUrl
+                  : withoutParams
+              );
+            }
+
+            try {
+              if (token !== null) await AsyncStorage.setItem("my-key", token);
+            } catch (e) {}
+          }
+        }
+      }
     } catch (error) {
       console.error("Error submitting form:", error.message);
     }
@@ -297,14 +259,15 @@ const AuthScreen = () => {
     });
   }, []);
 
-
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* {loading && <LoadingFullScreen />} */}
       {/* {customerDetailsLoading && <LoadingFullScreen />}
       {customerCreationLoading && <LoadingFullScreen />} */}
       <View className="flex-1 items-center bg-neutral-50">
-        {/* <ScreenHeader /> */}
+        <ScreenHeaderV3
+          left={navigation.canGoBack() === false ? null : <BackIconButton />}
+        />
 
         <TabHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -334,7 +297,7 @@ const AuthScreen = () => {
 
         <StatusMessage
           status={statusMessage}
-          completed={() => setStatusMessage(null)}
+          // completed={() => setStatusMessage(null)}
         />
       </View>
     </SafeAreaView>
@@ -343,7 +306,7 @@ const AuthScreen = () => {
 
 const TabHeader = ({ activeTab, setActiveTab }) => {
   return (
-    <View className="w-full flex-row bg-white shadow-sm justify-between mt-10">
+    <View className="w-full flex-row bg-white shadow-sm justify-between z-10">
       <Pressable
         onPress={() => setActiveTab("log")}
         className="flex-1 items-center justify-center"
@@ -373,6 +336,14 @@ const TabHeader = ({ activeTab, setActiveTab }) => {
 };
 
 const RegisterScreen = ({ handleRegister, loading }) => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    phone: "",
+    acceptsMarketing: false,
+  });
   const [isHidePassword, setHidePassword] = useState(true);
   const registerValidationSchema = Yup.object({
     firstName: Yup.string().required(),
@@ -386,18 +357,11 @@ const RegisterScreen = ({ handleRegister, loading }) => {
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets={true}
-      className="w-full flex-1"
+      className="w-full h-full"
     >
       <View className="flex-1 w-full px-10">
         <Formik
-          initialValues={{
-            firstName: "",
-            lastName: "",
-            email: "",
-            password: "",
-            phone: "",
-            acceptsMarketing: false,
-          }}
+          initialValues={formData}
           validationSchema={registerValidationSchema}
           onSubmit={handleRegister}
         >
@@ -546,39 +510,22 @@ const RegisterScreen = ({ handleRegister, loading }) => {
                 )}
               </View>
 
-              <View
-                className={`${
-                  errors.phone && touched.phone ? "h-16" : "h-14"
-                } mb-4 justify-between`}
-              >
-                <TextInput
-                  placeholder="phone*"
-                  placeholderTextColor={
-                    errors.phone && touched.phone ? "#D10000" : "black"
-                  }
-                  onChangeText={handleChange("phone")}
-                  onBlur={handleBlur("phone")}
-                  value={values.phone}
-                  keyboardType="phone-pad"
-                  secureTextEntry={false}
-                  className={`flex-1 text-[16px] font-normal border-b ${
-                    errors.phone && touched.phone
-                      ? "border-red-300 text-red-600"
-                      : "border-neutral-300 text-black"
-                  } `}
-                />
-                {errors.phone && touched.phone && (
-                  <Text className={`text-xs text-red-600 text-normal mt-2`}>
-                    {errors.phone}
-                  </Text>
-                )}
-              </View>
+              <PhoneTextInput
+                formData={formData}
+                setFormData={setFormData}
+                errors={errors}
+                touched={touched}
+                handleBlur={handleBlur}
+                handleChange={handleChange}
+                values={values}
+                countries={countryData}
+              />
 
               <Pressable
                 onPress={() =>
                   setFieldValue("acceptsMarketing", !values.acceptsMarketing)
                 }
-                className="flex-row items-center mb-8"
+                className="flex-row items-center my-5"
               >
                 <CheckBox active={values.acceptsMarketing} />
                 <Text className="ml-2">Newsletter subsciption</Text>
@@ -587,8 +534,6 @@ const RegisterScreen = ({ handleRegister, loading }) => {
               <Button
                 onPress={handleSubmit}
                 label="create account"
-                colors={["#42a5f5", "#90caf9"]}
-                textColors={["#ffffff"]}
                 style={{ marginBottom: 12 }}
                 loading={loading}
               />
@@ -627,7 +572,7 @@ const LoaginScreen = ({
   return (
     <ScrollView
       automaticallyAdjustKeyboardInsets={true}
-      className="w-full flex-1"
+      className="w-full h-full"
     >
       <View className="flex-1 w-full px-10">
         {/* <View style={{width: SCREEN_WIDTH}} className="bg-red-500 w-full h-10 absolute items-center justify-center">
@@ -746,8 +691,6 @@ const LoaginScreen = ({
                 }}
                 label="Log In"
                 style={{ marginBottom: 20 }}
-                colors={["#42a5f5"]}
-                textColors={["#ffffff"]}
                 loading={loading}
               />
               <Button
@@ -850,33 +793,48 @@ const LoaginScreen = ({
 };
 
 const StatusMessage = ({ status, completed }) => {
-  const [visible, setVisible] = useState(false);
   const sv = useSharedValue(0);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    width: sv.value,
+    transform: [{ translateY: sv.value }],
   }));
 
-  useEffect(() => {
-    sv.value = withDelay(500, withTiming(SCREEN_WIDTH));
+  const messageLength = status?.message?.length;
 
-    setTimeout(() => {
-      sv.value = withTiming(0);
-      completed();
-    }, 4000);
+  useEffect(() => {
+    if (status !== null) {
+      sv.value = withTiming(110, { duration: 400 });
+      const timeout = setTimeout(
+        () => {
+          sv.value = withTiming(64, { duration: 400 }); // Lowered duration for smoother animation
+          // completed();
+        },
+        messageLength > 90 ? 10000 : 6000
+      );
+
+      // Clean-up function
+      return () => clearTimeout(timeout);
+    }
   }, [status]);
 
-  if (status === null) return null;
+  // if (status === null) return null;
 
   return (
     <Animated.View
       style={[{ width: SCREEN_WIDTH }, animatedStyle]}
       className={`${
-        status.status === "success" ? "bg-green-500" : "bg-red-500"
-      } w-full h-10 absolute top-28 items-center justify-center overflow-hidden`}
+        status?.status === "success" ? "bg-green-500" : "bg-red-500"
+      }  absolute overflow-hidden`}
     >
-      <View style={{ width: SCREEN_WIDTH }} className="absolute items-center">
-        <Text className="text-sm text-white font-medium">{status.message}</Text>
+      <View className="w-full h-10 items-center justify-center">
+        <View style={{ width: SCREEN_WIDTH }} className="absolute items-center">
+          <Text
+            style={FONT_FAMILY.font_3}
+            className="text-sm text-white font-medium text-center leading-4"
+          >
+            {status?.message}
+          </Text>
+        </View>
       </View>
     </Animated.View>
   );

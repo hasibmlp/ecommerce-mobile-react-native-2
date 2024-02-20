@@ -23,6 +23,10 @@ function FilterBody({
   setActiveFilterInput,
   maxFilterPriceRange,
 }) {
+
+  const handleReset = () => {
+    setActiveFilterInput([])
+  }
   return (
     <View className="flex-1">
       {loading && <LoadingFullScreen />}
@@ -41,7 +45,7 @@ function FilterBody({
         maxFilterPriceRange={maxFilterPriceRange}
       />
 
-      <Footer onClose={onClose} />
+      <Footer onClose={onClose} handleReset={handleReset} />
     </View>
   );
 }
@@ -82,6 +86,12 @@ function Content({
     (item) => item.type === "PRICE_RANGE" || item.values.length > 0
   );
 
+  // console.log(activeFilterInput)
+  
+  const activeTabs = activeFilterInput.map(item => item.parent)
+  
+  console.log(activeTabs)
+  
   return (
     <View className="flex-1 flex-row">
       <View className="basis-[30%] bg-blue-50 h-full">
@@ -97,6 +107,7 @@ function Content({
                 title={item.label}
                 onPress={() => setActiveTabContent(item)}
                 active={item.id === activeTabContent?.id}
+                tabValuesSelected={activeTabs.includes(item.label)}
               />
             );
           }}
@@ -116,6 +127,7 @@ function Content({
                   setActiveFilterInput={setActiveFilterInput}
                   activeFilterInput={activeFilterInput}
                   loading={loading}
+                  activeTabLabel={activeTabContent?.label}
                 />
               );
             } else {
@@ -125,6 +137,7 @@ function Content({
                   setLoading={setLoading}
                   setActiveFilterInput={setActiveFilterInput}
                   maxFilterPriceRange={maxFilterPriceRange}
+                  activeTabLabel={activeTabContent?.label}
                 />
               );
             }
@@ -165,7 +178,8 @@ function Header({ activeFilterInput, setLoading, setActiveFilterInput }) {
   );
 }
 
-function Footer({ onClose }) {
+function Footer({ onClose, handleReset }) {
+
   return (
     <View
       style={{
@@ -180,6 +194,7 @@ function Footer({ onClose }) {
       <View className="w-full flex-row justify-between px-3 my-4">
         <View className="flex-1">
           <Button
+          onPress={handleReset}
             type="secondary"
             label="reset"
             flex
